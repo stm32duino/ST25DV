@@ -14,10 +14,10 @@
   * You may not use this file except in compliance with the License.
   * You may obtain a copy of the License at:
   *
-  *        http://www.st.com/myliberty  
+  *        http://www.st.com/myliberty
   *
-  * Unless required by applicable law or agreed to in writing, software 
-  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * Unless required by applicable law or agreed to in writing, software
+  * distributed under the License is distributed on an "AS IS" BASIS,
   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied,
   * AND SPECIFICALLY DISCLAIMING THE IMPLIED WARRANTIES OF MERCHANTABILITY,
   * FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
@@ -32,7 +32,7 @@
 #define __LIB_NDEF_VCARD_H
 
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
 
 /* Includes ------------------------------------------------------------------*/
@@ -50,7 +50,7 @@
 #define VCARD                         "VCARD"
 #define VERSION                       "VERSION:"
 #define VCARD_NAME                     "N:"
-  // TODO: rename FIRSTNAME into FORMATTEDNAME
+// TODO: rename FIRSTNAME into FORMATTEDNAME
 #define FIRSTNAME                     "FN:"
 #define HOME_TEL                      "TEL;HOME:"
 #define WORK_TEL                      "TEL;WORK:"
@@ -73,7 +73,7 @@
 #define VCARD_STRING_SIZE             5
 #define VERSION_STRING_SIZE           8
 #define VCARD_NAME_STRING_SIZE        2
-  // TODO: rename FIRSTNAME into FORMATTEDNAME
+// TODO: rename FIRSTNAME into FORMATTEDNAME
 #define FIRSTNAME_STRING_SIZE         3
 #define HOME_TEL_STRING_SIZE          9
 #define WORK_TEL_STRING_SIZE          9
@@ -86,12 +86,11 @@
 #define ORG_STRING_SIZE               4
 #define URL_STRING_SIZE               4
 #define END_STRING_SIZE               4
-#define JPEG_STRING_SIZE              4	
+#define JPEG_STRING_SIZE              4
 
 #define LIMIT_STRING_SIZE             2
 
-typedef struct
-{
+typedef struct {
   char Version [10];
   char Name[80];
   // TODO: rename FirstName into FormattedName
@@ -108,12 +107,12 @@ typedef struct
   char WorkEmail[80];
   char Email[80];
   char Url[80];
-}sVcardInfo;
+} sVcardInfo;
 
-uint16_t NDEF_ReadVcard( sRecordInfo_t *pRecordStruct, sVcardInfo *pVcardStruct );
-uint16_t NDEF_WriteVcard( sVcardInfo *pVcardStruct );
-void NDEF_PrepareVcardMessage( sVcardInfo *pVcardStruct, uint8_t *pNDEFMessage, uint16_t *size );
-int NDEF_getVcardPicture( uint8_t* pPayload, uint32_t PayloadSize,  uint8_t* pPict );
+uint16_t NDEF_ReadVcard(sRecordInfo_t *pRecordStruct, sVcardInfo *pVcardStruct);
+uint16_t NDEF_WriteVcard(sVcardInfo *pVcardStruct);
+void NDEF_PrepareVcardMessage(sVcardInfo *pVcardStruct, uint8_t *pNDEFMessage, uint16_t *size);
+int NDEF_getVcardPicture(uint8_t *pPayload, uint32_t PayloadSize,  uint8_t *pPict);
 
 #ifdef __cplusplus
 }

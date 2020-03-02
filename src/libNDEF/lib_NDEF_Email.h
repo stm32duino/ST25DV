@@ -14,10 +14,10 @@
   * You may not use this file except in compliance with the License.
   * You may obtain a copy of the License at:
   *
-  *        http://www.st.com/myliberty  
+  *        http://www.st.com/myliberty
   *
-  * Unless required by applicable law or agreed to in writing, software 
-  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * Unless required by applicable law or agreed to in writing, software
+  * distributed under the License is distributed on an "AS IS" BASIS,
   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied,
   * AND SPECIFICALLY DISCLAIMING THE IMPLIED WARRANTIES OF MERCHANTABILITY,
   * FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
@@ -32,7 +32,7 @@
 #define __LIB_NDEF_EMAIL_H
 
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
 
 /* Includes ------------------------------------------------------------------*/
@@ -41,26 +41,24 @@
 /* "mailto:customer.service@st.com?subject=M24SR S/N 754FHFGJF46G329 WARRANTY&body=this is an auomatic warranty activation email" */
 
 #ifdef NDEF_DYN_ALLOC
-typedef struct
-{
+typedef struct {
   char *EmailAdd;
   char *Subject;
   char *Message;
   char *Information;
-}sEmailInfo;
+} sEmailInfo;
 #else
-typedef struct
-{
+typedef struct {
   char EmailAdd[64];
   char Subject[100];
   char Message[2000];
   char Information[400];
-}sEmailInfo;
+} sEmailInfo;
 #endif
-uint16_t NDEF_ReadEmail( sRecordInfo_t *pRecordStruct, sEmailInfo *pEmailStruct );
-uint16_t NDEF_WriteEmail( sEmailInfo *pEmailStruct );
-void NDEF_PrepareEmailMessage( sEmailInfo *pEmailStruct, uint8_t *pNDEFMessage, uint16_t *size );
-void NDEF_closeEmail( sEmailInfo *pEmailStruct);
+uint16_t NDEF_ReadEmail(sRecordInfo_t *pRecordStruct, sEmailInfo *pEmailStruct);
+uint16_t NDEF_WriteEmail(sEmailInfo *pEmailStruct);
+void NDEF_PrepareEmailMessage(sEmailInfo *pEmailStruct, uint8_t *pNDEFMessage, uint16_t *size);
+void NDEF_closeEmail(sEmailInfo *pEmailStruct);
 
 #ifdef __cplusplus
 }

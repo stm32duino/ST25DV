@@ -14,10 +14,10 @@
   * You may not use this file except in compliance with the License.
   * You may obtain a copy of the License at:
   *
-  *        http://www.st.com/myliberty  
+  *        http://www.st.com/myliberty
   *
-  * Unless required by applicable law or agreed to in writing, software 
-  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * Unless required by applicable law or agreed to in writing, software
+  * distributed under the License is distributed on an "AS IS" BASIS,
   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied,
   * AND SPECIFICALLY DISCLAIMING THE IMPLIED WARRANTIES OF MERCHANTABILITY,
   * FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
@@ -32,7 +32,7 @@
 #define __LIB_NDEF_MYAPP_H
 
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
 
 /* Includes ------------------------------------------------------------------*/
@@ -57,28 +57,25 @@
 #define MYAPP_LED_CONF_INITAL_STATE ((uint8_t) 0x1)
 #define MYAPP_LED_CONF_BLINKING     ((uint8_t) 0x2)
 
-typedef struct
-{
+typedef struct {
   uint8_t LedConf[4];
   uint8_t Speed;
-}sLedBlinkConfig;
+} sLedBlinkConfig;
 
-typedef struct
-{
+typedef struct {
   uint8_t LineNb;
   uint16_t BackGroundColor;
   uint16_t FontColor;
   char String[20];
-}sLineConfig;
+} sLineConfig;
 
-typedef struct
-{
+typedef struct {
   sLedBlinkConfig LedBlinkConf;
   sLineConfig LineX[MYAPP_NB_LINES];
-}sMyAppInfo;
+} sMyAppInfo;
 
-uint16_t NDEF_ReadMyApp( sRecordInfo_t *pRecordStruct, sMyAppInfo *pMyAppStruct );
-uint16_t NDEF_WriteMyApp( sMyAppInfo *pMyAppStruct );
+uint16_t NDEF_ReadMyApp(sRecordInfo_t *pRecordStruct, sMyAppInfo *pMyAppStruct);
+uint16_t NDEF_WriteMyApp(sMyAppInfo *pMyAppStruct);
 
 #ifdef __cplusplus
 }

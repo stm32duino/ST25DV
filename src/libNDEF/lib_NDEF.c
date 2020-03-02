@@ -14,10 +14,10 @@
   * You may not use this file except in compliance with the License.
   * You may obtain a copy of the License at:
   *
-  *        http://www.st.com/myliberty  
+  *        http://www.st.com/myliberty
   *
-  * Unless required by applicable law or agreed to in writing, software 
-  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * Unless required by applicable law or agreed to in writing, software
+  * distributed under the License is distributed on an "AS IS" BASIS,
   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied,
   * AND SPECIFICALLY DISCLAIMING THE IMPLIED WARRANTIES OF MERCHANTABILITY,
   * FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
@@ -51,14 +51,14 @@
   */
 
 
-static uint16_t NDEF_IsNDEFPresent( void );
-static uint16_t NDEF_ParseRecordHeader( sRecordInfo_t *pRecordStruct );
-static void NDEF_ParseWellKnownType( sRecordInfo_t *pRecordStruct );
-static void NDEF_ParseMediaType( sRecordInfo_t *pRecordStruct );
-static void NDEF_ParseForumExternalType( sRecordInfo_t *pRecordStruct );
-static void NDEF_ParseURI( sRecordInfo_t *pRecordStruct );
-static void NDEF_ParseSP( sRecordInfo_t *pRecordStruct );
-static uint16_t NDEF_IdentifySPRecord( sRecordInfo_t *pRecordStruct, uint8_t* pPayload );
+static uint16_t NDEF_IsNDEFPresent(void);
+static uint16_t NDEF_ParseRecordHeader(sRecordInfo_t *pRecordStruct);
+static void NDEF_ParseWellKnownType(sRecordInfo_t *pRecordStruct);
+static void NDEF_ParseMediaType(sRecordInfo_t *pRecordStruct);
+static void NDEF_ParseForumExternalType(sRecordInfo_t *pRecordStruct);
+static void NDEF_ParseURI(sRecordInfo_t *pRecordStruct);
+static void NDEF_ParseSP(sRecordInfo_t *pRecordStruct);
+static uint16_t NDEF_IdentifySPRecord(sRecordInfo_t *pRecordStruct, uint8_t *pPayload);
 
 /** @brief This buffer is used to store the data sent/received by the TAG. */
 uint8_t NDEF_Buffer [NDEF_MAX_SIZE];
@@ -78,17 +78,18 @@ sRecordInfo_t *SPRecordStructAdd[SP_MAX_RECORD] = { &SPRecordStruct1, &SPRecordS
   * @retval NDEF_OK : There is a NDEF file stored in tag.
   * @retval NDEF_ERROR : No NDEF in the tag.
   */
-static uint16_t NDEF_IsNDEFPresent( void )
+static uint16_t NDEF_IsNDEFPresent(void)
 {
   uint16_t FileSize;
 
   /* Check NDEF existence */
   NfcTag_GetLength(&FileSize);
-  
-  if( FileSize != 0 )
+
+  if (FileSize != 0) {
     return NDEF_OK;
-  else
+  } else {
     return NDEF_ERROR;
+  }
 }
 
 /**
@@ -97,71 +98,64 @@ static uint16_t NDEF_IsNDEFPresent( void )
   * @param  pPayload : pointer on the payload.
   * @retval Status : Status of the operation.
   */
-static uint16_t NDEF_IdentifySPRecord( sRecordInfo_t *pRecordStruct, uint8_t* pPayload )
+static uint16_t NDEF_IdentifySPRecord(sRecordInfo_t *pRecordStruct, uint8_t *pPayload)
 {
   uint16_t status = NDEF_ERROR;
   uint16_t SizeOfRecordHeader, TypeNbByte, PayloadLengthField, IDLengthField, IDNbByte;
 
   /* Is ID length field present */
-  if( (*pPayload) & IL_Mask )
-  {
+  if ((*pPayload) & IL_Mask) {
     IDLengthField = ID_LENGTH_FIELD;
-  }
-  else
-  {
+  } else {
     IDLengthField = 0;
   }
 
   /* it's a SR */
-  if( (*pPayload) & SR_Mask )
-  {
+  if ((*pPayload) & SR_Mask) {
     TypeNbByte = pPayload[1];
     PayloadLengthField = 1;
-    if( IDLengthField == ID_LENGTH_FIELD )
+    if (IDLengthField == ID_LENGTH_FIELD) {
       IDNbByte = pPayload[3];
-    else
+    } else {
       IDNbByte = 0;
-  }
-  else
-  {
+    }
+  } else {
     TypeNbByte = pPayload[1];
     PayloadLengthField = 4;
-    if( IDLengthField == ID_LENGTH_FIELD )
+    if (IDLengthField == ID_LENGTH_FIELD) {
       IDNbByte = pPayload[6];
-    else
+    } else {
       IDNbByte = 0;
+    }
   }
 
   SizeOfRecordHeader = RECORD_FLAG_FIELD + TYPE_LENGTH_FIELD + PayloadLengthField + IDLengthField + TypeNbByte + IDNbByte;
 
   /* it's a SR */
-  if( pPayload[0] & SR_Mask )
-  {
+  if (pPayload[0] & SR_Mask) {
     pRecordStruct->RecordFlags = pPayload[0];
     pRecordStruct->TypeLength = TypeNbByte;
     pRecordStruct->PayloadLength = pPayload[2];
     pRecordStruct->IDLength = IDNbByte;
-    memcpy( pRecordStruct->Type, &pPayload[3+IDNbByte], TypeNbByte );
-    memcpy( pRecordStruct->ID, &pPayload[3+IDNbByte+TypeNbByte], IDNbByte );
+    memcpy(pRecordStruct->Type, &pPayload[3 + IDNbByte], TypeNbByte);
+    memcpy(pRecordStruct->ID, &pPayload[3 + IDNbByte + TypeNbByte], IDNbByte);
     pRecordStruct->PayloadOffset = SizeOfRecordHeader;
-  }
-  else
-  {
+  } else {
     pRecordStruct->RecordFlags = pPayload[0];
     pRecordStruct->TypeLength = TypeNbByte;
-    pRecordStruct->PayloadLength = ( ((uint32_t)pPayload[2]) << 24 ) |
-                                   ( ((uint32_t)pPayload[3]) << 16 ) |
-                                   ( ((uint32_t)pPayload[4]) << 8 )
-                                    | pPayload[5] ;
+    pRecordStruct->PayloadLength = (((uint32_t)pPayload[2]) << 24) |
+                                   (((uint32_t)pPayload[3]) << 16) |
+                                   (((uint32_t)pPayload[4]) << 8)
+                                   | pPayload[5] ;
     pRecordStruct->IDLength = IDNbByte;
-    memcpy( pRecordStruct->Type, &pPayload[6+IDNbByte], TypeNbByte );
-    memcpy( pRecordStruct->ID, &pPayload[6+IDNbByte+TypeNbByte], IDNbByte );
+    memcpy(pRecordStruct->Type, &pPayload[6 + IDNbByte], TypeNbByte);
+    memcpy(pRecordStruct->ID, &pPayload[6 + IDNbByte + TypeNbByte], IDNbByte);
     pRecordStruct->PayloadOffset = SizeOfRecordHeader;
   }
 
   pRecordStruct->PayloadBufferAdd =  pPayload + SizeOfRecordHeader ;
 
-  status = NDEF_ParseRecordHeader( pRecordStruct );
+  status = NDEF_ParseRecordHeader(pRecordStruct);
 
   return status;
 }
@@ -172,25 +166,24 @@ static uint16_t NDEF_IdentifySPRecord( sRecordInfo_t *pRecordStruct, uint8_t* pP
   * @retval NDEF_OK : record identified and structure filled.
   * @retval NDEF_ERROR : Not supported.
   */
-static uint16_t NDEF_ParseRecordHeader( sRecordInfo_t *pRecordStruct )
+static uint16_t NDEF_ParseRecordHeader(sRecordInfo_t *pRecordStruct)
 {
   uint16_t status = NDEF_OK;
 
-  switch( (pRecordStruct->RecordFlags & TNF_Mask) )
-  {
+  switch ((pRecordStruct->RecordFlags & TNF_Mask)) {
     case TNF_WellKnown:
-      NDEF_ParseWellKnownType( pRecordStruct );
+      NDEF_ParseWellKnownType(pRecordStruct);
       break;
 
     case TNF_MediaType:
-      NDEF_ParseMediaType( pRecordStruct );
+      NDEF_ParseMediaType(pRecordStruct);
       break;
 
     case TNF_NFCForumExternal:
-      NDEF_ParseForumExternalType( pRecordStruct);
+      NDEF_ParseForumExternalType(pRecordStruct);
       break;
 
-  default:
+    default:
       /* currently not supported or unknown*/
       pRecordStruct->NDEF_Type = UNKNOWN_TYPE;
       status = NDEF_ERROR;
@@ -202,121 +195,108 @@ static uint16_t NDEF_ParseRecordHeader( sRecordInfo_t *pRecordStruct )
   * @brief  This function parse the Well Known type record.
   * @param  pRecordStruct : pointer on the record structure to fill.
   */
-static void NDEF_ParseWellKnownType( sRecordInfo_t *pRecordStruct )
+static void NDEF_ParseWellKnownType(sRecordInfo_t *pRecordStruct)
 {
-  uint8_t* pPayload;
+  uint8_t *pPayload;
 
-  pPayload = (uint8_t*)( pRecordStruct->PayloadBufferAdd );
+  pPayload = (uint8_t *)(pRecordStruct->PayloadBufferAdd);
 
-  if( !memcmp( &(pRecordStruct->Type), SMART_POSTER_TYPE_STRING, pRecordStruct->TypeLength ) )
-  { 
-    /* special case where	we have to parse others records */
+  if (!memcmp(&(pRecordStruct->Type), SMART_POSTER_TYPE_STRING, pRecordStruct->TypeLength)) {
+    /* special case where we have to parse others records */
     pRecordStruct->NDEF_Type = SMARTPOSTER_TYPE;
-    NDEF_ParseSP( pRecordStruct );
+    NDEF_ParseSP(pRecordStruct);
   }
 
-  else if( !memcmp( &(pRecordStruct->Type), URI_TYPE_STRING, pRecordStruct->TypeLength ) )
-  { 
+  else if (!memcmp(&(pRecordStruct->Type), URI_TYPE_STRING, pRecordStruct->TypeLength)) {
     /* it's an URI Type check if it's an URL or SMS or ... */
     /* check identifier */
-    if( *pPayload == URI_ID_0x00 ) 
-    {
-      NDEF_ParseURI( pRecordStruct );
-    }
-    else if( (*pPayload > URI_ID_0x00) && (*pPayload < URI_RFU) ) 
-    {
+    if (*pPayload == URI_ID_0x00) {
+      NDEF_ParseURI(pRecordStruct);
+    } else if ((*pPayload > URI_ID_0x00) && (*pPayload < URI_RFU)) {
       /* email special case  */
-      if( *pPayload == (uint8_t) URI_ID_0x06 )
-      {
+      if (*pPayload == (uint8_t) URI_ID_0x06) {
         pRecordStruct->NDEF_Type = URI_EMAIL_TYPE;
-      }
-      else
-      {
+      } else {
         pRecordStruct->NDEF_Type = WELL_KNOWN_ABRIDGED_URI_TYPE;
       }
-    }
-    else
-    {
+    } else {
       pRecordStruct->NDEF_Type = UNKNOWN_TYPE;
     }
   }
 
-  else if( !memcmp( &(pRecordStruct->Type), TEXT_TYPE_STRING, pRecordStruct->TypeLength ) )
-  {
+  else if (!memcmp(&(pRecordStruct->Type), TEXT_TYPE_STRING, pRecordStruct->TypeLength)) {
     pRecordStruct->NDEF_Type = TEXT_TYPE;
-  } else if ((!memcmp( &(pRecordStruct->Type), NDEF_HANDOVER_SELECT_TYPE_STR, pRecordStruct->TypeLength )) ||
-            (!memcmp( &(pRecordStruct->Type), NDEF_HANDOVER_REQUEST_TYPE_STR, pRecordStruct->TypeLength ) ))
-  {
-     pRecordStruct->NDEF_Type = HANDOVER_TYPE;
-  }
-  else
+  } else if ((!memcmp(&(pRecordStruct->Type), NDEF_HANDOVER_SELECT_TYPE_STR, pRecordStruct->TypeLength)) ||
+             (!memcmp(&(pRecordStruct->Type), NDEF_HANDOVER_REQUEST_TYPE_STR, pRecordStruct->TypeLength))) {
+    pRecordStruct->NDEF_Type = HANDOVER_TYPE;
+  } else {
     pRecordStruct->NDEF_Type = UNKNOWN_TYPE;
+  }
 }
 
 /**
   * @brief  This function parse the Media type record.
   * @param  pRecordStruct : pointer on the record structure to fill.
   */
-static void NDEF_ParseMediaType( sRecordInfo_t *pRecordStruct )
+static void NDEF_ParseMediaType(sRecordInfo_t *pRecordStruct)
 {
-  if( !memcmp( &(pRecordStruct->Type), VCARD_TYPE_STRING, pRecordStruct->TypeLength ) )
+  if (!memcmp(&(pRecordStruct->Type), VCARD_TYPE_STRING, pRecordStruct->TypeLength)) {
     pRecordStruct->NDEF_Type = VCARD_TYPE;
-  else if( !memcmp( &(pRecordStruct->Type), XVCARD_TYPE_STRING, pRecordStruct->TypeLength ) )
+  } else if (!memcmp(&(pRecordStruct->Type), XVCARD_TYPE_STRING, pRecordStruct->TypeLength)) {
     pRecordStruct->NDEF_Type = VCARD_TYPE;
-  else if( !memcmp( &(pRecordStruct->Type), XVCARD2_TYPE_STRING, pRecordStruct->TypeLength ) )
+  } else if (!memcmp(&(pRecordStruct->Type), XVCARD2_TYPE_STRING, pRecordStruct->TypeLength)) {
     pRecordStruct->NDEF_Type = VCARD_TYPE;
-  else if (!memcmp(&pRecordStruct->Type, NDEF_BLUETOOTH_BREDR_MIME_TYPE,  pRecordStruct->TypeLength))
+  } else if (!memcmp(&pRecordStruct->Type, NDEF_BLUETOOTH_BREDR_MIME_TYPE,  pRecordStruct->TypeLength)) {
     pRecordStruct->NDEF_Type = BT_TYPE;
-  else if (!memcmp(&pRecordStruct->Type, NDEF_BLUETOOTH_BLE_MIME_TYPE,  pRecordStruct->TypeLength))
+  } else if (!memcmp(&pRecordStruct->Type, NDEF_BLUETOOTH_BLE_MIME_TYPE,  pRecordStruct->TypeLength)) {
     pRecordStruct->NDEF_Type = BLE_TYPE;
-  else if (!memcmp(&pRecordStruct->Type, WIFITOKEN_TYPE_STRING,  pRecordStruct->TypeLength))
+  } else if (!memcmp(&pRecordStruct->Type, WIFITOKEN_TYPE_STRING,  pRecordStruct->TypeLength)) {
     pRecordStruct->NDEF_Type = URI_WIFITOKEN_TYPE;
-  else
+  } else {
     pRecordStruct->NDEF_Type = UNKNOWN_TYPE;
+  }
 }
 
 /**
   * @brief  This function parse the Forum External type record.
   * @param  pRecordStruct : pointer on the record structure to fill.
   */
-static void NDEF_ParseForumExternalType( sRecordInfo_t *pRecordStruct )
+static void NDEF_ParseForumExternalType(sRecordInfo_t *pRecordStruct)
 {
-  if( !memcmp( &(pRecordStruct->Type), M24SR_DISCOVERY_APP_STRING, pRecordStruct->TypeLength ) )
+  if (!memcmp(&(pRecordStruct->Type), M24SR_DISCOVERY_APP_STRING, pRecordStruct->TypeLength)) {
     pRecordStruct->NDEF_Type = M24SR_DISCOVERY_APP_TYPE;
-  else
+  } else {
     pRecordStruct->NDEF_Type = UNKNOWN_TYPE;
+  }
 }
 
 /**
   * @brief  This function parse the URI type record.
   * @param  pRecordStruct : pointer on the record structure to fill.
   */
-static void NDEF_ParseURI( sRecordInfo_t *pRecordStruct )
+static void NDEF_ParseURI(sRecordInfo_t *pRecordStruct)
 {
-  uint8_t* pPayload;
+  uint8_t *pPayload;
 
-  pPayload = (uint8_t*)( pRecordStruct->PayloadBufferAdd );
+  pPayload = (uint8_t *)(pRecordStruct->PayloadBufferAdd);
   pPayload++; /* to skip URI identifier first URI payload byte */
 
-  if( !memcmp( pPayload, SMS_TYPE_STRING, strlen(SMS_TYPE_STRING) ) )
-  {
+  if (!memcmp(pPayload, SMS_TYPE_STRING, strlen(SMS_TYPE_STRING))) {
     pRecordStruct->NDEF_Type = URI_SMS_TYPE;
-  }
-  else if( !memcmp( pPayload, GEO_TYPE_STRING, strlen(GEO_TYPE_STRING) ) )
-  {
+  } else if (!memcmp(pPayload, GEO_TYPE_STRING, strlen(GEO_TYPE_STRING))) {
     pRecordStruct->NDEF_Type = URI_GEO_TYPE;
-  }
-  else
+  } else {
     pRecordStruct->NDEF_Type = UNKNOWN_TYPE;
+  }
 }
 
 /**
   * @brief  This function parse the Smart Poster.
   * @param  pRecordStruct : pointer on the record structure to fill.
   */
-static void NDEF_ParseSP( sRecordInfo_t *pRecordStruct )
+static void NDEF_ParseSP(sRecordInfo_t *pRecordStruct)
 {
-  uint8_t* pPayload;
+  uint8_t *pPayload;
   uint32_t PayloadSize = 0;
   uint32_t SPPayloadSize = 0;
   uint32_t OffsetInSPPayload = 0;
@@ -326,19 +306,17 @@ static void NDEF_ParseSP( sRecordInfo_t *pRecordStruct )
   /* initialize variable with size of the payload and poiter on data */
   PayloadSize = pRecordStruct->PayloadLength;
 
-  pPayload = (uint8_t*)( pRecordStruct->PayloadBufferAdd );
+  pPayload = (uint8_t *)(pRecordStruct->PayloadBufferAdd);
 
   pSPRecordStruct = SPRecordStructAdd[0];
 
   /* Initailize the number of record find in the SP payload */
   pRecordStruct->NbOfRecordInSPPayload = 0;
 
-  do
-  {
+  do {
     pSPRecordStruct = SPRecordStructAdd[RecordPosition];
     /* identify the record in the SP payload */
-    if( NDEF_IdentifySPRecord( pSPRecordStruct, pPayload ) == NDEF_OK )
-    {
+    if (NDEF_IdentifySPRecord(pSPRecordStruct, pPayload) == NDEF_OK) {
       /* store add of structure that will contain the other record information */
       pRecordStruct->NbOfRecordInSPPayload++;
       pRecordStruct->SPRecordStructAdd[RecordPosition] = pSPRecordStruct;
@@ -348,14 +326,11 @@ static void NDEF_ParseSP( sRecordInfo_t *pRecordStruct )
 
       OffsetInSPPayload += pSPRecordStruct->PayloadOffset + SPPayloadSize;
       pPayload += OffsetInSPPayload;
-    }
-    else /* Recommended Action Record for example */
-    {
+    } else { /* Recommended Action Record for example */
       SPPayloadSize = 0;
     }
     RecordPosition++;
-  }
-  while( (OffsetInSPPayload < PayloadSize) && RecordPosition<SP_MAX_RECORD); /* there is another record */
+  } while ((OffsetInSPPayload < PayloadSize) && RecordPosition < SP_MAX_RECORD); /* there is another record */
 }
 
 /**
@@ -374,82 +349,74 @@ static void NDEF_ParseSP( sRecordInfo_t *pRecordStruct )
   * @retval NDEF_OK : record struct filled.
   * @retval NDEF_ERROR : record struct not updated.
   */
-uint16_t NDEF_IdentifyNDEF( sRecordInfo_t *pRecordStruct, uint8_t* pNDEF )
+uint16_t NDEF_IdentifyNDEF(sRecordInfo_t *pRecordStruct, uint8_t *pNDEF)
 {
   uint16_t SizeOfRecordHeader, TypeNbByte, PayloadLengthField, IDLengthField, IDNbByte;
 
   /* check NDEF present */
-  if( NDEF_IsNDEFPresent() != NDEF_OK )
-  {
+  if (NDEF_IsNDEFPresent() != NDEF_OK) {
     return NDEF_ERROR;
   }
 
   /* Read the NDEF file */
-  NfcTag_ReadNDEF( pNDEF );
+  NfcTag_ReadNDEF(pNDEF);
 
   /* Is ID length field present */
-  if( (*pNDEF) & IL_Mask )
-  {
+  if ((*pNDEF) & IL_Mask) {
     IDLengthField = ID_LENGTH_FIELD;
-  }
-  else
-  {
+  } else {
     IDLengthField = 0;
   }
 
   /* it's a SR */
-  if( (*pNDEF) & SR_Mask )
-  {
+  if ((*pNDEF) & SR_Mask) {
     /* Analyse short record layout */
     TypeNbByte = pNDEF[1];
     PayloadLengthField = 1;
-    if( IDLengthField == ID_LENGTH_FIELD )
+    if (IDLengthField == ID_LENGTH_FIELD) {
       IDNbByte = pNDEF[3];
-    else
+    } else {
       IDNbByte = 0;
-  }
-  else
-  {
+    }
+  } else {
     /* Analyse normal record layout */
     TypeNbByte = pNDEF[1];
     PayloadLengthField = 4;
-    if( IDLengthField == ID_LENGTH_FIELD )
+    if (IDLengthField == ID_LENGTH_FIELD) {
       IDNbByte = pNDEF[6];
-    else
+    } else {
       IDNbByte = 0;
+    }
   }
 
   SizeOfRecordHeader = RECORD_FLAG_FIELD + TYPE_LENGTH_FIELD + PayloadLengthField + IDLengthField + TypeNbByte + IDNbByte;
 
   /* Read record header */
   /* it's a SR */
-  if( pNDEF[0] & SR_Mask )
-  {
+  if (pNDEF[0] & SR_Mask) {
     pRecordStruct->RecordFlags = pNDEF[0];
     pRecordStruct->TypeLength = TypeNbByte;
     pRecordStruct->PayloadLength = pNDEF[2];
     pRecordStruct->IDLength = IDNbByte;
-    memcpy( pRecordStruct->Type, &pNDEF[3+IDNbByte], TypeNbByte );
-    memcpy( pRecordStruct->ID, &pNDEF[3+IDNbByte+TypeNbByte], IDNbByte );
+    memcpy(pRecordStruct->Type, &pNDEF[3 + IDNbByte], TypeNbByte);
+    memcpy(pRecordStruct->ID, &pNDEF[3 + IDNbByte + TypeNbByte], IDNbByte);
     pRecordStruct->PayloadOffset = SizeOfRecordHeader;
-  }
-  else
-  {
+  } else {
     pRecordStruct->RecordFlags = pNDEF[0];
     pRecordStruct->TypeLength = TypeNbByte;
-    pRecordStruct->PayloadLength = ( ((uint32_t)pNDEF[2]) << 24 ) |
-                                   ( ((uint32_t)pNDEF[3]) << 16 ) |
-                                   ( ((uint32_t)pNDEF[4]) << 8 )
-                                    | pNDEF[5] ;
+    pRecordStruct->PayloadLength = (((uint32_t)pNDEF[2]) << 24) |
+                                   (((uint32_t)pNDEF[3]) << 16) |
+                                   (((uint32_t)pNDEF[4]) << 8)
+                                   | pNDEF[5] ;
     pRecordStruct->IDLength = IDNbByte;
-    memcpy( pRecordStruct->Type, &pNDEF[6+IDNbByte], TypeNbByte );
-    memcpy( pRecordStruct->ID, &pNDEF[6+IDNbByte+TypeNbByte], IDNbByte );
+    memcpy(pRecordStruct->Type, &pNDEF[6 + IDNbByte], TypeNbByte);
+    memcpy(pRecordStruct->ID, &pNDEF[6 + IDNbByte + TypeNbByte], IDNbByte);
     pRecordStruct->PayloadOffset = SizeOfRecordHeader;
   }
 
   pRecordStruct->PayloadBufferAdd = pNDEF;
 
-  NDEF_ParseRecordHeader( pRecordStruct );
+  NDEF_ParseRecordHeader(pRecordStruct);
 
   return NDEF_OK;
 }
@@ -464,9 +431,9 @@ uint16_t NDEF_IdentifyNDEF( sRecordInfo_t *pRecordStruct, uint8_t* pNDEF )
   * @retval NDEF_ERROR_MEMORY_TAG : Size not compatible with memory.
   * @retval NDEF_ERROR_LOCKED : Tag locked, cannot be read.
   */
-uint16_t NDEF_ReadNDEF( uint8_t* pNDEF )
+uint16_t NDEF_ReadNDEF(uint8_t *pNDEF)
 {
-   return NfcTag_ReadNDEF( pNDEF );
+  return NfcTag_ReadNDEF(pNDEF);
 }
 
 
@@ -481,7 +448,7 @@ uint16_t NDEF_ReadNDEF( uint8_t* pNDEF )
   * @retval NDEF_ERROR_MEMORY_TAG : Size not compatible with memory.
   * @retval NDEF_ERROR_LOCKED : Tag locked, cannot be read.
   */
-uint16_t NDEF_getNDEFSize(uint16_t* Size)
+uint16_t NDEF_getNDEFSize(uint16_t *Size)
 {
   return NfcTag_GetLength(Size);
 }
@@ -495,9 +462,9 @@ uint16_t NDEF_getNDEFSize(uint16_t* Size)
   * @retval NDEF_ERROR_MEMORY_TAG : Size not compatible with memory.
   * @retval NDEF_ERROR_LOCKED : Tag locked, cannot be write.
   */
-uint16_t NDEF_WriteNDEF( uint16_t NDEF_Size, uint8_t *pNDEF )
+uint16_t NDEF_WriteNDEF(uint16_t NDEF_Size, uint8_t *pNDEF)
 {
-  return NfcTag_WriteNDEF( NDEF_Size, pNDEF );
+  return NfcTag_WriteNDEF(NDEF_Size, pNDEF);
 
 }
 
@@ -511,31 +478,34 @@ uint16_t NDEF_WriteNDEF( uint16_t NDEF_Size, uint8_t *pNDEF )
   * @retval NDEF_ERROR_MEMORY_TAG : Size not compatible with memory.
   * @retval NDEF_ERROR_LOCKED : Tag locked, cannot be write.
   */
-uint16_t NDEF_AppendRecord(sRecordInfo_t  *Record )
+uint16_t NDEF_AppendRecord(sRecordInfo_t  *Record)
 {
   uint16_t status;
   uint16_t NDEF_Size = 0;
-  uint8_t* pData = NDEF_Buffer;
+  uint8_t *pData = NDEF_Buffer;
 
   status = NDEF_getNDEFSize(&NDEF_Size);
-  if(status != NDEF_OK)  return status ;
+  if (status != NDEF_OK) {
+    return status ;
+  }
 
-  if(NDEF_Size != 0)
-  {
+  if (NDEF_Size != 0) {
     // There are already records in the NDEF
     Record->RecordFlags &= ~MB_Mask;
 
     status = NfcTag_ReadNDEF(pData);
-    if(status != NDEF_OK)  return status ;
-  
-    uint8_t* pNdefRecord;
+    if (status != NDEF_OK) {
+      return status ;
+    }
+
+    uint8_t *pNdefRecord;
     sRecordInfo_t   LastRecord;
     do {
       pNdefRecord = pData;
-      NDEF_IdentifyBuffer(&LastRecord,pData);
+      NDEF_IdentifyBuffer(&LastRecord, pData);
       pData  += LastRecord.PayloadOffset + LastRecord.PayloadLength;
-   // TO DO: add a security condition to avoid infinite loop if NDEF file is corrupted
-    } while(!(LastRecord.RecordFlags & ME_Mask));
+      // TO DO: add a security condition to avoid infinite loop if NDEF file is corrupted
+    } while (!(LastRecord.RecordFlags & ME_Mask));
     LastRecord.RecordFlags &= ~ME_Mask;
     *pNdefRecord = LastRecord.RecordFlags;
   } else {
@@ -543,10 +513,10 @@ uint16_t NDEF_AppendRecord(sRecordInfo_t  *Record )
     Record->RecordFlags |= MB_Mask;
   }
   Record->RecordFlags |= ME_Mask;
-  uint32_t RecordLength = NDEF_WriteRecord(Record,pData);
-  
+  uint32_t RecordLength = NDEF_WriteRecord(Record, pData);
 
-  return NfcTag_WriteNDEF( NDEF_Size + RecordLength, NDEF_Buffer );
+
+  return NfcTag_WriteNDEF(NDEF_Size + RecordLength, NDEF_Buffer);
 
 }
 
@@ -559,72 +529,65 @@ uint16_t NDEF_AppendRecord(sRecordInfo_t  *Record )
   * @retval NDEF_OK : record struct filled.
   * @retval NDEF_ERROR : record struct not updated.
   */
-uint16_t NDEF_IdentifyBuffer( sRecordInfo_t *pRecordStruct, uint8_t* pNDEF )
+uint16_t NDEF_IdentifyBuffer(sRecordInfo_t *pRecordStruct, uint8_t *pNDEF)
 {
   uint16_t SizeOfRecordHeader, TypeNbByte, PayloadLengthField, IDLengthField, IDNbByte;
 
   /* Is ID length field present */
-  if( (*pNDEF) & IL_Mask )
-  {
+  if ((*pNDEF) & IL_Mask) {
     IDLengthField = ID_LENGTH_FIELD;
-  }
-  else
-  {
+  } else {
     IDLengthField = 0;
   }
 
   /* it's a SR */
-  if( (*pNDEF) & SR_Mask )
-  {
+  if ((*pNDEF) & SR_Mask) {
     /* Analyse short record layout */
     TypeNbByte = pNDEF[1];
     PayloadLengthField = 1;
-    if( IDLengthField == ID_LENGTH_FIELD )
+    if (IDLengthField == ID_LENGTH_FIELD) {
       IDNbByte = pNDEF[3];
-    else
+    } else {
       IDNbByte = 0;
-  }
-  else
-  {
+    }
+  } else {
     /* Analyse normal record layout */
     TypeNbByte = pNDEF[1];
     PayloadLengthField = 4;
-    if( IDLengthField == ID_LENGTH_FIELD )
+    if (IDLengthField == ID_LENGTH_FIELD) {
       IDNbByte = pNDEF[6];
-    else
+    } else {
       IDNbByte = 0;
+    }
   }
 
   SizeOfRecordHeader = RECORD_FLAG_FIELD + TYPE_LENGTH_FIELD + PayloadLengthField + IDLengthField + TypeNbByte + IDNbByte;
 
   /* it's a SR */
-  if( pNDEF[0] & SR_Mask )
-  {
+  if (pNDEF[0] & SR_Mask) {
     pRecordStruct->RecordFlags = pNDEF[0];
     pRecordStruct->TypeLength = TypeNbByte;
     pRecordStruct->PayloadLength = pNDEF[2];
     pRecordStruct->IDLength = IDNbByte;
-    memcpy( pRecordStruct->Type, &pNDEF[3+IDLengthField], TypeNbByte );
-    memcpy( pRecordStruct->ID, &pNDEF[3+IDLengthField+TypeNbByte], IDNbByte );
+    memcpy(pRecordStruct->Type, &pNDEF[3 + IDLengthField], TypeNbByte);
+    memcpy(pRecordStruct->ID, &pNDEF[3 + IDLengthField + TypeNbByte], IDNbByte);
     pRecordStruct->PayloadOffset = SizeOfRecordHeader;
-  }
-  else
-  {
+  } else {
     pRecordStruct->RecordFlags = pNDEF[0];
     pRecordStruct->TypeLength = TypeNbByte;
-    pRecordStruct->PayloadLength = ( ((uint32_t)pNDEF[2]) << 24 ) |
-                                   ( ((uint32_t)pNDEF[3]) << 16 ) |
-                                   ( ((uint32_t)pNDEF[4]) << 8 )
-                                    | pNDEF[5] ;
+    pRecordStruct->PayloadLength = (((uint32_t)pNDEF[2]) << 24) |
+                                   (((uint32_t)pNDEF[3]) << 16) |
+                                   (((uint32_t)pNDEF[4]) << 8)
+                                   | pNDEF[5] ;
     pRecordStruct->IDLength = IDNbByte;
-    memcpy( pRecordStruct->Type, &pNDEF[6+IDNbByte], TypeNbByte );
-    memcpy( pRecordStruct->ID, &pNDEF[6+IDNbByte+TypeNbByte], IDNbByte );
+    memcpy(pRecordStruct->Type, &pNDEF[6 + IDNbByte], TypeNbByte);
+    memcpy(pRecordStruct->ID, &pNDEF[6 + IDNbByte + TypeNbByte], IDNbByte);
     pRecordStruct->PayloadOffset = SizeOfRecordHeader;
   }
 
   pRecordStruct->PayloadBufferAdd = &pNDEF[pRecordStruct->PayloadOffset];
 
-  NDEF_ParseRecordHeader( pRecordStruct );
+  NDEF_ParseRecordHeader(pRecordStruct);
 
   return NDEF_OK;
 }
@@ -635,65 +598,65 @@ uint16_t NDEF_IdentifyBuffer( sRecordInfo_t *pRecordStruct, uint8_t* pNDEF )
   * @param  pNDEF : pointer on the NDEF buffer.
   * @retval Length : Length of the written data (in bytes)
   */
-uint32_t NDEF_WriteRecord( sRecordInfo_t *pRecord, uint8_t* pNDEF )
+uint32_t NDEF_WriteRecord(sRecordInfo_t *pRecord, uint8_t *pNDEF)
 {
   /************************************/
-/*  7 |  6 |  5 |  4 |  3 | 2  1  0 */
-/*----------------------------------*/
-/* MB   ME   CF   SR   IL    TNF    */  
-/*----------------------------------*/
-/*          TYPE LENGTH             */
-/*----------------------------------*/
-/*        PAYLOAD LENGTH 3          */  
-/*----------------------------------*/
-/*        PAYLOAD LENGTH 2          */  
-/*----------------------------------*/
-/*        PAYLOAD LENGTH 1          */  
-/*----------------------------------*/
-/*        PAYLOAD LENGTH 0          */
-/*----------------------------------*/
-/*           ID LENGTH              */  
-/*----------------------------------*/
-/*             TYPE                 */  
-/*----------------------------------*/
-/*              ID                  */  
-/*----------------------------------*/
-/*           PAYLOAD                */  
-/************************************/
-  uint8_t * start = pNDEF;
+  /*  7 |  6 |  5 |  4 |  3 | 2  1  0 */
+  /*----------------------------------*/
+  /* MB   ME   CF   SR   IL    TNF    */
+  /*----------------------------------*/
+  /*          TYPE LENGTH             */
+  /*----------------------------------*/
+  /*        PAYLOAD LENGTH 3          */
+  /*----------------------------------*/
+  /*        PAYLOAD LENGTH 2          */
+  /*----------------------------------*/
+  /*        PAYLOAD LENGTH 1          */
+  /*----------------------------------*/
+  /*        PAYLOAD LENGTH 0          */
+  /*----------------------------------*/
+  /*           ID LENGTH              */
+  /*----------------------------------*/
+  /*             TYPE                 */
+  /*----------------------------------*/
+  /*              ID                  */
+  /*----------------------------------*/
+  /*           PAYLOAD                */
+  /************************************/
+  uint8_t *start = pNDEF;
 
   // start by considering payload length
-  if(pRecord->PayloadLength <= 0xFF)
+  if (pRecord->PayloadLength <= 0xFF) {
     pRecord->RecordFlags |= SR_Mask;
-  else
+  } else {
     pRecord->RecordFlags &= ~SR_Mask;
-  
+  }
+
   // Then start writing!
   *pNDEF++ = pRecord->RecordFlags;
 
   *pNDEF++ = pRecord->TypeLength;
 
-  if (!(pRecord->RecordFlags & SR_Mask))
-  {
+  if (!(pRecord->RecordFlags & SR_Mask)) {
     *pNDEF++ = (pRecord->PayloadLength >> 24) & 0xFF;
     *pNDEF++ = (pRecord->PayloadLength >> 16) & 0xFF ;
     *pNDEF++ = (pRecord->PayloadLength >> 8) & 0xFF;
   }
   *pNDEF++ = (pRecord->PayloadLength) & 0xFF;
 
-  if(pRecord->RecordFlags & IL_Mask)
+  if (pRecord->RecordFlags & IL_Mask) {
     *pNDEF++ = (pRecord->IDLength);
-  
-  memcpy(pNDEF,pRecord->Type,pRecord->TypeLength);
+  }
+
+  memcpy(pNDEF, pRecord->Type, pRecord->TypeLength);
   pNDEF += pRecord->TypeLength;
 
-  if(pRecord->RecordFlags & IL_Mask)
-  {
-    memcpy(pNDEF,pRecord->ID,pRecord->IDLength);
+  if (pRecord->RecordFlags & IL_Mask) {
+    memcpy(pNDEF, pRecord->ID, pRecord->IDLength);
     pNDEF += pRecord->IDLength;
   }
 
-  memcpy(pNDEF,pRecord->PayloadBufferAdd,pRecord->PayloadLength);
+  memcpy(pNDEF, pRecord->PayloadBufferAdd, pRecord->PayloadLength);
   pNDEF += pRecord->PayloadLength;
 
   return (pNDEF - start);
@@ -704,23 +667,24 @@ uint32_t NDEF_WriteRecord( sRecordInfo_t *pRecord, uint8_t* pNDEF )
   * @param  pRecord : Structure with record information
   * @retval Length : Length of the data (in bytes)
   */
-uint32_t NDEF_GetRecordLength( sRecordInfo_t *pRecord )
+uint32_t NDEF_GetRecordLength(sRecordInfo_t *pRecord)
 {
   // start by considering payload length
-  if(pRecord->PayloadLength <= 0xFF)
+  if (pRecord->PayloadLength <= 0xFF) {
     pRecord->RecordFlags |= SR_Mask;
-  else
+  } else {
     pRecord->RecordFlags &= ~SR_Mask;
-  
+  }
+
   // Then compute the length
   uint32_t length = 1 +                                                         // Flags
                     1 +                                                         // Type length
-                    ((pRecord->RecordFlags & SR_Mask)? 1 : 4) +                 // Payload length
-                    ((pRecord->RecordFlags & IL_Mask)? 1 : 0) +                 // ID length
+                    ((pRecord->RecordFlags & SR_Mask) ? 1 : 4) +                // Payload length
+                    ((pRecord->RecordFlags & IL_Mask) ? 1 : 0) +                // ID length
                     pRecord->TypeLength +                                       // Type
-                    ((pRecord->RecordFlags & IL_Mask)? pRecord->IDLength : 0) + // ID 
+                    ((pRecord->RecordFlags & IL_Mask) ? pRecord->IDLength : 0) + // ID
                     pRecord->PayloadLength;                                     // Payload;
-  
+
   return length;
 }
 
@@ -730,7 +694,7 @@ uint32_t NDEF_GetRecordLength( sRecordInfo_t *pRecord )
   */
 uint16_t NDEF_ClearNDEF(void)
 {
-  return NDEF_WriteNDEF(0 , NULL);
+  return NDEF_WriteNDEF(0, NULL);
 }
 
 /**

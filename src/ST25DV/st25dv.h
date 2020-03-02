@@ -4,8 +4,8 @@
   * @author  MMY Application Team
   * @version $Revision: 3308 $
   * @date    $Date: 2017-01-13 11:19:33 +0100 (Fri, 13 Jan 2017) $
-  * @brief   This file provides set of driver functions to manage communication 
-  * @brief   between MCU and ST25DV chip 
+  * @brief   This file provides set of driver functions to manage communication
+  * @brief   between MCU and ST25DV chip
   ******************************************************************************
   * @attention
   *
@@ -15,10 +15,10 @@
   * You may not use this file except in compliance with the License.
   * You may obtain a copy of the License at:
   *
-  *        http://www.st.com/myliberty  
+  *        http://www.st.com/myliberty
   *
-  * Unless required by applicable law or agreed to in writing, software 
-  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * Unless required by applicable law or agreed to in writing, software
+  * distributed under the License is distributed on an "AS IS" BASIS,
   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied,
   * AND SPECIFICALLY DISCLAIMING THE IMPLIED WARRANTIES OF MERCHANTABILITY,
   * FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
@@ -26,14 +26,14 @@
   * limitations under the License.
   *
   ******************************************************************************
-  */ 
+  */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __ST25DV_H
 #define __ST25DV_H
 
 #ifdef __cplusplus
-  extern "C" {
+extern "C" {
 #endif
 
 /* Includes ------------------------------------------------------------------*/
@@ -41,8 +41,8 @@
 
 /** @addtogroup BSP
   * @{
-  */ 
- 
+  */
+
 
 /** @addtogroup ST25DV
   * @{
@@ -52,8 +52,7 @@
 /**
  * @brief  NFCTAG status enumerator definition.
  */
-typedef enum
-{
+typedef enum {
   NFCTAG_OK      = 0,
   NFCTAG_ERROR   = 1,
   NFCTAG_BUSY    = 2,
@@ -64,8 +63,7 @@ typedef enum
 /**
  * @brief  ST25DV Enable Disable enumerator definition.
  */
-typedef enum
-{
+typedef enum {
   ST25DV_DISABLE = 0,
   ST25DV_ENABLE
 } ST25DV_EN_STATUS;
@@ -73,8 +71,7 @@ typedef enum
 /**
  * @brief  ST25DV Energy Harvesting mode enumerator definition.
  */
-typedef enum
-{
+typedef enum {
   ST25DV_EH_ACTIVE_AFTER_BOOT = 0,
   ST25DV_EH_ON_DEMAND
 } ST25DV_EH_MODE_STATUS;
@@ -82,8 +79,7 @@ typedef enum
 /**
  * @brief  ST25DV FIELD status enumerator definition.
  */
-typedef enum
-{
+typedef enum {
   ST25DV_FIELD_OFF = 0,
   ST25DV_FIELD_ON
 } ST25DV_FIELD_STATUS;
@@ -91,8 +87,7 @@ typedef enum
 /**
  * @brief  ST25DV VCC status enumerator definition
  */
-typedef enum
-{
+typedef enum {
   ST25DV_VCC_OFF = 0,
   ST25DV_VCC_ON
 } ST25DV_VCC_STATUS;
@@ -100,8 +95,7 @@ typedef enum
 /**
  * @brief  ST25DV protection status enumerator definition
  */
-typedef enum
-{
+typedef enum {
   ST25DV_NO_PROT = 0,
   ST25DV_WRITE_PROT,
   ST25DV_READ_PROT,
@@ -111,8 +105,7 @@ typedef enum
 /**
  * @brief  ST25DV area protection enumerator definition.
  */
-typedef enum
-{
+typedef enum {
   ST25DV_PROT_ZONE1 = 0,
   ST25DV_PROT_ZONE2,
   ST25DV_PROT_ZONE3,
@@ -122,8 +115,7 @@ typedef enum
 /**
  * @brief  ST25DV password protection status enumerator definition.
  */
-typedef enum
-{
+typedef enum {
   ST25DV_NOT_PROTECTED = 0,
   ST25DV_PROT_PASSWD1,
   ST25DV_PROT_PASSWD2,
@@ -133,8 +125,7 @@ typedef enum
 /**
  * @brief  ST25DV lock status enumerator definition.
  */
-typedef enum
-{
+typedef enum {
   ST25DV_UNLOCKED = 0,
   ST25DV_LOCKED
 } ST25DV_LOCK_STATUS;
@@ -142,8 +133,7 @@ typedef enum
 /**
  * @brief  ST25DV Number of Blocks for the CCFile enumerator definition.
  */
-typedef enum
-{
+typedef enum {
   ST25DV_CCFILE_1BLCK = 0,
   ST25DV_CCFILE_2BLCK
 } ST25DV_CCFILE_BLOCK;
@@ -151,8 +141,7 @@ typedef enum
 /**
  * @brief  ST25DV session status enumerator definition.
  */
-typedef enum
-{
+typedef enum {
   ST25DV_SESSION_CLOSED = 0,
   ST25DV_SESSION_OPEN
 } ST25DV_I2CSSO_STATUS;
@@ -160,8 +149,7 @@ typedef enum
 /**
  * @brief  ST25DV area end address enumerator definition.
  */
-typedef enum
-{
+typedef enum {
   ST25DV_ZONE_END1 = 0,
   ST25DV_ZONE_END2,
   ST25DV_ZONE_END3
@@ -170,8 +158,7 @@ typedef enum
 /**
  * @brief  ST25DV IT pulse duration enumerator definition.
  */
-typedef enum
-{
+typedef enum {
   ST25DV_302_US = 0,
   ST25DV_264_US,
   ST25DV_226_US,
@@ -179,24 +166,22 @@ typedef enum
   ST25DV_151_US,
   ST25DV_113_US,
   ST25DV_75_US,
-  ST25DV_37_US  
+  ST25DV_37_US
 } ST25DV_PULSE_DURATION;
 
 /**
  * @brief  ST25DV Mailbox Current Message enumerator definition
  */
-typedef enum
-{
+typedef enum {
   ST25DV_NO_MSG = 0,
   ST25DV_HOST_MSG,
-  ST25DV_RF_MSG  
+  ST25DV_RF_MSG
 } ST25DV_CURRENT_MSG;
 
 /**
  * @brief  ST25DV EH Ctrl structure definition
  */
-typedef struct
-{
+typedef struct {
   ST25DV_EN_STATUS EH_EN_Mode;
   ST25DV_EN_STATUS EH_on;
   ST25DV_EN_STATUS Field_on;
@@ -206,8 +191,7 @@ typedef struct
 /**
  * @brief  ST25DV GPO structure definition
  */
-typedef struct
-{
+typedef struct {
   ST25DV_EN_STATUS GPO_RFUser_en;
   ST25DV_EN_STATUS GPO_RFActivity_en;
   ST25DV_EN_STATUS GPO_RFInterrupt_en;
@@ -221,8 +205,7 @@ typedef struct
 /**
  * @brief  ST25DV RF Management structure definition.
  */
-typedef struct
-{
+typedef struct {
   ST25DV_EN_STATUS RfDisable;
   ST25DV_EN_STATUS RfSleep;
 } ST25DV_RF_MNGT;
@@ -230,8 +213,7 @@ typedef struct
 /**
  * @brief  ST25DV RF Area protection structure definition.
  */
-typedef struct
-{
+typedef struct {
   ST25DV_PASSWD_PROT_STATUS PasswdCtrl;
   ST25DV_PROTECTION_CONF RWprotection;
 } ST25DV_RF_PROT_ZONE;
@@ -239,8 +221,7 @@ typedef struct
 /**
  * @brief  ST25DV I2C Area protection structure definition.
  */
-typedef struct
-{
+typedef struct {
   ST25DV_PROTECTION_CONF ProtectZone1;
   ST25DV_PROTECTION_CONF ProtectZone2;
   ST25DV_PROTECTION_CONF ProtectZone3;
@@ -250,8 +231,7 @@ typedef struct
 /**
  * @brief  ST25DV MB_CTRL_DYN register structure definition.
  */
-typedef struct
-{
+typedef struct {
   uint8_t MbEnable;
   uint8_t HostPutMsg;
   uint8_t RfPutMsg;
@@ -263,8 +243,7 @@ typedef struct
 /**
  * @brief  ST25DV Lock CCFile structure definition.
  */
-typedef struct
-{
+typedef struct {
   ST25DV_LOCK_STATUS LckBck0;
   ST25DV_LOCK_STATUS LckBck1;
 } ST25DV_LOCK_CCFILE;
@@ -272,8 +251,7 @@ typedef struct
 /**
  * @brief  ST25DV Memory size structure definition.
  */
-typedef struct
-{
+typedef struct {
   uint8_t BlockSize;
   uint16_t Mem_Size;
 } ST25DV_MEM_SIZE;
@@ -281,8 +259,7 @@ typedef struct
 /**
  * @brief  ST25DV UID information structure definition.
  */
-typedef struct
-{
+typedef struct {
   uint32_t MsbUid;
   uint32_t LsbUid;
 } ST25DV_UID;
@@ -290,8 +267,7 @@ typedef struct
 /**
  * @brief  ST25DV Password structure definition.
  */
-typedef struct
-{
+typedef struct {
   uint32_t MsbPasswd;
   uint32_t LsbPasswd;
 } ST25DV_PASSWD;
@@ -300,93 +276,91 @@ typedef struct
 /**
  * @brief  NFCTAG standard driver API structure definition.
  */
-typedef struct
-{
-  NFCTAG_StatusTypeDef       (*Init)( void );
-  NFCTAG_StatusTypeDef       (*ReadID)( uint8_t * const );
-  NFCTAG_StatusTypeDef       (*IsReady)( const uint32_t );
-  NFCTAG_StatusTypeDef       (*GetITStatus)( uint16_t * const );
-  NFCTAG_StatusTypeDef       (*ConfigIT)( const uint16_t );
-  NFCTAG_StatusTypeDef       (*ReadData)( uint8_t * const, const uint16_t, const uint16_t );
-  NFCTAG_StatusTypeDef       (*WriteData)( const uint8_t * const, const uint16_t, const uint16_t );
-  NFCTAG_StatusTypeDef       (*ReadRegister)( uint8_t * const, const uint16_t, const uint16_t );
-  NFCTAG_StatusTypeDef       (*WriteRegister)( const uint8_t * const, const uint16_t, const uint16_t );
+typedef struct {
+  NFCTAG_StatusTypeDef(*Init)(void);
+  NFCTAG_StatusTypeDef(*ReadID)(uint8_t *const);
+  NFCTAG_StatusTypeDef(*IsReady)(const uint32_t);
+  NFCTAG_StatusTypeDef(*GetITStatus)(uint16_t *const);
+  NFCTAG_StatusTypeDef(*ConfigIT)(const uint16_t);
+  NFCTAG_StatusTypeDef(*ReadData)(uint8_t *const, const uint16_t, const uint16_t);
+  NFCTAG_StatusTypeDef(*WriteData)(const uint8_t *const, const uint16_t, const uint16_t);
+  NFCTAG_StatusTypeDef(*ReadRegister)(uint8_t *const, const uint16_t, const uint16_t);
+  NFCTAG_StatusTypeDef(*WriteRegister)(const uint8_t *const, const uint16_t, const uint16_t);
   void                       *pData;
 } NFCTAG_DrvTypeDef;
 
 /**
  * @brief  NFCTAG extended driver API structure definition.
  */
-typedef struct
-{
-  NFCTAG_StatusTypeDef (*ReadICRev)( uint8_t * const );
-  NFCTAG_StatusTypeDef (*WriteITPulse)( const ST25DV_PULSE_DURATION );
-  NFCTAG_StatusTypeDef (*ReadITPulse)( ST25DV_PULSE_DURATION * const );
-  NFCTAG_StatusTypeDef (*ReadDataCurrentAddr)( uint8_t * const, const uint16_t );
-  NFCTAG_StatusTypeDef (*ReadUID)( ST25DV_UID * const );
-  NFCTAG_StatusTypeDef (*ReadDSFID)( uint8_t * const );
-  NFCTAG_StatusTypeDef (*ReadDsfidRFProtection)( ST25DV_LOCK_STATUS * const );
-  NFCTAG_StatusTypeDef (*ReadAFI)( uint8_t * const );
-  NFCTAG_StatusTypeDef (*ReadAfiRFProtection)( ST25DV_LOCK_STATUS * const );
-  NFCTAG_StatusTypeDef (*ReadI2CProtectZone)( ST25DV_I2C_PROT_ZONE * const );
-  NFCTAG_StatusTypeDef (*WriteI2CProtectZonex)( const ST25DV_PROTECTION_ZONE, const ST25DV_PROTECTION_CONF );
-  NFCTAG_StatusTypeDef (*ReadLockCCFile)( ST25DV_LOCK_CCFILE * const );
-  NFCTAG_StatusTypeDef (*WriteLockCCFile)( const ST25DV_CCFILE_BLOCK, const ST25DV_LOCK_STATUS );
-  NFCTAG_StatusTypeDef (*ReadLockCFG)( ST25DV_LOCK_STATUS * const );
-  NFCTAG_StatusTypeDef (*WriteLockCFG)( const ST25DV_LOCK_STATUS );
-  NFCTAG_StatusTypeDef (*PresentI2CPassword)( const ST25DV_PASSWD );
-  NFCTAG_StatusTypeDef (*WriteI2CPassword)( const ST25DV_PASSWD );
-  NFCTAG_StatusTypeDef (*ReadRFZxSS)( const ST25DV_PROTECTION_ZONE, ST25DV_RF_PROT_ZONE * const );
-  NFCTAG_StatusTypeDef (*WriteRFZxSS)( const ST25DV_PROTECTION_ZONE, const ST25DV_RF_PROT_ZONE );
-  NFCTAG_StatusTypeDef (*ReadEndZonex)( const ST25DV_END_ZONE, uint8_t * const );
-  NFCTAG_StatusTypeDef (*WriteEndZonex)( const ST25DV_END_ZONE, const uint8_t );
-  NFCTAG_StatusTypeDef (*InitEndZone)( void );
-  NFCTAG_StatusTypeDef (*CreateUserZone)( uint16_t, uint16_t, uint16_t, uint16_t );
-  NFCTAG_StatusTypeDef (*ReadMemSize)( ST25DV_MEM_SIZE * const );
-  NFCTAG_StatusTypeDef (*ReadEHMode)( ST25DV_EH_MODE_STATUS * const );
-  NFCTAG_StatusTypeDef (*WriteEHMode)( const ST25DV_EH_MODE_STATUS );
-  NFCTAG_StatusTypeDef (*ReadRFMngt)( ST25DV_RF_MNGT * const );
-  NFCTAG_StatusTypeDef (*WriteRFMngt)( const uint8_t );
-  NFCTAG_StatusTypeDef (*GetRFDisable)( ST25DV_EN_STATUS * const );
-  NFCTAG_StatusTypeDef (*SetRFDisable)( void );
-  NFCTAG_StatusTypeDef (*ResetRFDisable)( void );
-  NFCTAG_StatusTypeDef (*GetRFSleep)( ST25DV_EN_STATUS * const );
-  NFCTAG_StatusTypeDef (*SetRFSleep)( void );
-  NFCTAG_StatusTypeDef (*ResetRFSleep)( void );
-  NFCTAG_StatusTypeDef (*ReadMBMode)( ST25DV_EN_STATUS * const );
-  NFCTAG_StatusTypeDef (*WriteMBMode)( const ST25DV_EN_STATUS );
-  NFCTAG_StatusTypeDef (*ReadMBWDG)( uint8_t * const );
-  NFCTAG_StatusTypeDef (*WriteMBWDG)( const uint8_t );
-  NFCTAG_StatusTypeDef (*ReadMailboxData)( uint8_t * const, const uint16_t, const uint16_t );
-  NFCTAG_StatusTypeDef (*WriteMailboxData)( const uint8_t * const, const uint16_t );
-  NFCTAG_StatusTypeDef (*ReadMailboxRegister)( uint8_t * const, const uint16_t, const uint16_t );
-  NFCTAG_StatusTypeDef (*WriteMailboxRegister)( const uint8_t * const, const uint16_t, const uint16_t );
-  NFCTAG_StatusTypeDef (*ReadI2CSecuritySession_Dyn)( ST25DV_I2CSSO_STATUS * const );
-  NFCTAG_StatusTypeDef (*ReadITSTStatus_Dyn)( uint8_t * const );
-  NFCTAG_StatusTypeDef (*ReadGPO_Dyn)( uint8_t * );
-  NFCTAG_StatusTypeDef (*GetGPO_en_Dyn)( ST25DV_EN_STATUS * const );
-  NFCTAG_StatusTypeDef (*SetGPO_en_Dyn)( void );
-  NFCTAG_StatusTypeDef (*ResetGPO_en_Dyn)( void );
-  NFCTAG_StatusTypeDef (*ReadEHCtrl_Dyn)( ST25DV_EH_CTRL * const );
-  NFCTAG_StatusTypeDef (*GetEHENMode_Dyn)( ST25DV_EN_STATUS * const );
-  NFCTAG_StatusTypeDef (*SetEHENMode_Dyn)( void );
-  NFCTAG_StatusTypeDef (*ResetEHENMode_Dyn)( void );
-  NFCTAG_StatusTypeDef (*GetEHON_Dyn)( ST25DV_EN_STATUS * const );
-  NFCTAG_StatusTypeDef (*GetRFField_Dyn)( ST25DV_FIELD_STATUS * const );
-  NFCTAG_StatusTypeDef (*GetVCC_Dyn)( ST25DV_VCC_STATUS * const );
-  NFCTAG_StatusTypeDef (*ReadRFMngt_Dyn)( ST25DV_RF_MNGT * const );
-  NFCTAG_StatusTypeDef (*WriteRFMngt_Dyn)( const uint8_t );
-  NFCTAG_StatusTypeDef (*GetRFDisable_Dyn)( ST25DV_EN_STATUS * const );
-  NFCTAG_StatusTypeDef (*SetRFDisable_Dyn)( void );
-  NFCTAG_StatusTypeDef (*ResetRFDisable_Dyn)( void );
-  NFCTAG_StatusTypeDef (*GetRFSleep_Dyn)( ST25DV_EN_STATUS * const );
-  NFCTAG_StatusTypeDef (*SetRFSleep_Dyn)( void );
-  NFCTAG_StatusTypeDef (*ResetRFSleep_Dyn)( void );
-  NFCTAG_StatusTypeDef (*ReadMBctrl_Dyn)( ST25DV_MB_CTRL_DYN_STATUS * const );
-  NFCTAG_StatusTypeDef (*GetMBEN_Dyn)( ST25DV_EN_STATUS * const );
-  NFCTAG_StatusTypeDef (*SetMBEN_Dyn)( void );
-  NFCTAG_StatusTypeDef (*ResetMBEN_Dyn)( void );
-  NFCTAG_StatusTypeDef (*ReadMBLength_Dyn)( uint8_t * const );
+typedef struct {
+  NFCTAG_StatusTypeDef(*ReadICRev)(uint8_t *const);
+  NFCTAG_StatusTypeDef(*WriteITPulse)(const ST25DV_PULSE_DURATION);
+  NFCTAG_StatusTypeDef(*ReadITPulse)(ST25DV_PULSE_DURATION *const);
+  NFCTAG_StatusTypeDef(*ReadDataCurrentAddr)(uint8_t *const, const uint16_t);
+  NFCTAG_StatusTypeDef(*ReadUID)(ST25DV_UID *const);
+  NFCTAG_StatusTypeDef(*ReadDSFID)(uint8_t *const);
+  NFCTAG_StatusTypeDef(*ReadDsfidRFProtection)(ST25DV_LOCK_STATUS *const);
+  NFCTAG_StatusTypeDef(*ReadAFI)(uint8_t *const);
+  NFCTAG_StatusTypeDef(*ReadAfiRFProtection)(ST25DV_LOCK_STATUS *const);
+  NFCTAG_StatusTypeDef(*ReadI2CProtectZone)(ST25DV_I2C_PROT_ZONE *const);
+  NFCTAG_StatusTypeDef(*WriteI2CProtectZonex)(const ST25DV_PROTECTION_ZONE, const ST25DV_PROTECTION_CONF);
+  NFCTAG_StatusTypeDef(*ReadLockCCFile)(ST25DV_LOCK_CCFILE *const);
+  NFCTAG_StatusTypeDef(*WriteLockCCFile)(const ST25DV_CCFILE_BLOCK, const ST25DV_LOCK_STATUS);
+  NFCTAG_StatusTypeDef(*ReadLockCFG)(ST25DV_LOCK_STATUS *const);
+  NFCTAG_StatusTypeDef(*WriteLockCFG)(const ST25DV_LOCK_STATUS);
+  NFCTAG_StatusTypeDef(*PresentI2CPassword)(const ST25DV_PASSWD);
+  NFCTAG_StatusTypeDef(*WriteI2CPassword)(const ST25DV_PASSWD);
+  NFCTAG_StatusTypeDef(*ReadRFZxSS)(const ST25DV_PROTECTION_ZONE, ST25DV_RF_PROT_ZONE *const);
+  NFCTAG_StatusTypeDef(*WriteRFZxSS)(const ST25DV_PROTECTION_ZONE, const ST25DV_RF_PROT_ZONE);
+  NFCTAG_StatusTypeDef(*ReadEndZonex)(const ST25DV_END_ZONE, uint8_t *const);
+  NFCTAG_StatusTypeDef(*WriteEndZonex)(const ST25DV_END_ZONE, const uint8_t);
+  NFCTAG_StatusTypeDef(*InitEndZone)(void);
+  NFCTAG_StatusTypeDef(*CreateUserZone)(uint16_t, uint16_t, uint16_t, uint16_t);
+  NFCTAG_StatusTypeDef(*ReadMemSize)(ST25DV_MEM_SIZE *const);
+  NFCTAG_StatusTypeDef(*ReadEHMode)(ST25DV_EH_MODE_STATUS *const);
+  NFCTAG_StatusTypeDef(*WriteEHMode)(const ST25DV_EH_MODE_STATUS);
+  NFCTAG_StatusTypeDef(*ReadRFMngt)(ST25DV_RF_MNGT *const);
+  NFCTAG_StatusTypeDef(*WriteRFMngt)(const uint8_t);
+  NFCTAG_StatusTypeDef(*GetRFDisable)(ST25DV_EN_STATUS *const);
+  NFCTAG_StatusTypeDef(*SetRFDisable)(void);
+  NFCTAG_StatusTypeDef(*ResetRFDisable)(void);
+  NFCTAG_StatusTypeDef(*GetRFSleep)(ST25DV_EN_STATUS *const);
+  NFCTAG_StatusTypeDef(*SetRFSleep)(void);
+  NFCTAG_StatusTypeDef(*ResetRFSleep)(void);
+  NFCTAG_StatusTypeDef(*ReadMBMode)(ST25DV_EN_STATUS *const);
+  NFCTAG_StatusTypeDef(*WriteMBMode)(const ST25DV_EN_STATUS);
+  NFCTAG_StatusTypeDef(*ReadMBWDG)(uint8_t *const);
+  NFCTAG_StatusTypeDef(*WriteMBWDG)(const uint8_t);
+  NFCTAG_StatusTypeDef(*ReadMailboxData)(uint8_t *const, const uint16_t, const uint16_t);
+  NFCTAG_StatusTypeDef(*WriteMailboxData)(const uint8_t *const, const uint16_t);
+  NFCTAG_StatusTypeDef(*ReadMailboxRegister)(uint8_t *const, const uint16_t, const uint16_t);
+  NFCTAG_StatusTypeDef(*WriteMailboxRegister)(const uint8_t *const, const uint16_t, const uint16_t);
+  NFCTAG_StatusTypeDef(*ReadI2CSecuritySession_Dyn)(ST25DV_I2CSSO_STATUS *const);
+  NFCTAG_StatusTypeDef(*ReadITSTStatus_Dyn)(uint8_t *const);
+  NFCTAG_StatusTypeDef(*ReadGPO_Dyn)(uint8_t *);
+  NFCTAG_StatusTypeDef(*GetGPO_en_Dyn)(ST25DV_EN_STATUS *const);
+  NFCTAG_StatusTypeDef(*SetGPO_en_Dyn)(void);
+  NFCTAG_StatusTypeDef(*ResetGPO_en_Dyn)(void);
+  NFCTAG_StatusTypeDef(*ReadEHCtrl_Dyn)(ST25DV_EH_CTRL *const);
+  NFCTAG_StatusTypeDef(*GetEHENMode_Dyn)(ST25DV_EN_STATUS *const);
+  NFCTAG_StatusTypeDef(*SetEHENMode_Dyn)(void);
+  NFCTAG_StatusTypeDef(*ResetEHENMode_Dyn)(void);
+  NFCTAG_StatusTypeDef(*GetEHON_Dyn)(ST25DV_EN_STATUS *const);
+  NFCTAG_StatusTypeDef(*GetRFField_Dyn)(ST25DV_FIELD_STATUS *const);
+  NFCTAG_StatusTypeDef(*GetVCC_Dyn)(ST25DV_VCC_STATUS *const);
+  NFCTAG_StatusTypeDef(*ReadRFMngt_Dyn)(ST25DV_RF_MNGT *const);
+  NFCTAG_StatusTypeDef(*WriteRFMngt_Dyn)(const uint8_t);
+  NFCTAG_StatusTypeDef(*GetRFDisable_Dyn)(ST25DV_EN_STATUS *const);
+  NFCTAG_StatusTypeDef(*SetRFDisable_Dyn)(void);
+  NFCTAG_StatusTypeDef(*ResetRFDisable_Dyn)(void);
+  NFCTAG_StatusTypeDef(*GetRFSleep_Dyn)(ST25DV_EN_STATUS *const);
+  NFCTAG_StatusTypeDef(*SetRFSleep_Dyn)(void);
+  NFCTAG_StatusTypeDef(*ResetRFSleep_Dyn)(void);
+  NFCTAG_StatusTypeDef(*ReadMBctrl_Dyn)(ST25DV_MB_CTRL_DYN_STATUS *const);
+  NFCTAG_StatusTypeDef(*GetMBEN_Dyn)(ST25DV_EN_STATUS *const);
+  NFCTAG_StatusTypeDef(*SetMBEN_Dyn)(void);
+  NFCTAG_StatusTypeDef(*ResetMBEN_Dyn)(void);
+  NFCTAG_StatusTypeDef(*ReadMBLength_Dyn)(uint8_t *const);
 } NFCTAG_ExtDrvTypeDef;
 #endif
 
@@ -406,7 +380,7 @@ typedef struct
 #define ST25DV_ADDR_SYST_I2C                 0xAE
 
 /** @brief I2C Time out (ms), min value : (Max write bytes) / (Internal page write) * tw   (256/4)*5. */
-#define ST25DV_I2C_TIMEOUT                   320 
+#define ST25DV_I2C_TIMEOUT                   320
 
 /** @brief Size of the ST25DV write buffer. */
 #define ST25DV_MAX_WRITE_BYTE                256
@@ -683,7 +657,7 @@ typedef struct
 #define ST25DV_I2C_SSO_DYN_I2CSSO_MASK       0x01
 
 
-  
+
 /* External variables --------------------------------------------------------*/
 /* NFCTAG driver structure */
 extern NFCTAG_DrvTypeDef St25Dv_i2c_Drv;
@@ -691,13 +665,13 @@ extern NFCTAG_ExtDrvTypeDef St25Dv_i2c_ExtDrv;
 
 /* Exported macro ------------------------------------------------------------*/
 /* Imported functions ------------------------------------------------------- */
-extern NFCTAG_StatusTypeDef ST25DV_IO_Init( void );
-extern NFCTAG_StatusTypeDef ST25DV_IO_MemWrite( const uint8_t * const pData, const uint8_t DevAddr, const uint16_t TarAddr, const uint16_t Size );
-extern NFCTAG_StatusTypeDef ST25DV_IO_Write( const uint8_t * const pData, const uint8_t DevAddr, const uint16_t Size );
-extern NFCTAG_StatusTypeDef ST25DV_IO_MemRead( uint8_t * const pData, const uint8_t DevAddr, const uint16_t TarAddr, const uint16_t Size );
-extern NFCTAG_StatusTypeDef ST25DV_IO_Read( uint8_t * const pData, const uint8_t DevAddr, const uint16_t Size );
-extern uint8_t ST25DV_IO_IsNacked( void );
-extern NFCTAG_StatusTypeDef ST25DV_IO_IsDeviceReady( const uint8_t DevAddr, const uint32_t Trials );
+extern NFCTAG_StatusTypeDef ST25DV_IO_Init(void);
+extern NFCTAG_StatusTypeDef ST25DV_IO_MemWrite(const uint8_t *const pData, const uint8_t DevAddr, const uint16_t TarAddr, const uint16_t Size);
+extern NFCTAG_StatusTypeDef ST25DV_IO_Write(const uint8_t *const pData, const uint8_t DevAddr, const uint16_t Size);
+extern NFCTAG_StatusTypeDef ST25DV_IO_MemRead(uint8_t *const pData, const uint8_t DevAddr, const uint16_t TarAddr, const uint16_t Size);
+extern NFCTAG_StatusTypeDef ST25DV_IO_Read(uint8_t *const pData, const uint8_t DevAddr, const uint16_t Size);
+extern uint8_t ST25DV_IO_IsNacked(void);
+extern NFCTAG_StatusTypeDef ST25DV_IO_IsDeviceReady(const uint8_t DevAddr, const uint32_t Trials);
 
 /* Exported functions ------------------------------------------------------- */
 
@@ -707,11 +681,11 @@ extern NFCTAG_StatusTypeDef ST25DV_IO_IsDeviceReady( const uint8_t DevAddr, cons
 
 /**
   * @}
-  */ 
-  
+  */
+
 
 #ifdef __cplusplus
-  }
+}
 #endif
 #endif /* __ST25DV_H */
 

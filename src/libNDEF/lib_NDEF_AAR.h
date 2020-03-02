@@ -14,10 +14,10 @@
   * You may not use this file except in compliance with the License.
   * You may obtain a copy of the License at:
   *
-  *        http://www.st.com/myliberty  
+  *        http://www.st.com/myliberty
   *
-  * Unless required by applicable law or agreed to in writing, software 
-  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * Unless required by applicable law or agreed to in writing, software
+  * distributed under the License is distributed on an "AS IS" BASIS,
   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied,
   * AND SPECIFICALLY DISCLAIMING THE IMPLIED WARRANTIES OF MERCHANTABILITY,
   * FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
@@ -32,18 +32,17 @@
 #define __LIB_NDEF_AAR_H
 
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
 
 /* Includes ------------------------------------------------------------------*/
 #include "lib_NDEF.h"
 
-typedef struct
-{
+typedef struct {
   char PackageName[80];
-}sAARInfo;
-	 	 
-uint16_t NDEF_AddAAR( const sAARInfo *pAARStruct );
+} sAARInfo;
+
+uint16_t NDEF_AddAAR(const sAARInfo *pAARStruct);
 
 #ifdef __cplusplus
 }

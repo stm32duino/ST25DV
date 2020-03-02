@@ -14,10 +14,10 @@
   * You may not use this file except in compliance with the License.
   * You may obtain a copy of the License at:
   *
-  *        http://www.st.com/myliberty  
+  *        http://www.st.com/myliberty
   *
-  * Unless required by applicable law or agreed to in writing, software 
-  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * Unless required by applicable law or agreed to in writing, software
+  * distributed under the License is distributed on an "AS IS" BASIS,
   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied,
   * AND SPECIFICALLY DISCLAIMING THE IMPLIED WARRANTIES OF MERCHANTABILITY,
   * FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
@@ -32,17 +32,17 @@
 #define __LIB_NDEF_HANDOVER_H
 
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
 
 /* Includes ------------------------------------------------------------------*/
 #include "lib_NDEF.h"
 
-   
+
 /** @addtogroup lib_NDEF_Handover NDEF Handover library
   * @{
   */
-   
+
 /** @brief SIze of the buffer used to store an Alternative Carrier (allocated on the stack).
   * @details 128 bytes should be enough, the specification recommends to use short URIs as AC identifiers.
   */
@@ -81,8 +81,8 @@ typedef struct {
   sRecordInfo_t                 ac_record;          /**< The record structure used to store/build the Alternative Carrier record. */
   uint8_t                       aux_data_ref_count; /**< The number of Auxiliary Data Reference for this Alternative Carrier. */
   /* following fields are only used when reading NDEF */
-  uint8_t*                      aux_data_ref_start; /**< Internal field, managed by the library, to keep track of the Auxiliary Data Reference start address in the AC record. */
-  uint8_t*                      aux_data_ref_end;   /**< Internal field, managed by the library, to keep track of the Auxiliary Data Reference end address in the AC record. */
+  uint8_t                      *aux_data_ref_start; /**< Internal field, managed by the library, to keep track of the Auxiliary Data Reference start address in the AC record. */
+  uint8_t                      *aux_data_ref_end;   /**< Internal field, managed by the library, to keep track of the Auxiliary Data Reference end address in the AC record. */
 } Ndef_Handover_alternative_carrier_t;
 
 
@@ -93,21 +93,21 @@ typedef struct {
   uint8_t   has_cr;                                 /**< Boolean, if true this Handover has a Collision Resolution nested record. */
   uint16_t  cr_random_number;                       /**< Random number for the Collision Resolution. */
   uint8_t   nb_alternative_carrier;                 /**< Number of Alternative Carrier nested records un this Handover. */
-  uint8_t*  ac_start;                               /**< Internal field, managed by the library, to keep track of the Alternative Carrier Reference Data start address in the Handover record. */
-  uint8_t*  ac_end;                                 /**< Internal field, managed by the library, to keep track of the Alternative Carrier Reference Data end address in the Handover record. */
+  uint8_t  *ac_start;                               /**< Internal field, managed by the library, to keep track of the Alternative Carrier Reference Data start address in the Handover record. */
+  uint8_t  *ac_end;                                 /**< Internal field, managed by the library, to keep track of the Alternative Carrier Reference Data end address in the Handover record. */
 } Ndef_Handover_t;
 
 
 
-uint16_t NDEF_ReadHandover(sRecordInfo_t *pRecord ,  Ndef_Handover_t *pHandover );
-uint16_t NDEF_ReadAC( uint8_t ac_nb, Ndef_Handover_t *pHandover  , Ndef_Handover_alternative_carrier_t *pAC );
-uint16_t NDEF_ReadAuxData( uint8_t aux_data_nb, Ndef_Handover_alternative_carrier_t *pAC, sRecordInfo_t *pRecord );
+uint16_t NDEF_ReadHandover(sRecordInfo_t *pRecord,  Ndef_Handover_t *pHandover);
+uint16_t NDEF_ReadAC(uint8_t ac_nb, Ndef_Handover_t *pHandover, Ndef_Handover_alternative_carrier_t *pAC);
+uint16_t NDEF_ReadAuxData(uint8_t aux_data_nb, Ndef_Handover_alternative_carrier_t *pAC, sRecordInfo_t *pRecord);
 
-uint16_t NDEF_CreateHandover(Ndef_Handover_t  *pHandover, sRecordInfo_t* pRecord );
-uint16_t NDEF_AddAlternativeCarrier(Ndef_Handover_alternative_carrier_t *pAC, char* CarrierDataRef, char **AuxDataRefID, sRecordInfo_t* pRecord );
-uint16_t NDEF_WriteHandover( sRecordInfo_t* pRecord , uint8_t* pNdef);
+uint16_t NDEF_CreateHandover(Ndef_Handover_t  *pHandover, sRecordInfo_t *pRecord);
+uint16_t NDEF_AddAlternativeCarrier(Ndef_Handover_alternative_carrier_t *pAC, char *CarrierDataRef, char **AuxDataRefID, sRecordInfo_t *pRecord);
+uint16_t NDEF_WriteHandover(sRecordInfo_t *pRecord, uint8_t *pNdef);
 
-uint32_t NDEF_GetACDataLength(Ndef_Handover_alternative_carrier_t *pAC,char *CarrierDataRef, char **AuxDataRefID);
+uint32_t NDEF_GetACDataLength(Ndef_Handover_alternative_carrier_t *pAC, char *CarrierDataRef, char **AuxDataRefID);
 
 
 #ifdef __cplusplus

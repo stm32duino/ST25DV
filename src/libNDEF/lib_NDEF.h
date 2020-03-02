@@ -14,10 +14,10 @@
   * You may not use this file except in compliance with the License.
   * You may obtain a copy of the License at:
   *
-  *        http://www.st.com/myliberty  
+  *        http://www.st.com/myliberty
   *
-  * Unless required by applicable law or agreed to in writing, software 
-  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * Unless required by applicable law or agreed to in writing, software
+  * distributed under the License is distributed on an "AS IS" BASIS,
   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied,
   * AND SPECIFICALLY DISCLAIMING THE IMPLIED WARRANTIES OF MERCHANTABILITY,
   * FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
@@ -37,10 +37,10 @@
 #include <string.h>
 
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
 
-   
+
 #define NDEF_ACTION_COMPLETED       0x9000
 
 #ifndef errorchk
@@ -60,7 +60,7 @@
 //#define NDEF_RECORD_MAX_SIZE        (512)
 #define NDEF_MAX_SIZE               (100)
 #define NDEF_RECORD_MAX_SIZE        (100)
- 
+
 #define NDEF_SIZE_OFFSET            0
 #define FIRST_RECORD_OFFSET         0
 
@@ -69,7 +69,7 @@
 #define ID_LENGTH_FIELD             1
 
 
-#define	MB_Mask                     ((uint8_t)(0x80))
+#define MB_Mask                     ((uint8_t)(0x80))
 #define ME_Mask                     ((uint8_t)(0x40))
 #define CF_Mask                     ((uint8_t)(0x20))
 #define SR_Mask                     ((uint8_t)(0x10))
@@ -104,10 +104,10 @@
 
 #define SMART_POSTER_TYPE_STRING                "Sp"
 #define SMART_POSTER_TYPE_STRING_LENGTH         2
-	 
+
 #define URI_TYPE_STRING                         "U"
 #define URI_TYPE_STRING_LENGTH                  1
-	 
+
 #define SMS_TYPE_STRING                         "sms:"
 #define SMS_TYPE_STRING_LENGTH                  4
 
@@ -219,8 +219,7 @@ extern uint32_t NDEF_Buffer_size;
 extern uint8_t NDEF_Record_Buffer [NDEF_RECORD_MAX_SIZE];
 extern uint32_t NDEF_Record_Buffer_size;
 
-typedef enum
-{
+typedef enum {
   UNKNOWN_TYPE = 0,
   VCARD_TYPE,
   WELL_KNOWN_ABRIDGED_URI_TYPE,
@@ -240,8 +239,7 @@ typedef enum
 
 typedef struct sRecordInfo sRecordInfo_t;
 
-struct sRecordInfo
-{
+struct sRecordInfo {
   uint8_t RecordFlags;
   uint8_t TypeLength;
   uint32_t PayloadLength;
@@ -249,21 +247,21 @@ struct sRecordInfo
   uint8_t Type[20];
   uint8_t ID[20];
   uint16_t PayloadOffset;
-  uint8_t* PayloadBufferAdd;    /* add where payload content has been stored */
+  uint8_t *PayloadBufferAdd;    /* add where payload content has been stored */
   NDEF_TypeDef NDEF_Type;  /* to store identification ID for application */
   sRecordInfo_t *SPRecordStructAdd[SP_MAX_RECORD]; /*in case of smart poster array to store add of other sRecordInfo struct */
   uint8_t NbOfRecordInSPPayload;
 };
 
-uint16_t NDEF_IdentifyNDEF( sRecordInfo_t *pRecordStruct, uint8_t* pNDEF );
-uint16_t NDEF_IdentifyBuffer( sRecordInfo_t *pRecordStruct, uint8_t* pNDEF );
-uint16_t NDEF_ReadNDEF( uint8_t *pNDEF );
-uint16_t NDEF_WriteNDEF( uint16_t NDEF_Size, uint8_t *pNDEF );
+uint16_t NDEF_IdentifyNDEF(sRecordInfo_t *pRecordStruct, uint8_t *pNDEF);
+uint16_t NDEF_IdentifyBuffer(sRecordInfo_t *pRecordStruct, uint8_t *pNDEF);
+uint16_t NDEF_ReadNDEF(uint8_t *pNDEF);
+uint16_t NDEF_WriteNDEF(uint16_t NDEF_Size, uint8_t *pNDEF);
 uint16_t NDEF_ClearNDEF(void);
-uint16_t NDEF_getNDEFSize(uint16_t* Size);
-uint32_t NDEF_WriteRecord( sRecordInfo_t *pRecord, uint8_t* pNDEF );
-uint16_t NDEF_AppendRecord(sRecordInfo_t  *Record );
-uint32_t NDEF_GetRecordLength( sRecordInfo_t *pRecord );
+uint16_t NDEF_getNDEFSize(uint16_t *Size);
+uint32_t NDEF_WriteRecord(sRecordInfo_t *pRecord, uint8_t *pNDEF);
+uint16_t NDEF_AppendRecord(sRecordInfo_t  *Record);
+uint32_t NDEF_GetRecordLength(sRecordInfo_t *pRecord);
 
 #ifdef __cplusplus
 }

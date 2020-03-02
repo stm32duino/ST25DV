@@ -14,10 +14,10 @@
   * You may not use this file except in compliance with the License.
   * You may obtain a copy of the License at:
   *
-  *        http://www.st.com/myliberty  
+  *        http://www.st.com/myliberty
   *
-  * Unless required by applicable law or agreed to in writing, software 
-  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * Unless required by applicable law or agreed to in writing, software
+  * distributed under the License is distributed on an "AS IS" BASIS,
   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied,
   * AND SPECIFICALLY DISCLAIMING THE IMPLIED WARRANTIES OF MERCHANTABILITY,
   * FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
@@ -32,27 +32,26 @@
 #define __LIB_NDEF_URI_H
 
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
 
 /* Includes ------------------------------------------------------------------*/
 #include "lib_NDEF.h"
 
-typedef struct 
-{
-//  char protocol[80];
-//  char URI_Message[400];
-//  char Information[400];
+typedef struct {
+  //  char protocol[80];
+  //  char URI_Message[400];
+  //  char Information[400];
   char protocol[20];
   char URI_Message[100];
   char Information[20];
-}sURI_Info;
+} sURI_Info;
 
 uint16_t NDEF_ReadURI(sRecordInfo_t *pRecordStruct, sURI_Info *pURI);
 uint16_t NDEF_WriteURI(sURI_Info *pURI);
 
-void NDEF_PrepareURIMessage( sURI_Info *pURI, uint8_t *pNDEFMessage, uint16_t *size );
-char getUriType( char *protocol );
+void NDEF_PrepareURIMessage(sURI_Info *pURI, uint8_t *pNDEFMessage, uint16_t *size);
+char getUriType(char *protocol);
 
 #ifdef __cplusplus
 }

@@ -14,10 +14,10 @@
   * You may not use this file except in compliance with the License.
   * You may obtain a copy of the License at:
   *
-  *        http://www.st.com/myliberty  
+  *        http://www.st.com/myliberty
   *
-  * Unless required by applicable law or agreed to in writing, software 
-  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * Unless required by applicable law or agreed to in writing, software
+  * distributed under the License is distributed on an "AS IS" BASIS,
   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied,
   * AND SPECIFICALLY DISCLAIMING THE IMPLIED WARRANTIES OF MERCHANTABILITY,
   * FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
@@ -53,65 +53,62 @@ extern uint8_t NDEF_Buffer [];
   * @{
   */
 
-static void NDEF_Extract_M24SRDiscoveryApp_Input( sRecordInfo_t *pRecordStruct, sMyAppInfo *pMyAppStruct );
+static void NDEF_Extract_M24SRDiscoveryApp_Input(sRecordInfo_t *pRecordStruct, sMyAppInfo *pMyAppStruct);
 
 /**
   * @brief  This function read the NDEF file and store application data in a structure.
   * @param  pRecordStruct : Pointer on the record structure.
   * @param  pMyAppStruct : pointer on the structure to fill.
   */
-static void NDEF_Extract_M24SRDiscoveryApp_Input( sRecordInfo_t *pRecordStruct, sMyAppInfo *pMyAppStruct )
+static void NDEF_Extract_M24SRDiscoveryApp_Input(sRecordInfo_t *pRecordStruct, sMyAppInfo *pMyAppStruct)
 {
-  uint8_t* pPayload;
-  uint8_t* pLook4Word;
+  uint8_t *pPayload;
+  uint8_t *pLook4Word;
   uint16_t BackGroundColor, FontColor;
   uint8_t i;
 
   /* Read record header */
-  pPayload = (uint8_t*)(pRecordStruct->PayloadBufferAdd);
+  pPayload = (uint8_t *)(pRecordStruct->PayloadBufferAdd);
 
   /* initialize struct in case not matching found */
-  for( i = 0; i < 8; i++ )
-  {
+  for (i = 0; i < 8; i++) {
     /* Set the Back Color */
     pMyAppStruct->LineX[i].BackGroundColor = 0xFFFF;
     /* Set the Text Color */
     pMyAppStruct->LineX[i].FontColor = 0x0000;
     /* Set the line number */
-    pMyAppStruct->LineX[i].LineNb = i + 1; 
+    pMyAppStruct->LineX[i].LineNb = i + 1;
     /* Set the line content */
-    memcpy( pMyAppStruct->LineX[i].String, "                    ", 20 );
+    memcpy(pMyAppStruct->LineX[i].String, "                    ", 20);
   }
 
   pLook4Word = pPayload;
 
-  for( i = 0; i < 4; i++ )
-    {
-      pMyAppStruct->LedBlinkConf.LedConf[i] = *pLook4Word;
-      pLook4Word++;
-    }
-    pMyAppStruct->LedBlinkConf.Speed = *pLook4Word;
+  for (i = 0; i < 4; i++) {
+    pMyAppStruct->LedBlinkConf.LedConf[i] = *pLook4Word;
     pLook4Word++;
+  }
+  pMyAppStruct->LedBlinkConf.Speed = *pLook4Word;
+  pLook4Word++;
 
-  for( i = 0; i < 8; i++ )
-  {
-      /* Set the line number */
-      pMyAppStruct->LineX[i].LineNb = *pLook4Word; 
-      pLook4Word++;
-      /* Set the Back Color */
-      BackGroundColor = (uint16_t)(*pLook4Word << 8);
-      BackGroundColor = BackGroundColor | (uint16_t)(*++pLook4Word );
-      pMyAppStruct->LineX[i].BackGroundColor = BackGroundColor;
-      pLook4Word++;
-      /* Set the Text Color */
-      FontColor = (uint16_t)(*pLook4Word << 8);
-      FontColor = FontColor | (uint16_t)(*++pLook4Word);
-      pMyAppStruct->LineX[i].FontColor = FontColor;
-      pLook4Word++;
-      /* Set the line content */
-      memcpy( pMyAppStruct->LineX[i].String, (char*)pLook4Word, 20 );
-      pLook4Word += 20;
-    }
+  for (i = 0; i < 8; i++) {
+    /* Set the line number */
+    pMyAppStruct->LineX[i].LineNb = *pLook4Word;
+    pLook4Word++;
+    /* Set the Back Color */
+    BackGroundColor = (uint16_t)(*pLook4Word << 8);
+    BackGroundColor = BackGroundColor | (uint16_t)(*++pLook4Word);
+    pMyAppStruct->LineX[i].BackGroundColor = BackGroundColor;
+    pLook4Word++;
+    /* Set the Text Color */
+    FontColor = (uint16_t)(*pLook4Word << 8);
+    FontColor = FontColor | (uint16_t)(*++pLook4Word);
+    pMyAppStruct->LineX[i].FontColor = FontColor;
+    pLook4Word++;
+    /* Set the line content */
+    memcpy(pMyAppStruct->LineX[i].String, (char *)pLook4Word, 20);
+    pLook4Word += 20;
+  }
 
 }
 
@@ -122,7 +119,7 @@ static void NDEF_Extract_M24SRDiscoveryApp_Input( sRecordInfo_t *pRecordStruct, 
 /** @defgroup libMyApp_Public_Functions
   * @{
   * @brief  This file is used to manage proprietary NDEF (stored or loaded in tag)
-  */ 
+  */
 
 /**
   * @brief  This function read NDEF and retrieve Application information if any.
@@ -131,17 +128,14 @@ static void NDEF_Extract_M24SRDiscoveryApp_Input( sRecordInfo_t *pRecordStruct, 
   * @retval NDEF_OK : NDEF file data read in the tag.
   * @retval NDEF_ERROR : not able to read NDEF in tag.
   */
-uint16_t NDEF_ReadMyApp( sRecordInfo_t *pRecordStruct, sMyAppInfo *pMyAppStruct )
+uint16_t NDEF_ReadMyApp(sRecordInfo_t *pRecordStruct, sMyAppInfo *pMyAppStruct)
 {
   uint16_t status = NDEF_ERROR;
 
-  if( pRecordStruct->NDEF_Type == M24SR_DISCOVERY_APP_TYPE )
-  {
-    NDEF_Extract_M24SRDiscoveryApp_Input( pRecordStruct, pMyAppStruct );
+  if (pRecordStruct->NDEF_Type == M24SR_DISCOVERY_APP_TYPE) {
+    NDEF_Extract_M24SRDiscoveryApp_Input(pRecordStruct, pMyAppStruct);
     status = NDEF_OK;
-  }
-  else 
-  {
+  } else {
     status = NDEF_ERROR;
   }
 
@@ -159,45 +153,45 @@ uint16_t NDEF_ReadMyApp( sRecordInfo_t *pRecordStruct, sMyAppInfo *pMyAppStruct 
   * @retval NDEF_ERROR_MEMORY_TAG : Size not compatible with memory.
   * @retval NDEF_ERROR_LOCKED : Tag locked, cannot be write.
   */
-uint16_t NDEF_WriteMyApp( sMyAppInfo *pMyAppStruct )
+uint16_t NDEF_WriteMyApp(sMyAppInfo *pMyAppStruct)
 {
   uint16_t status = NDEF_ERROR;
   uint16_t DataSize;
   uint32_t PayloadSize;
   uint8_t  i;
-  uint8_t* pPayload;
+  uint8_t *pPayload;
 
 
-/* External Type Record Header */
-/************************************/
-/*  7 |  6 |  5 |  4 |  3 | 2  1  0 */
-/*----------------------------------*/
-/* MB   ME   CF   SR   IL    TNF    */  /* <---- IL=0, CF=0 and SR=1 TNF=4 NFC Forum external type*/
-/*----------------------------------*/
-/*          TYPE LENGTH             */
-/*----------------------------------*/
-/*        PAYLOAD LENGTH 3          */  /* <---- Not Used  */
-/*----------------------------------*/
-/*        PAYLOAD LENGTH 2          */  /* <---- Not Used  */
-/*----------------------------------*/
-/*        PAYLOAD LENGTH 1          */  /* <---- Not Used  */
-/*----------------------------------*/
-/*        PAYLOAD LENGTH 0          */  /* The payload will always be 5 + 25*8=205 bytes for this application */
-/*----------------------------------*/
-/*          ID LENGTH               */  /* <---- Not Used  */
-/*----------------------------------*/
-/*              TYPE                */  /* st.com:m24sr_discovery_democtrl */
-/*----------------------------------*/
-/*               ID                 */  /* <---- Not Used  */
-/************************************/
+  /* External Type Record Header */
+  /************************************/
+  /*  7 |  6 |  5 |  4 |  3 | 2  1  0 */
+  /*----------------------------------*/
+  /* MB   ME   CF   SR   IL    TNF    */  /* <---- IL=0, CF=0 and SR=1 TNF=4 NFC Forum external type*/
+  /*----------------------------------*/
+  /*          TYPE LENGTH             */
+  /*----------------------------------*/
+  /*        PAYLOAD LENGTH 3          */  /* <---- Not Used  */
+  /*----------------------------------*/
+  /*        PAYLOAD LENGTH 2          */  /* <---- Not Used  */
+  /*----------------------------------*/
+  /*        PAYLOAD LENGTH 1          */  /* <---- Not Used  */
+  /*----------------------------------*/
+  /*        PAYLOAD LENGTH 0          */  /* The payload will always be 5 + 25*8=205 bytes for this application */
+  /*----------------------------------*/
+  /*          ID LENGTH               */  /* <---- Not Used  */
+  /*----------------------------------*/
+  /*              TYPE                */  /* st.com:m24sr_discovery_democtrl */
+  /*----------------------------------*/
+  /*               ID                 */  /* <---- Not Used  */
+  /************************************/
 
- 
+
   /* fill URI record header */
   NDEF_Buffer[0] = 0xD4;   /* Record Flag */
   NDEF_Buffer[1] = M24SR_DISCOVERY_APP_STRING_LENGTH;
   NDEF_Buffer[2] = 0x00; /* Will be filled at the end when payload size is known */
 
-  memcpy( &NDEF_Buffer[3], M24SR_DISCOVERY_APP_STRING, M24SR_DISCOVERY_APP_STRING_LENGTH );
+  memcpy(&NDEF_Buffer[3], M24SR_DISCOVERY_APP_STRING, M24SR_DISCOVERY_APP_STRING_LENGTH);
 
   pPayload = &NDEF_Buffer[ 3 + M24SR_DISCOVERY_APP_STRING_LENGTH];
   PayloadSize = 0;
@@ -227,23 +221,22 @@ uint16_t NDEF_WriteMyApp( sMyAppInfo *pMyAppStruct )
 
   /**************************************************************/
   /* SCREEN config  data */
-  for( i = 0; i < 8; i++ )
-  {
+  for (i = 0; i < 8; i++) {
     /* Line number */
     *pPayload = (uint8_t)(i + 1);
     pPayload++;
     /* Background color */
-    *pPayload = 0xFF - (0xFF/i);
+    *pPayload = 0xFF - (0xFF / i);
     pPayload++;
-    *pPayload = 0xFF - (0xFF/i);
+    *pPayload = 0xFF - (0xFF / i);
     pPayload++;
     /* Font Color */
-    *pPayload = 0xFF/i;
+    *pPayload = 0xFF / i;
     pPayload++;
-    *pPayload = 0xFF/i;
+    *pPayload = 0xFF / i;
     pPayload++;
     /* String */
-    memcpy( pPayload, "ABCDEFGHIJKLMNOPQRST", 20 );
+    memcpy(pPayload, "ABCDEFGHIJKLMNOPQRST", 20);
     pPayload += 20;
 
     PayloadSize += 25;
@@ -255,7 +248,7 @@ uint16_t NDEF_WriteMyApp( sMyAppInfo *pMyAppStruct )
   DataSize = PayloadSize + 5 + M24SR_DISCOVERY_APP_STRING_LENGTH;
 
   /* Write NDEF */
-  status = NfcTag_WriteNDEF(  DataSize, NDEF_Buffer );
+  status = NfcTag_WriteNDEF(DataSize, NDEF_Buffer);
 
 
   return status;

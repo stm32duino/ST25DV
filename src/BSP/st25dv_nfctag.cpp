@@ -4,7 +4,7 @@
   * @author  MMY Application Team
   * @version $Revision: 3306 $
   * @date    $Date: 2017-01-13 11:18:15 +0100 (Fri, 13 Jan 2017) $
-  * @brief   This file provides a set of functions needed to manage a nfc dual 
+  * @brief   This file provides a set of functions needed to manage a nfc dual
   *          interface eeprom memory.
   ******************************************************************************
   * @attention
@@ -15,10 +15,10 @@
   * You may not use this file except in compliance with the License.
   * You may obtain a copy of the License at:
   *
-  *        http://www.st.com/myliberty  
+  *        http://www.st.com/myliberty
   *
-  * Unless required by applicable law or agreed to in writing, software 
-  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * Unless required by applicable law or agreed to in writing, software
+  * distributed under the License is distributed on an "AS IS" BASIS,
   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied,
   * AND SPECIFICALLY DISCLAIMING THE IMPLIED WARRANTIES OF MERCHANTABILITY,
   * FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
@@ -26,7 +26,7 @@
   * limitations under the License.
   *
   ******************************************************************************
-  */ 
+  */
 
 /* Includes ------------------------------------------------------------------*/
 #include "st25dv_nfctag.h"
@@ -51,7 +51,7 @@
  */
 
 /* Private macros ------------------------------------------------------------*/
-/* Private variables ---------------------------------------------------------*/ 
+/* Private variables ---------------------------------------------------------*/
 /* Global variables ----------------------------------------------------------*/
 /** @defgroup ST25DV_NFCTAG_Private_Variables
  * @{
@@ -71,39 +71,33 @@ static uint8_t NfctagInitialized = 0;
   * @param  None
   * @retval NFCTAG enum status
   */
-NFCTAG_StatusTypeDef BSP_NFCTAG_Init( void )
-{ 
+NFCTAG_StatusTypeDef BSP_NFCTAG_Init(void)
+{
   uint8_t nfctag_id = 0;
-  
-  if( !NfctagInitialized )
-  {
-    if( St25Dv_i2c_Drv.Init == NULL )
-    {
+
+  if (!NfctagInitialized) {
+    if (St25Dv_i2c_Drv.Init == NULL) {
       return NFCTAG_ERROR;
     }
     /* ST25DV Init */
-    if( St25Dv_i2c_Drv.Init() != NFCTAG_OK )
-    {
+    if (St25Dv_i2c_Drv.Init() != NFCTAG_OK) {
       return NFCTAG_ERROR;
     }
 
     /* Check ST25DV driver ID */
     St25Dv_i2c_Drv.ReadID(&nfctag_id);
-	
-    if( (nfctag_id == I_AM_ST25DV04) || (nfctag_id == I_AM_ST25DV64) )
-    {
+
+    if ((nfctag_id == I_AM_ST25DV04) || (nfctag_id == I_AM_ST25DV64)) {
       NfctagInitialized = 1;
       Nfctag_Drv = &St25Dv_i2c_Drv;
       Nfctag_Drv->pData = &St25Dv_i2c_ExtDrv;
-    }
-    else
-    {
-     Nfctag_Drv = NULL;
+    } else {
+      Nfctag_Drv = NULL;
       NfctagInitialized = 0;
       return NFCTAG_ERROR;
     }
   }
-  
+
   return NFCTAG_OK;
 }
 
@@ -112,8 +106,8 @@ NFCTAG_StatusTypeDef BSP_NFCTAG_Init( void )
   * @param  None
   * @retval None
   */
-void BSP_NFCTAG_DeInit( void )
-{ 
+void BSP_NFCTAG_DeInit(void)
+{
   Nfctag_Drv->pData = NULL;
   Nfctag_Drv = NULL;
   NfctagInitialized = 0;
@@ -124,7 +118,7 @@ void BSP_NFCTAG_DeInit( void )
   * @param  None
   * @retval 0 if the nfctag is not initialized, 1 if the nfctag is already initialized
   */
-uint8_t BSP_NFCTAG_isInitialized( void )
+uint8_t BSP_NFCTAG_isInitialized(void)
 {
   return NfctagInitialized;
 }
@@ -134,25 +128,24 @@ uint8_t BSP_NFCTAG_isInitialized( void )
   * @param  wai_id : the pointer where the who_am_i of the device is stored
   * @retval NFCTAG enum status
   */
-NFCTAG_StatusTypeDef BSP_NFCTAG_ReadID( uint8_t * const wai_id )
+NFCTAG_StatusTypeDef BSP_NFCTAG_ReadID(uint8_t *const wai_id)
 {
-  if ( Nfctag_Drv->ReadID == NULL )
-  {
+  if (Nfctag_Drv->ReadID == NULL) {
     return NFCTAG_ERROR;
   }
-  
-  return Nfctag_Drv->ReadID( wai_id );
+
+  return Nfctag_Drv->ReadID(wai_id);
 }
 
 /**
   * @brief  Return the size of the nfctag
   * @retval Size of the NFCtag in Bytes
   */
-uint32_t BSP_NFCTAG_GetByteSize( void )
+uint32_t BSP_NFCTAG_GetByteSize(void)
 {
   ST25DV_MEM_SIZE mem_size;
-  ((NFCTAG_ExtDrvTypeDef *)Nfctag_Drv->pData)->ReadMemSize( &mem_size );
-  return (mem_size.BlockSize+1) * (mem_size.Mem_Size+1);
+  ((NFCTAG_ExtDrvTypeDef *)Nfctag_Drv->pData)->ReadMemSize(&mem_size);
+  return (mem_size.BlockSize + 1) * (mem_size.Mem_Size + 1);
 }
 
 /**
@@ -160,14 +153,13 @@ uint32_t BSP_NFCTAG_GetByteSize( void )
   * @param  Trials : Number of trials
   * @retval NFCTAG enum status
   */
-NFCTAG_StatusTypeDef BSP_NFCTAG_IsDeviceReady( const uint32_t Trials )
+NFCTAG_StatusTypeDef BSP_NFCTAG_IsDeviceReady(const uint32_t Trials)
 {
-  if ( Nfctag_Drv->IsReady == NULL )
-  {
+  if (Nfctag_Drv->IsReady == NULL) {
     return NFCTAG_ERROR;
   }
-  
-  return Nfctag_Drv->IsReady( Trials );
+
+  return Nfctag_Drv->IsReady(Trials);
 }
 
 /**
@@ -177,13 +169,12 @@ NFCTAG_StatusTypeDef BSP_NFCTAG_IsDeviceReady( const uint32_t Trials )
   *                  - 0x02 => WIP
   * @retval NFCTAG enum status
   */
-NFCTAG_StatusTypeDef BSP_NFCTAG_ConfigIT( const uint16_t ITConfig )
+NFCTAG_StatusTypeDef BSP_NFCTAG_ConfigIT(const uint16_t ITConfig)
 {
-  if ( Nfctag_Drv->ConfigIT == NULL )
-  {
+  if (Nfctag_Drv->ConfigIT == NULL) {
     return NFCTAG_ERROR;
   }
-  return Nfctag_Drv->ConfigIT( ITConfig );
+  return Nfctag_Drv->ConfigIT(ITConfig);
 }
 
 /**
@@ -193,14 +184,13 @@ NFCTAG_StatusTypeDef BSP_NFCTAG_ConfigIT( const uint16_t ITConfig )
   *                  - 0x02 => WIP
   * @retval NFCTAG enum status
   */
-NFCTAG_StatusTypeDef BSP_NFCTAG_GetITStatus( uint16_t * const ITConfig )
+NFCTAG_StatusTypeDef BSP_NFCTAG_GetITStatus(uint16_t *const ITConfig)
 {
-  if ( Nfctag_Drv->GetITStatus == NULL )
-  {
+  if (Nfctag_Drv->GetITStatus == NULL) {
     return NFCTAG_ERROR;
   }
-  
-  return Nfctag_Drv->GetITStatus( ITConfig );
+
+  return Nfctag_Drv->GetITStatus(ITConfig);
 }
 
 /**
@@ -210,14 +200,13 @@ NFCTAG_StatusTypeDef BSP_NFCTAG_GetITStatus( uint16_t * const ITConfig )
   * @param  Size : Size in bytes of the value to be read
   * @retval NFCTAG enum status
   */
-NFCTAG_StatusTypeDef BSP_NFCTAG_ReadData( uint8_t * const pData, const uint16_t TarAddr, const uint16_t Size )
+NFCTAG_StatusTypeDef BSP_NFCTAG_ReadData(uint8_t *const pData, const uint16_t TarAddr, const uint16_t Size)
 {
-  if ( Nfctag_Drv->ReadData == NULL )
-  {
+  if (Nfctag_Drv->ReadData == NULL) {
     return NFCTAG_ERROR;
   }
-  
-  return Nfctag_Drv->ReadData( pData, TarAddr, Size );
+
+  return Nfctag_Drv->ReadData(pData, TarAddr, Size);
 }
 
 /**
@@ -227,14 +216,13 @@ NFCTAG_StatusTypeDef BSP_NFCTAG_ReadData( uint8_t * const pData, const uint16_t 
   * @param  Size : Size in bytes of the value to be written
   * @retval NFCTAG enum status
   */
-NFCTAG_StatusTypeDef BSP_NFCTAG_WriteData( const uint8_t * const pData, const uint16_t TarAddr, const uint16_t Size )
+NFCTAG_StatusTypeDef BSP_NFCTAG_WriteData(const uint8_t *const pData, const uint16_t TarAddr, const uint16_t Size)
 {
-  if ( Nfctag_Drv->WriteData == NULL )
-  {
+  if (Nfctag_Drv->WriteData == NULL) {
     return NFCTAG_ERROR;
   }
-  
-  return Nfctag_Drv->WriteData( pData, TarAddr, Size );
+
+  return Nfctag_Drv->WriteData(pData, TarAddr, Size);
 }
 
 /**
@@ -244,14 +232,13 @@ NFCTAG_StatusTypeDef BSP_NFCTAG_WriteData( const uint8_t * const pData, const ui
   * @param  Size : Size in bytes of the value to be read
   * @retval NFCTAG enum status
   */
-NFCTAG_StatusTypeDef BSP_NFCTAG_ReadRegister( uint8_t * const pData, const uint16_t TarAddr, const uint16_t Size )
+NFCTAG_StatusTypeDef BSP_NFCTAG_ReadRegister(uint8_t *const pData, const uint16_t TarAddr, const uint16_t Size)
 {
-  if ( Nfctag_Drv->ReadRegister == NULL )
-  {
+  if (Nfctag_Drv->ReadRegister == NULL) {
     return NFCTAG_ERROR;
   }
-  
-  return Nfctag_Drv->ReadRegister( pData, TarAddr, Size );
+
+  return Nfctag_Drv->ReadRegister(pData, TarAddr, Size);
 }
 
 /**
@@ -261,21 +248,19 @@ NFCTAG_StatusTypeDef BSP_NFCTAG_ReadRegister( uint8_t * const pData, const uint1
   * @param  Size : Size in bytes of the value to be written
   * @retval NFCTAG enum status
   */
-NFCTAG_StatusTypeDef BSP_NFCTAG_WriteRegister( const uint8_t * const pData, const uint16_t TarAddr, const uint16_t Size )
+NFCTAG_StatusTypeDef BSP_NFCTAG_WriteRegister(const uint8_t *const pData, const uint16_t TarAddr, const uint16_t Size)
 {
   NFCTAG_StatusTypeDef ret_value;
-  if ( Nfctag_Drv->WriteRegister == NULL )
-  {
+  if (Nfctag_Drv->WriteRegister == NULL) {
     return NFCTAG_ERROR;
   }
-  
-  ret_value = Nfctag_Drv->WriteRegister( pData, TarAddr, Size );
-  if( ret_value == NFCTAG_OK )
-  {
-    while( BSP_NFCTAG_IsDeviceReady( 1 ) != NFCTAG_OK ) {};
-      return NFCTAG_OK;
+
+  ret_value = Nfctag_Drv->WriteRegister(pData, TarAddr, Size);
+  if (ret_value == NFCTAG_OK) {
+    while (BSP_NFCTAG_IsDeviceReady(1) != NFCTAG_OK) {};
+    return NFCTAG_OK;
   }
-  
+
   return ret_value;
 }
 
@@ -284,7 +269,7 @@ NFCTAG_StatusTypeDef BSP_NFCTAG_WriteRegister( const uint8_t * const pData, cons
   * @param  None
   * @retval address of the Extended Component Structure
   */
-NFCTAG_ExtDrvTypeDef *BSP_NFCTAG_GetExtended_Drv( void )
+NFCTAG_ExtDrvTypeDef *BSP_NFCTAG_GetExtended_Drv(void)
 {
   return (NFCTAG_ExtDrvTypeDef *)Nfctag_Drv->pData;
 }

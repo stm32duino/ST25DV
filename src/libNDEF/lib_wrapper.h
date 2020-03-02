@@ -14,10 +14,10 @@
   * You may not use this file except in compliance with the License.
   * You may obtain a copy of the License at:
   *
-  *        http://www.st.com/myliberty  
+  *        http://www.st.com/myliberty
   *
-  * Unless required by applicable law or agreed to in writing, software 
-  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * Unless required by applicable law or agreed to in writing, software
+  * distributed under the License is distributed on an "AS IS" BASIS,
   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied,
   * AND SPECIFICALLY DISCLAIMING THE IMPLIED WARRANTIES OF MERCHANTABILITY,
   * FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
@@ -37,10 +37,10 @@
 
 
 
-uint16_t NfcTag_ReadNDEF( uint8_t* pData );
-uint16_t NfcTag_WriteNDEF(uint16_t Length, uint8_t* pData );
-uint16_t NfcTag_WriteProprietary(uint16_t Length, uint8_t* pData );
-uint16_t NfcTag_GetLength(uint16_t* Length);
+uint16_t NfcTag_ReadNDEF(uint8_t *pData);
+uint16_t NfcTag_WriteNDEF(uint16_t Length, uint8_t *pData);
+uint16_t NfcTag_WriteProprietary(uint16_t Length, uint8_t *pData);
+uint16_t NfcTag_GetLength(uint16_t *Length);
 
 #endif /* __LIB_WRAPPER_H */
 

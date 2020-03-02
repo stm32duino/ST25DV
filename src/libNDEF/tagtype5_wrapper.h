@@ -14,10 +14,10 @@
   * You may not use this file except in compliance with the License.
   * You may obtain a copy of the License at:
   *
-  *        http://www.st.com/myliberty  
+  *        http://www.st.com/myliberty
   *
-  * Unless required by applicable law or agreed to in writing, software 
-  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * Unless required by applicable law or agreed to in writing, software
+  * distributed under the License is distributed on an "AS IS" BASIS,
   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied,
   * AND SPECIFICALLY DISCLAIMING THE IMPLIED WARRANTIES OF MERCHANTABILITY,
   * FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
@@ -45,8 +45,7 @@ extern "C" {
 /**
   * @brief  Tag Type 5 State enumeration definition.
   */
-typedef enum
-{
+typedef enum {
   TT5_NO_NDEF = 0,  /**< No data detected in the tag. */
   TT5_INITIALIZED,  /**< Capability container detected. */
   TT5_READ_WRITE,   /**< Read-Write data detected. */
@@ -63,8 +62,7 @@ typedef enum {
 /**
   * @brief  Type5 Tag Capability Container structure.
   */
-typedef struct
-{
+typedef struct {
   TT5_MagicNumber_t MagicNumber;  /**< CCfile[0]: Magic Number should be E1h or E2h (for extended API) */
   uint8_t Version;                /**< CCfile[1]: Capability container version (b7-b4) and access conditions (b3-b0) */
   uint8_t MemorySize;             /**< CCfile[2]: Memory size, expressed in 8 bytes blocks, set to 0 if tag size is greater than 16kbits. */
@@ -80,11 +78,10 @@ typedef struct
   uint16_t ExtMemorySize;         /**< CCfile[6],CCfile[7]: Memory size, expressed in 8 bytes blocks, when tag size is greater than 16kbits. */
   TT5_State State;                /**< Indicates if a NDEF message is present. */
   uint32_t NDEF_offset;           /**< Indicates the address of a NDEF message in the tag. */
-}sCCFileInfo;
+} sCCFileInfo;
 
 /** @brief Type5 Tag Type-Length-Value structure as defined by the NFC Forum */
-typedef struct
-{
+typedef struct {
   uint8_t   Type;     /**< NFC Forum message Type */
   uint8_t   Length;   /**< Message length if lesser than 255 bytes */
   uint16_t  Length16; /**< Message length if greater than or equal to 255 bytes */
@@ -115,13 +112,13 @@ typedef struct
 extern sCCFileInfo CCFileStruct;
 
 /* Exported functions ------------------------------------------------------- */
-uint16_t NfcType5_WriteCCFile( const uint8_t * const pCCBuffer );
-uint16_t NfcType5_ReadCCFile( uint8_t * const pCCBuffer );
-uint16_t NfcType5_TT5Init( void );
-uint16_t NfcType5_NDEFDetection( void );
+uint16_t NfcType5_WriteCCFile(const uint8_t *const pCCBuffer);
+uint16_t NfcType5_ReadCCFile(uint8_t *const pCCBuffer);
+uint16_t NfcType5_TT5Init(void);
+uint16_t NfcType5_NDEFDetection(void);
 
 #ifdef __cplusplus
-  }
+}
 #endif
 #endif /* __TAGTYPE5_WRAPPER_H */
 

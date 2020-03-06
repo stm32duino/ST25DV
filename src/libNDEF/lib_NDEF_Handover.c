@@ -149,8 +149,8 @@ uint16_t NDEF_ReadAuxData(uint8_t aux_data_nb, Ndef_Handover_alternative_carrier
   uint16_t status;
   uint8_t *pData = pAC->aux_data_ref_start;
   uint8_t current_aux = 0;
-  uint8_t *aux_id;
-  uint8_t  aux_id_length;
+  uint8_t *aux_id = NULL;
+  uint8_t  aux_id_length = 0;
 
   if ((pAC->aux_data_ref_start == NULL) ||
       (pAC->aux_data_ref_end == NULL) ||

@@ -412,6 +412,9 @@ void NDEF_closeEmail(sEmailInfo *pEmailStruct)
   if (pEmailStruct->Subject != NULL) {
     free(pEmailStruct->Subject);
   }
+#else
+  // Unused parameter
+  (void)(pEmailStruct);
 #endif
 }
 

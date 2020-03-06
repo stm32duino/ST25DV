@@ -161,6 +161,8 @@ uint16_t NDEF_WriteMyApp(sMyAppInfo *pMyAppStruct)
   uint8_t  i;
   uint8_t *pPayload;
 
+  // Unused parameter
+  (void)(pMyAppStruct);
 
   /* External Type Record Header */
   /************************************/

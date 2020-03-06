@@ -57,7 +57,7 @@ class ST25DV {
     ST25DV(void);
     int begin(uint8_t gpo, uint8_t ldp, TwoWire *pwire = &WIRE);
     int writeURI(String protocol, String uri, String info);
-    String readURI();
+    int readURI(String *s);
 
     void ST25DV_GPO_Init(void);
     void ST25DV_GPO_DeInit(void);

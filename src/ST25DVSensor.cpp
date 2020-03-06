@@ -77,22 +77,29 @@ int ST25DV::writeURI(String protocol, String uri, String info)
 
 
 
-String ST25DV::readURI()
+int ST25DV::readURI(String *s)
 {
+  uint16_t ret;
   sURI_Info uri = {"", "", ""};
   sRecordInfo_t recordInfo;
   // increase buffer size for bigger messages
-  if (NDEF_ReadNDEF(NDEF_Buffer)) {
-    return (String)NULL;
+  ret = NDEF_ReadNDEF(NDEF_Buffer);
+  if (ret) {
+    return ret;
   }
 
-  if (NDEF_IdentifyBuffer(&recordInfo, NDEF_Buffer)) {
-    return (String)NULL;
+  ret = NDEF_IdentifyBuffer(&recordInfo, NDEF_Buffer);
+  if (ret) {
+    return ret;
   }
-  if (NDEF_ReadURI(&recordInfo, &uri)) {
-    return (String)NULL;
+
+  ret = NDEF_ReadURI(&recordInfo, &uri);
+  if (ret) {
+    return ret;
   }
-  return String(uri.protocol) + String(uri.URI_Message);
+  *s = String(uri.protocol) + String(uri.URI_Message);
+
+  return 0;
 }
 
 /**

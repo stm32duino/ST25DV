@@ -278,7 +278,7 @@ NFCTAG_StatusTypeDef ST25DV_IO_MemWrite(const uint8_t *const pData, const uint8_
     _serial->print(":");
     _serial->println(Size);
     _serial->print("  ");
-    for (int d = 0; d < Size; d++) {
+    for (uint16_t d = 0; d < Size; d++) {
       sprintf(tmp, "%02X", pData[d]);
       _serial->print(tmp);
     }

@@ -121,17 +121,17 @@ typedef enum {
 /** @brief Helper macro to set a particular EIR in the EIR mask of a `Ndef_Bluetooth_OOB_t` instance.
   * @param bt     Pointer to a `Ndef_Bluetooth_OOB_t` struct
   * @param option Index of the option based on the `Ndef_Bluetooth_Eir_Types_t` */
-#define NDEF_BLUETOOTH_SET_OPTIONAL_MASK(bt,option)   do { bt->OptionalMask |= (1<<(option)); } while (0)
+#define NDEF_BLUETOOTH_SET_OPTIONAL_MASK(bt,option)   do { bt->OptionalMask |= ((uint32_t)1<<(option)); } while (0)
 
 /** @brief Helper macro to unset a particular EIR in the EIR mask of a `Ndef_Bluetooth_OOB_t` instance.
   * @param bt     Pointer to a `Ndef_Bluetooth_OOB_t` struct
   * @param option Index of the option based on the `Ndef_Bluetooth_Eir_Types_t` */
-#define NDEF_BLUETOOTH_UNSET_OPTIONAL_MASK(bt,option) do {bt->OptionalMask &= ~(1<<(option)); } while (0)
+#define NDEF_BLUETOOTH_UNSET_OPTIONAL_MASK(bt,option) do {bt->OptionalMask &= ~((uint32_t)1<<(option)); } while (0)
 
 /** @brief Helper macro to know if a particular EIR is present in the EIR mask of a `Ndef_Bluetooth_OOB_t` instance.
   * @param bt     Pointer to a `Ndef_Bluetooth_OOB_t` struct
   * @param option Index of the option based on the `Ndef_Bluetooth_Eir_Types_t` */
-#define NDEF_BLUETOOTH_GET_OPTIONAL_MASK(bt,option) ((bt->OptionalMask & (1<<(option))) >>  (option))
+#define NDEF_BLUETOOTH_GET_OPTIONAL_MASK(bt,option) ((bt->OptionalMask & ((uint32_t)1<<(option))) >>  (option))
 
 /** @brief Helper macro to create a mask for a particular EIR.
   * @param option Index of the option based on the `Ndef_Bluetooth_Eir_Types_t` */

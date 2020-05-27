@@ -27,6 +27,30 @@ It is then possible to read/write NFC URI:
 ```
 
 
+## Examples
+
+There are 2 examples with the ST25DV library:
+* ST25DV_HelloWorld: This application writes a URI tag on the device. It records an URI.
+
+When the NFC module is started and ready, the message "Sytstem init done!" is displayed on the monitor window.
+Next, the tag is written, we wait few seconds, we read the same tag and print it on the monitor window.
+
+You can test this application by connecting it with your smartphone.
+On Android, download a NFC Tools. Then start the app, check if NFC is activated
+on your smartphone. Put your smartphone near the tag, you can read it. You can
+write a tag with this app.
+
+* ST25DV_SimpleWrite: This application writes a NDEF message, containing a URI record, to the tag.
+
+When the NFC module is started and ready, the message "System init done!" is displayed on the monitor window.
+Next, the tag is written with a URI.
+
+You can test this application by tapping the tag with your smartphone.
+On Android, check if NFC is activated on your smartphone.
+Put your smartphone near the tag to read it.
+The preferred Internet Browser is automatically opened with the provided URI.
+
+
 ## Documentation
 
 You can find the source files at

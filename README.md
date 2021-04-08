@@ -32,7 +32,7 @@ It is then possible to read/write NFC URI:
 There are 2 examples with the ST25DV library:
 * ST25DV_HelloWorld: This application writes a URI tag on the device. It records an URI.
 
-When the NFC module is started and ready, the message "Sytstem init done!" is displayed on the monitor window.
+When the NFC module is started and ready, the message "System init done!" is displayed on the monitor window.
 Next, the tag is written, we wait few seconds, we read the same tag and print it on the monitor window.
 
 You can test this application by connecting it with your smartphone.

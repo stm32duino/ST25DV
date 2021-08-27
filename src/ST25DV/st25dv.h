@@ -453,7 +453,7 @@ typedef struct {
 /** @brief ST25DV Mailbox control dynamic register address. */
 #define ST25DV_MB_CTRL_DYN_REG               0x2006
 /** @brief ST25DV Mailbox message length dynamic register address. */
-#define ST25DV_MBLEN_DYN_REG                 0x2007
+#define ST25DV_MB_LEN_DYN_REG                 0x2007
 /** @brief ST25DV Mailbox buffer address. */
 #define ST25DV_MAILBOX_RAM_REG               0x2008
 

@@ -1459,7 +1459,7 @@ NFCTAG_StatusTypeDef ST25DV_i2c_WriteMailboxData(const uint8_t *const pData, con
   */
 NFCTAG_StatusTypeDef ST25DV_i2c_ReadMailboxRegister(uint8_t *const pData, const uint16_t TarAddr, const uint16_t NbByte)
 {
-  if ((TarAddr < ST25DV_GPO_DYN_REG) || (TarAddr > ST25DV_MBLEN_DYN_REG)) {
+  if ((TarAddr < ST25DV_GPO_DYN_REG) || (TarAddr > ST25DV_MB_LEN_DYN_REG)) {
     return NFCTAG_ERROR;
   }
 
@@ -1477,7 +1477,7 @@ NFCTAG_StatusTypeDef ST25DV_i2c_WriteMailboxRegister(const uint8_t *const pData,
 {
   NFCTAG_StatusTypeDef status;
 
-  if ((TarAddr < ST25DV_GPO_DYN_REG) || (TarAddr > ST25DV_MBLEN_DYN_REG)) {
+  if ((TarAddr < ST25DV_GPO_DYN_REG) || (TarAddr > ST25DV_MB_LEN_DYN_REG)) {
     return NFCTAG_ERROR;
   }
 
@@ -2091,7 +2091,7 @@ NFCTAG_StatusTypeDef ST25DV_i2c_ResetMBEN_Dyn(void)
 NFCTAG_StatusTypeDef ST25DV_i2c_ReadMBLength_Dyn(uint8_t *const pMBLength)
 {
   /* Read actual value of MBLEN_DYN register */
-  return ST25DV_i2c_ReadMailboxRegister(pMBLength, ST25DV_MBLEN_DYN_REG, 1);
+  return ST25DV_i2c_ReadMailboxRegister(pMBLength, ST25DV_MB_LEN_DYN_REG, 1);
 }
 
 /**

@@ -375,15 +375,22 @@ NFCTAG_StatusTypeDef ST25DV_IO_MemRead(uint8_t *const pData, const uint8_t DevAd
     }
     _serial->println("");
   }
-  ret = st25dv._pwire->endTransmission();
-  if (_serial != NULL) {
-    //  _serial->println(pData[0]);
-    _serial->print("  =");
-    _serial->println(ret);
-    //  _serial->print("  ");
-    //  _serial->println(pData[0]);
-    //  _serial->println((uint32_t)pData);
-  }
+
+  /*
+  It doesn't seem like Arduino wants you to call `endTransmission` 
+  after `requestFrom`. On the ESP32 the ret value is 8 because it
+  is an `endTransmission` without a `startTransmission` which is 
+  considered an error by the library.
+  */
+  // ret = st25dv._pwire->endTransmission();
+  // if (_serial != NULL) {
+  //   //  _serial->println(pData[0]);
+  //   _serial->print("  =");
+  //   _serial->println(ret);
+  //   //  _serial->print("  ");
+  //   //  _serial->println(pData[0]);
+  //   //  _serial->println((uint32_t)pData);
+  // }
   return NFCTAG_ConvertStatus(ret);
 }
 
@@ -434,13 +441,19 @@ NFCTAG_StatusTypeDef ST25DV_IO_Read(uint8_t *const pData, const uint8_t DevAddr,
     }
     _serial->println("");
   }
-  ret = st25dv._pwire->endTransmission();
+  /*
+  It doesn't seem like Arduino wants you to call `endTransmission` 
+  after `requestFrom`. On the ESP32 the ret value is 8 because it
+  is an `endTransmission` without a `startTransmission` which is 
+  considered an error by the library.
+  */
+  // ret = st25dv._pwire->endTransmission();
 
-  if (_serial != NULL) {
-    //  _serial->println(pData[0]);
-    _serial->print("  =");
-    _serial->println(ret);
-  }
+  // if (_serial != NULL) {
+  //   //  _serial->println(pData[0]);
+  //   _serial->print("  =");
+  //   _serial->println(ret);
+  // }
   return NFCTAG_ConvertStatus(ret);
 }
 

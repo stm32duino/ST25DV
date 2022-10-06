@@ -34,7 +34,7 @@ NFCTAG_StatusTypeDef ST25DV_IO_Read(uint8_t *const pData, const uint8_t DevAddr,
 NFCTAG_StatusTypeDef ST25DV_IO_IsDeviceReady(const uint8_t DevAddr, const uint32_t Trials);
 NFCTAG_StatusTypeDef NFCTAG_ConvertStatus(uint8_t ret);
 
-int ST25DV::begin(uint8_t gpo, uint8_t lpd, TwoWire *pwire)
+int ST25DV::begin(int32_t gpo, int32_t lpd, TwoWire *pwire)
 {
   int ret = NDEF_OK;
 
@@ -129,8 +129,10 @@ uint8_t ST25DV::ST25DV_GPO_ReadPin(void)
   */
 void ST25DV::ST25DV_LPD_Init(void)
 {
-  pinMode(_lpd, OUTPUT);
-  digitalWrite(_lpd, LOW);
+  if(_lpd > 0) {
+    pinMode(_lpd, OUTPUT);
+    digitalWrite(_lpd, LOW);
+  }
 }
 
 /**

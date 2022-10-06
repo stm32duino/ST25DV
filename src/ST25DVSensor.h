@@ -55,7 +55,7 @@ typedef enum {
 class ST25DV {
   public:
     ST25DV(void);
-    int begin(uint8_t gpo, uint8_t ldp, TwoWire *pwire = &WIRE);
+    int begin(int32_t gpo, int32_t ldp, TwoWire *pwire = &WIRE);
     int writeURI(String protocol, String uri, String info);
     int readURI(String *s);
 
@@ -72,8 +72,8 @@ class ST25DV {
     TwoWire *_pwire;
 
   private:
-    uint8_t _gpo;
-    uint8_t _lpd;
+    int32_t _gpo;
+    int32_t _lpd;
 };
 
 extern ST25DV st25dv;

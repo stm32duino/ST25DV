@@ -369,6 +369,10 @@ typedef struct {
 #define I_AM_ST25DV04                        0x24
 /** @brief ST25DV 64Kbits */
 #define I_AM_ST25DV64                        0x26
+/** @brief ST25DV 4Kbits */
+#define I_AM_ST25DV04KC                      0x50
+/** @brief ST25DV 64Kbits */
+#define I_AM_ST25DV64KC                      0x51
 
 #ifndef NULL
 #define NULL      (void *) 0

@@ -31,10 +31,6 @@
 #ifndef __LIB_NDEF_MYAPP_H
 #define __LIB_NDEF_MYAPP_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /* Includes ------------------------------------------------------------------*/
 #include "lib_NDEF.h"
 
@@ -73,13 +69,6 @@ typedef struct {
   sLedBlinkConfig LedBlinkConf;
   sLineConfig LineX[MYAPP_NB_LINES];
 } sMyAppInfo;
-
-uint16_t NDEF_ReadMyApp(sRecordInfo_t *pRecordStruct, sMyAppInfo *pMyAppStruct);
-uint16_t NDEF_WriteMyApp(sMyAppInfo *pMyAppStruct);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* __LIB_NDEF_MYAPP_H */
 

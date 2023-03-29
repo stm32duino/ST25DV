@@ -31,10 +31,6 @@
 #ifndef __LIB_NDEF_URI_H
 #define __LIB_NDEF_URI_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /* Includes ------------------------------------------------------------------*/
 #include "lib_NDEF.h"
 
@@ -46,16 +42,6 @@ typedef struct {
   char URI_Message[100];
   char Information[20];
 } sURI_Info;
-
-uint16_t NDEF_ReadURI(sRecordInfo_t *pRecordStruct, sURI_Info *pURI);
-uint16_t NDEF_WriteURI(sURI_Info *pURI);
-
-void NDEF_PrepareURIMessage(sURI_Info *pURI, uint8_t *pNDEFMessage, uint16_t *size);
-char getUriType(char *protocol);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* __LIB_NDEF_URI_H */
 

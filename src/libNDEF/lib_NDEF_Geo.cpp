@@ -29,6 +29,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "lib_NDEF_Geo.h"
+#include "NDEF_class.h"
 
 /** @addtogroup NFC_libraries
   * @{
@@ -46,14 +47,11 @@
 /**
   * @brief  This buffer contains the data send/received by TAG
   */
-extern uint8_t NDEF_Buffer [];
+//extern uint8_t NDEF_Buffer [];
 
 /** @defgroup libGeo_Private_Functions
   * @{
   */
-
-static void NDEF_FillGeoStruct(uint8_t *pPayload, uint32_t PayloadSize, sGeoInfo *pGeoStruct);
-static void NDEF_ReadURI_Geo(sRecordInfo_t *pRecordStruct, sGeoInfo *pGeoStruct);
 
 /**
   * @brief  This function fill Geo structure with information of NDEF message.
@@ -61,7 +59,7 @@ static void NDEF_ReadURI_Geo(sRecordInfo_t *pRecordStruct, sGeoInfo *pGeoStruct)
   * @param  PayloadSize : number of data in the payload.
   * @param  pGeoStruct : pointer on the structure to fill.
   */
-static void NDEF_FillGeoStruct(uint8_t *pPayload, uint32_t PayloadSize, sGeoInfo *pGeoStruct)
+void NDEF::NDEF_FillGeoStruct(uint8_t *pPayload, uint32_t PayloadSize, sGeoInfo *pGeoStruct)
 {
   uint8_t *pLastByteAdd, *pLook4Word, *pEndString;
   char *pKeyWord;
@@ -75,7 +73,7 @@ static void NDEF_FillGeoStruct(uint8_t *pPayload, uint32_t PayloadSize, sGeoInfo
   *pGeoStruct->Latitude = 0;
   *pGeoStruct->Longitude = 0;
 
-  /* Interresting information are stored before picture if any */
+  /* Interesting information are stored before picture if any */
   /* Moreover picture is not used in this demonstration SW */
   pLastByteAdd = (uint8_t *)(pPayload + PayloadSize);
 
@@ -111,7 +109,7 @@ static void NDEF_FillGeoStruct(uint8_t *pPayload, uint32_t PayloadSize, sGeoInfo
   * @param  pRecordStruct : Pointer on the record structure.
   * @param  pGeoStruct : pointer on the structure to fill.
   */
-static void NDEF_ReadURI_Geo(sRecordInfo_t *pRecordStruct, sGeoInfo *pGeoStruct)
+void NDEF::NDEF_ReadURI_Geo(sRecordInfo_t *pRecordStruct, sGeoInfo *pGeoStruct)
 {
   uint8_t *pPayload;
   uint32_t PayloadSize;
@@ -143,7 +141,7 @@ static void NDEF_ReadURI_Geo(sRecordInfo_t *pRecordStruct, sGeoInfo *pGeoStruct)
   * @retval NDEF_OK : Geolocation information from NDEF have been retrieved.
   * @retval NDEF_ERROR : not able to read NDEF from tag.
   */
-uint16_t NDEF_ReadGeo(sRecordInfo_t *pRecordStruct, sGeoInfo *pGeoStruct)
+uint16_t NDEF::NDEF_ReadGeo(sRecordInfo_t *pRecordStruct, sGeoInfo *pGeoStruct)
 {
   uint16_t status = NDEF_ERROR;
   sRecordInfo_t *pSPRecordStruct;
@@ -165,8 +163,8 @@ uint16_t NDEF_ReadGeo(sRecordInfo_t *pRecordStruct, sGeoInfo *pGeoStruct)
 
         /* The instruction content the UTF-8 language code that is not used here */
         pData = (uint8_t *)pSPRecordStruct->PayloadBufferAdd;
-        PayloadSize -= *pData + 1; /* remove not usefull data */
-        pData += *pData + 1; /* set pointer on usefull data */
+        PayloadSize -= *pData + 1; /* remove not useful data */
+        pData += *pData + 1; /* set pointer on useful data */
 
         memcpy(pGeoStruct->Information, pData, PayloadSize);
         /* add end of string character */
@@ -181,13 +179,13 @@ uint16_t NDEF_ReadGeo(sRecordInfo_t *pRecordStruct, sGeoInfo *pGeoStruct)
 /**
   * @brief  This function write the NDEF file with the geolocation data given in the structure.
   * @param  pGeoStruct : pointer on structure that contain the geolocation information.
-  * @retval NDEF_OK : the function is succesful.
+  * @retval NDEF_OK : the function is successful.
   * @retval NDEF_ERROR_MEMORY_INTERNAL : Cannot write to tag.
   * @retval NDEF_ERROR_NOT_FORMATED : CCFile data not supported or not present.
   * @retval NDEF_ERROR_MEMORY_TAG : Size not compatible with memory.
   * @retval NDEF_ERROR_LOCKED : Tag locked, cannot be write.
   */
-uint16_t NDEF_WriteGeo(sGeoInfo *pGeoStruct)
+uint16_t NDEF::NDEF_WriteGeo(sGeoInfo *pGeoStruct)
 {
   uint16_t status = NDEF_ERROR, Offset = 0;
 
@@ -204,7 +202,7 @@ uint16_t NDEF_WriteGeo(sGeoInfo *pGeoStruct)
   * @param  pNDEFMessage : pointer on the NDEF message.
   * @param  size : to store the size of the NDEF message generated.
   */
-void NDEF_PrepareGeoMessage(sGeoInfo *pGeoStruct, uint8_t *pNDEFMessage, uint16_t *size)
+void NDEF::NDEF_PrepareGeoMessage(sGeoInfo *pGeoStruct, uint8_t *pNDEFMessage, uint16_t *size)
 {
   uint16_t Offset = 0;
   uint32_t geoSize = 0;

@@ -31,10 +31,6 @@
 #ifndef __LIB_NDEF_TEXT_H
 #define __LIB_NDEF_TEXT_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /* Includes ------------------------------------------------------------------*/
 #include "lib_NDEF.h"
 
@@ -64,13 +60,6 @@ typedef struct {
   uint8_t  encoding: 1;       /**< UTF-8 (0) or UTF-16 (1) encoding. */
   char     language[1];       /**< IANA language code. */
 } NDEF_Text_metadata_t;
-
-uint16_t NDEF_WriteText(char *text);
-uint16_t NDEF_ReadText(sRecordInfo_t *pRecordStruct, NDEF_Text_info_t *pText);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* __LIB_NDEF_TEXT_H */
 

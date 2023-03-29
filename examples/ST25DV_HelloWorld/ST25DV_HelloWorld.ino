@@ -63,29 +63,17 @@
 
 #if defined(ARDUINO_B_L4S5I_IOT01A)
 // Pin definitions for board B-L4S5I_IOT01A
-#define GPO_PIN PE4
-#define LPD_PIN PE2
-#define SDA_PIN PB11
-#define SCL_PIN PB10
-
-#define WireNFC MyWire
-TwoWire MyWire(SDA_PIN, SCL_PIN);
-
+  #define GPO_PIN PE4
+  #define LPD_PIN PE2
+  #define SDA_PIN PB11
+  #define SCL_PIN PB10
+  #define WireNFC MyWire
+  TwoWire MyWire(SDA_PIN, SCL_PIN);
+  ST25DV st25dv(12, -1, &MyWire);
 #else
-// Please define the pin and wire instance used for your board
-// #define GPO_PIN PE4
-// #define LPD_PIN PE2
-// #define SDA_PIN PB11
-// #define SCL_PIN PB10
-
-#define WireNFC Wire // Default wire instance
-
+  #define DEV_I2C         Wire
+  ST25DV st25dv(12, -1, &DEV_I2C);
 #endif
-
-#if !defined(GPO_PIN) || !defined(LPD_PIN)
-#error define the pin and wire instance used for your board
-#endif
-
 
 void setup() {
   const char uri_write_message[] = "st.com/st25";       // Uri message to write in the tag
@@ -96,8 +84,8 @@ void setup() {
   // Initialize serial for output.
   SerialPort.begin(115200);
 
-  // The wire instance used can be omited in case you use default Wire instance
-  if(st25dv.begin(GPO_PIN, LPD_PIN, &WireNFC) == 0) {
+  // The wire instance used can be omitted in case you use default Wire instance
+  if(st25dv.begin() == 0) {
     SerialPort.println("System Init done!");
   } else {
     SerialPort.println("System Init failed!");

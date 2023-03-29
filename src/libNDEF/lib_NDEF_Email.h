@@ -31,10 +31,6 @@
 #ifndef __LIB_NDEF_EMAIL_H
 #define __LIB_NDEF_EMAIL_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /* Includes ------------------------------------------------------------------*/
 #include "lib_NDEF.h"
 
@@ -54,14 +50,6 @@ typedef struct {
   char Message[2000];
   char Information[400];
 } sEmailInfo;
-#endif
-uint16_t NDEF_ReadEmail(sRecordInfo_t *pRecordStruct, sEmailInfo *pEmailStruct);
-uint16_t NDEF_WriteEmail(sEmailInfo *pEmailStruct);
-void NDEF_PrepareEmailMessage(sEmailInfo *pEmailStruct, uint8_t *pNDEFMessage, uint16_t *size);
-void NDEF_closeEmail(sEmailInfo *pEmailStruct);
-
-#ifdef __cplusplus
-}
 #endif
 
 #endif /* __LIB_NDEF_EMAIL_H */

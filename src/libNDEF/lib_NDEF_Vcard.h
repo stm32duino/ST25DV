@@ -31,10 +31,6 @@
 #ifndef __LIB_NDEF_VCARD_H
 #define __LIB_NDEF_VCARD_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /* Includes ------------------------------------------------------------------*/
 #include "lib_NDEF.h"
 
@@ -108,15 +104,6 @@ typedef struct {
   char Email[80];
   char Url[80];
 } sVcardInfo;
-
-uint16_t NDEF_ReadVcard(sRecordInfo_t *pRecordStruct, sVcardInfo *pVcardStruct);
-uint16_t NDEF_WriteVcard(sVcardInfo *pVcardStruct);
-void NDEF_PrepareVcardMessage(sVcardInfo *pVcardStruct, uint8_t *pNDEFMessage, uint16_t *size);
-int NDEF_getVcardPicture(uint8_t *pPayload, uint32_t PayloadSize,  uint8_t *pPict);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* __LIB_NDEF_VCARD_H */
 

@@ -31,10 +31,6 @@
 #ifndef __LIB_NDEF_GEO_H
 #define __LIB_NDEF_GEO_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /* Includes ------------------------------------------------------------------*/
 #include "lib_NDEF.h"
 
@@ -43,14 +39,6 @@ typedef struct {
   char Longitude[20];
   char Information[100];
 } sGeoInfo;
-
-uint16_t NDEF_ReadGeo(sRecordInfo_t *pRecordStruct, sGeoInfo *pGeoStruct);
-uint16_t NDEF_WriteGeo(sGeoInfo *pGeoStruct);
-void NDEF_PrepareGeoMessage(sGeoInfo *pGeoStruct, uint8_t *pNDEFMessage, uint16_t *size);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* __LIB_NDEF_GEO_H */
 

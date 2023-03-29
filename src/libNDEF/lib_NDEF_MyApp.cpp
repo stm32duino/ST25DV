@@ -29,6 +29,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "lib_NDEF_MyApp.h"
+#include "NDEF_class.h"
 
 
 /** @addtogroup NFC_libraries
@@ -47,20 +48,19 @@
 /**
   * @brief  This buffer contains the data send/received by TAG
   */
-extern uint8_t NDEF_Buffer [];
+//extern uint8_t NDEF_Buffer [];
 
 /** @defgroup libMyApp_Private_Functions
   * @{
   */
 
-static void NDEF_Extract_M24SRDiscoveryApp_Input(sRecordInfo_t *pRecordStruct, sMyAppInfo *pMyAppStruct);
 
 /**
   * @brief  This function read the NDEF file and store application data in a structure.
   * @param  pRecordStruct : Pointer on the record structure.
   * @param  pMyAppStruct : pointer on the structure to fill.
   */
-static void NDEF_Extract_M24SRDiscoveryApp_Input(sRecordInfo_t *pRecordStruct, sMyAppInfo *pMyAppStruct)
+void NDEF::NDEF_Extract_M24SRDiscoveryApp_Input(sRecordInfo_t *pRecordStruct, sMyAppInfo *pMyAppStruct)
 {
   uint8_t *pPayload;
   uint8_t *pLook4Word;
@@ -128,7 +128,7 @@ static void NDEF_Extract_M24SRDiscoveryApp_Input(sRecordInfo_t *pRecordStruct, s
   * @retval NDEF_OK : NDEF file data read in the tag.
   * @retval NDEF_ERROR : not able to read NDEF in tag.
   */
-uint16_t NDEF_ReadMyApp(sRecordInfo_t *pRecordStruct, sMyAppInfo *pMyAppStruct)
+uint16_t NDEF::NDEF_ReadMyApp(sRecordInfo_t *pRecordStruct, sMyAppInfo *pMyAppStruct)
 {
   uint16_t status = NDEF_ERROR;
 
@@ -153,7 +153,7 @@ uint16_t NDEF_ReadMyApp(sRecordInfo_t *pRecordStruct, sMyAppInfo *pMyAppStruct)
   * @retval NDEF_ERROR_MEMORY_TAG : Size not compatible with memory.
   * @retval NDEF_ERROR_LOCKED : Tag locked, cannot be write.
   */
-uint16_t NDEF_WriteMyApp(sMyAppInfo *pMyAppStruct)
+uint16_t NDEF::NDEF_WriteMyApp(sMyAppInfo *pMyAppStruct)
 {
   uint16_t status = NDEF_ERROR;
   uint16_t DataSize;

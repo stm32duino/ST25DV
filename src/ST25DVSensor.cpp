@@ -86,6 +86,16 @@ int ST25DV::readURI(String *s)
 }
 
 /**
+  * @brief  Returns the NDEF class instance used by the component 
+  * @param  None
+  * @retval NDEF class 
+  */
+NDEF ST25DV::getNDEF(void)
+{
+  return ndef;
+}
+
+/**
   * @brief  Initializes peripherals used by the I2C NFCTAG driver
   * @param  None
   * @retval NFCTAG enum status

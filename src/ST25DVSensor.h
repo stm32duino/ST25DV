@@ -37,6 +37,7 @@ class ST25DV : public ST25DV_IO {
     int begin();
     int writeURI(String protocol, String uri, String info);
     int readURI(String *s);
+    NDEF getNDEF();
 
   protected:
     NFCTAG_StatusTypeDef ST25DV_Init(void);

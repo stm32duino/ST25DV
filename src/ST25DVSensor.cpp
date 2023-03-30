@@ -86,9 +86,9 @@ int ST25DV::readURI(String *s)
 }
 
 /**
-  * @brief  Returns the NDEF class instance used by the component 
+  * @brief  Returns the NDEF class instance used by the component
   * @param  None
-  * @retval NDEF class 
+  * @retval NDEF class
   */
 NDEF ST25DV::getNDEF(void)
 {

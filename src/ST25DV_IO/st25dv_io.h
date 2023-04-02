@@ -22,8 +22,7 @@
 #include <Wire.h>
 #include <Stream.h>
 
-#define NDEF_OK                              0x00
-#define ST25DV_OK NDEF_OK
+#define ST25DV_OK                            0
 #define ST25DV_MAX_INSTANCE                  1
 
 /* Exported constants --------------------------------------------------------*/
@@ -660,12 +659,16 @@ class ST25DV_IO {
     NFCTAG_StatusTypeDef ST25DV_IO_IsDeviceReady(const uint8_t DevAddr, const uint32_t Trials);
     NFCTAG_StatusTypeDef NFCTAG_ConvertStatus(uint8_t ret);
 
+    int32_t get_gpo();
+    int32_t get_lpd();
+    TwoWire *get_pwire();
+    Stream *get_pserial();
+
   protected:
     int32_t _gpo;
     int32_t _lpd;
     TwoWire *_pwire;
     Stream *_serial;
-    uint8_t NfctagInitialized = 0;
 };
 
 #endif

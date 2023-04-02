@@ -30,7 +30,7 @@ int ST25DV::begin()
     }
 
     /* Check ST25DV driver ID */
-    ST25DV_i2c_ReadID(&nfctag_id);
+    st25dv_io.ST25DV_i2c_ReadID(&nfctag_id);
 
     if ((nfctag_id == I_AM_ST25DV04) || (nfctag_id == I_AM_ST25DV64) ||
         (nfctag_id == I_AM_ST25DV04KC) || (nfctag_id == I_AM_ST25DV64KC)) {
@@ -39,8 +39,7 @@ int ST25DV::begin()
       return NFCTAG_ERROR;
     }
 
-    ST25DV_IO *dev_cpy = (ST25DV_IO *) this;
-    int ret = ndef.begin(dev_cpy);
+    int ret = ndef.begin();
     if (ret != NDEF_OK) {
       return ret;
     }
@@ -90,9 +89,9 @@ int ST25DV::readURI(String *s)
   * @param  None
   * @retval NDEF class
   */
-NDEF ST25DV::getNDEF(void)
+NDEF *ST25DV::getNDEF(void)
 {
-  return ndef;
+  return &ndef;
 }
 
 /**
@@ -102,7 +101,7 @@ NDEF ST25DV::getNDEF(void)
   */
 NFCTAG_StatusTypeDef ST25DV::ST25DV_Init(void)
 {
-  if (_pwire == NULL) {
+  if (st25dv_io.get_pwire() == NULL) {
     return NFCTAG_ERROR;
   }
 
@@ -122,7 +121,7 @@ NFCTAG_StatusTypeDef ST25DV::ST25DV_Init(void)
   */
 void ST25DV::ST25DV_GPO_Init(void)
 {
-  pinMode(_gpo, INPUT);
+  pinMode(st25dv_io.get_gpo(), INPUT);
 }
 
 /**
@@ -132,7 +131,7 @@ void ST25DV::ST25DV_GPO_Init(void)
   */
 uint8_t ST25DV::ST25DV_GPO_ReadPin(void)
 {
-  return digitalRead(_gpo);
+  return digitalRead(st25dv_io.get_gpo());
 }
 
 /**
@@ -142,9 +141,9 @@ uint8_t ST25DV::ST25DV_GPO_ReadPin(void)
   */
 void ST25DV::ST25DV_LPD_Init(void)
 {
-  if (_lpd > 0) {
-    pinMode(_lpd, OUTPUT);
-    digitalWrite(_lpd, LOW);
+  if (st25dv_io.get_lpd() > 0) {
+    pinMode(st25dv_io.get_lpd(), OUTPUT);
+    digitalWrite(st25dv_io.get_lpd(), LOW);
   }
 }
 
@@ -164,7 +163,7 @@ void ST25DV::ST25DV_LPD_DeInit(void)
   */
 uint8_t ST25DV::ST25DV_LPD_ReadPin(void)
 {
-  return digitalRead(_lpd);
+  return digitalRead(st25dv_io.get_lpd());
 }
 
 /**
@@ -174,7 +173,7 @@ uint8_t ST25DV::ST25DV_LPD_ReadPin(void)
   */
 void ST25DV::ST25DV_LPD_WritePin(uint8_t LpdPinState)
 {
-  digitalWrite(_lpd, LpdPinState);
+  digitalWrite(st25dv_io.get_lpd(), LpdPinState);
 }
 
 /**
@@ -184,7 +183,7 @@ void ST25DV::ST25DV_LPD_WritePin(uint8_t LpdPinState)
   */
 void ST25DV::ST25DV_SelectI2cSpeed(uint8_t i2cspeedchoice)
 {
-  if (_pwire == NULL) {
+  if (st25dv_io.get_pwire() == NULL) {
     return;
   }
 
@@ -192,37 +191,37 @@ void ST25DV::ST25DV_SelectI2cSpeed(uint8_t i2cspeedchoice)
   switch (i2cspeedchoice) {
     case 0:
 
-      _pwire->setClock(10000);
+      st25dv_io.get_pwire()->setClock(10000);
       break;
 
     case 1:
 
-      _pwire->setClock(100000);
+      st25dv_io.get_pwire()->setClock(100000);
       break;
 
     case 2:
 
-      _pwire->setClock(200000);
+      st25dv_io.get_pwire()->setClock(200000);
       break;
 
     case 3:
 
-      _pwire->setClock(400000);
+      st25dv_io.get_pwire()->setClock(400000);
       break;
 
     case 4:
 
-      _pwire->setClock(800000);
+      st25dv_io.get_pwire()->setClock(800000);
       break;
 
     case 5:
 
-      _pwire->setClock(1000000);
+      st25dv_io.get_pwire()->setClock(1000000);
       break;
 
     default:
 
-      _pwire->setClock(1000000);
+      st25dv_io.get_pwire()->setClock(1000000);
       break;
   }
 }
@@ -234,7 +233,7 @@ void ST25DV::ST25DV_SelectI2cSpeed(uint8_t i2cspeedchoice)
   */
 void ST25DV::ST25DV_I2C_Init(void)
 {
-  _pwire->begin();
+  st25dv_io.get_pwire()->begin();
 }
 
 #endif

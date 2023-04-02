@@ -62,12 +62,9 @@
 void NDEF::NDEF_FillGeoStruct(uint8_t *pPayload, uint32_t PayloadSize, sGeoInfo *pGeoStruct)
 {
   uint8_t *pLastByteAdd, *pLook4Word, *pEndString;
-  char *pKeyWord;
-  uint32_t SizeOfKeyWord;
+  const char *pKeyWord = GEO_TYPE_STRING;
+  uint32_t SizeOfKeyWord = GEO_TYPE_STRING_LENGTH;
   pEndString = 0;
-
-  pKeyWord = GEO_TYPE_STRING;
-  SizeOfKeyWord = GEO_TYPE_STRING_LENGTH;
 
   /* First character force to NULL in case not matching found */
   *pGeoStruct->Latitude = 0;

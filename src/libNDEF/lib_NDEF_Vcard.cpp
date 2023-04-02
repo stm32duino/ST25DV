@@ -50,7 +50,7 @@
   * @param  SizeOfKeyWord Number of bytes of the vCard property keyword we are looking for.
   * @param  pString       Pointer on a string used to return the vCard property read.
   */
-void NDEF_FillVcardStruct(uint8_t *pPayload, uint32_t PayloadSize, char *pKeyWord, uint32_t SizeOfKeyWord, uint8_t *pString)
+void NDEF_FillVcardStruct(uint8_t *pPayload, uint32_t PayloadSize, const char *pKeyWord, uint32_t SizeOfKeyWord, uint8_t *pString)
 {
   uint8_t *pLastByteAdd, *pLook4Word, *pEndString;
 
@@ -130,7 +130,7 @@ void NDEF_ExtractVcard(sRecordInfo_t *pRecordStruct, sVcardInfo *pVcardStruct)
   * @retval NDEF_OK     The Vcard information has been retrieved.
   * @retval NDEF_ERROR  Not able to retrieve the Vcard information.
   */
-uint16_t NDEF_ReadVcard(sRecordInfo_t *pRecordStruct, sVcardInfo *pVcardStruct)
+uint16_t NDEF::NDEF_ReadVcard(sRecordInfo_t *pRecordStruct, sVcardInfo *pVcardStruct)
 {
   uint16_t status = NDEF_ERROR;
 
@@ -270,7 +270,7 @@ uint32_t NDEF_GetVcardLength(sVcardInfo *pVcardStruct)
   * @param  pNDEFMessage : pointer on the NDEF message.
   * @param  size : to store the size of the NDEF message generated.
   */
-void NDEF_PrepareVcardMessage(sVcardInfo *pVcardStruct, uint8_t *pNDEFMessage, uint16_t *size)
+void NDEF::NDEF_PrepareVcardMessage(sVcardInfo *pVcardStruct, uint8_t *pNDEFMessage, uint16_t *size)
 {
 
   uint32_t PayloadSize = 0;
@@ -527,7 +527,7 @@ static uint8_t *from_base64(uint8_t *input64, uint32_t *binary)
   * @param  PayloadSize : number of data in the payload.
   * @param  pPict : Pointer on the dpicture buffer (must be big enough to contain the picture - warning: no check is done in the function).
  */
-int NDEF_getVcardPicture(uint8_t *pPayload, uint32_t PayloadSize,  uint8_t *pPict)
+int NDEF::NDEF_getVcardPicture(uint8_t *pPayload, uint32_t PayloadSize,  uint8_t *pPict)
 {
   uint8_t *pSrcPict;
 

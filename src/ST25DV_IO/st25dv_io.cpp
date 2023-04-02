@@ -1991,3 +1991,23 @@ NFCTAG_StatusTypeDef ST25DV_IO::ST25DV_i2c_ReadMBLength_Dyn(uint8_t *const pMBLe
   /* Read actual value of MBLEN_DYN register */
   return ST25DV_i2c_ReadMailboxRegister(pMBLength, ST25DV_MB_LEN_DYN_REG, 1);
 }
+
+int32_t ST25DV_IO::get_gpo()
+{
+  return _gpo;
+}
+
+int32_t ST25DV_IO::get_lpd()
+{
+  return _lpd;
+}
+
+TwoWire *ST25DV_IO::get_pwire()
+{
+  return _pwire;
+}
+
+Stream *ST25DV_IO::get_pserial()
+{
+  return _serial;
+}

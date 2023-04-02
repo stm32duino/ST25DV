@@ -64,12 +64,9 @@
 void NDEF::NDEF_FillSMSStruct(uint8_t *pPayload, uint32_t PayloadSize, sSMSInfo *pSMSStruct)
 {
   uint8_t *pLastByteAdd, *pLook4Word, *pEndString;
-  char *pKeyWord;
-  uint32_t SizeOfKeyWord;
+  const char *pKeyWord = SMS_TYPE_STRING;
+  uint32_t SizeOfKeyWord = SMS_TYPE_STRING_LENGTH;
   pEndString = 0;
-
-  pKeyWord = SMS_TYPE_STRING;
-  SizeOfKeyWord = SMS_TYPE_STRING_LENGTH;
 
   /* First character force to NULL in case not matching found */
   *pSMSStruct->PhoneNumber = 0;

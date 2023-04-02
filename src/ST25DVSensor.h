@@ -30,14 +30,14 @@
   #define WIRE Wire
 #endif
 
-class ST25DV : public ST25DV_IO {
+class ST25DV {
   public:
-    ST25DV(int32_t gpo, int32_t lpd, TwoWire *i2c, Stream *serial = NULL) : ST25DV_IO(gpo, lpd, i2c, serial) {}
+    ST25DV(int32_t gpo, int32_t lpd, TwoWire *i2c, Stream *serial = NULL) : st25dv_io(gpo, lpd, i2c, serial), ndef(&st25dv_io) {}
 
     int begin();
     int writeURI(String protocol, String uri, String info);
     int readURI(String *s);
-    NDEF getNDEF();
+    NDEF *getNDEF();
 
   protected:
     NFCTAG_StatusTypeDef ST25DV_Init(void);
@@ -51,7 +51,9 @@ class ST25DV : public ST25DV_IO {
     void ST25DV_I2C_Init(void);
     void ST25DV_SelectI2cSpeed(uint8_t i2cspeedchoice);
 
+    ST25DV_IO st25dv_io;
     NDEF ndef;
+    uint8_t NfctagInitialized = 0;
 };
 
 #endif

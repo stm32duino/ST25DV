@@ -57,19 +57,19 @@
   * @retval NDEF_ERROR : No NDEF in the tag.
   */
 
-NDEF::NDEF()
+NDEF::NDEF(ST25DV_IO *dev)
 {
+  mydev = dev;
   SPRecordStructAdd[0] = &SPRecordStruct1;
   SPRecordStructAdd[1] = &SPRecordStruct2;
   SPRecordStructAdd[2] = &SPRecordStruct3;
   SPRecordStructAdd[3] = &SPRecordStruct4;
 }
 
-uint16_t NDEF::begin(ST25DV_IO *dev)
+uint16_t NDEF::begin()
 {
   int ret = NDEF_OK;
 
-  mydev = dev;
   if (NfcType5_NDEFDetection() != NDEF_OK) {
     CCFileStruct.MagicNumber = NFCT5_MAGICNUMBER_E1_CCFILE;
     CCFileStruct.Version = NFCT5_VERSION_V1_0;

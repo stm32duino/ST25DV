@@ -55,9 +55,9 @@ typedef struct {
 
 class NDEF {
   public:
-    NDEF();
+    NDEF(ST25DV_IO *dev);
 
-    uint16_t begin(ST25DV_IO *dev);
+    uint16_t begin();
 
     //lib_NDEF
     uint16_t NDEF_IdentifyNDEF(sRecordInfo_t *pRecordStruct, uint8_t *pNDEF);

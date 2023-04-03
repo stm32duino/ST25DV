@@ -60,7 +60,7 @@ You can find the source files at
 https://github.com/stm32duino/ST25DV
 
 The ST25DV datasheets are available at:
-* https://www.st.com/content/st_com/en/products/nfc/st25-nfc-rfid-tags-readers/st25-dynamic-nfc-tags/st25dv-i2c-series-dynamic-nfc-tags/st25dv04k.html
-* https://www.st.com/content/st_com/en/products/nfc/st25-nfc-rfid-tags-readers/st25-dynamic-nfc-tags/st25dv-i2c-series-dynamic-nfc-tags/st25dv64k.html
-* https://www.st.com/en/nfc/st25dv04kc.html
-* https://www.st.com/en/nfc/st25dv64kc.html
+* https://www.st.com/resource/en/datasheet/st25dv04k.pdf
+* https://www.st.com/resource/en/datasheet/st25dv64k.pdf
+* https://www.st.com/resource/en/datasheet/st25dv04kc.pdf
+* https://www.st.com/resource/en/datasheet/st25dv64kc.pdf

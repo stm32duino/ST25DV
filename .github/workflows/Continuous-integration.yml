@@ -1,4 +1,4 @@
-name: X_NUCLEO_53L7A1 Continuous Integration
+name: ST25DV Continuous Integration
 on:
   push:
     branches:
@@ -60,7 +60,6 @@ jobs:
       uses: stm32duino/actions/compile-examples@main
       with:
         board-pattern: "NUCLEO_L476RG"
-        libraries: "STM32duino VL53L7CX"
 
     # Use the output from the `Compilation` step
     - name: Compilation Errors

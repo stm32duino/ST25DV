@@ -26,7 +26,7 @@ It is then possible to read/write NFC URI:
 
 ```cpp
     int writeURI(String protocol, String uri, String info);
-    String readURI();
+    int readURI(String *s);
 ```
 
 

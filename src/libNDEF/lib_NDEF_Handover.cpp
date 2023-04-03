@@ -405,8 +405,7 @@ uint16_t NDEF::NDEF_CreateHandover(Ndef_Handover_t  *pHandover, sRecordInfo_t *p
   */
 uint16_t NDEF::NDEF_AddAlternativeCarrier(Ndef_Handover_alternative_carrier_t *pAC, char *CarrierDataRef, char **AuxDataRefID, sRecordInfo_t *pRecord)
 {
-  /* Specific buffer to prepare the Alternative Carrier record */
-  uint8_t NDEF_AlternativeCarrier_Buffer[NDEF_AC_BUFFER_SIZE];
+  memset(NDEF_AlternativeCarrier_Buffer, 0x0, ((sizeof(uint8_t))*NDEF_AC_BUFFER_SIZE));
 
   /* check that there is enough space in the buffers */
   pAC->ac_record.PayloadLength = NDEF_GetACDataLength(pAC, CarrierDataRef, AuxDataRefID);

@@ -19,46 +19,28 @@
 #ifndef _ST25DVSENSOR_H_
 #define _ST25DVSENSOR_H_
 #include "Arduino.h"
-#include "BSP/st25dv_nfctag.h"
-#include "libNDEF/NDEFcommon.h"
-#include "libNDEF/tagtype5_wrapper.h"
-#include "libNDEF/lib_NDEF_URI.h"
-#include "libNDEF/lib_NDEF_AAR.h"
-#include "libNDEF/lib_NDEF_Bluetooth.h"
-#include "libNDEF/lib_NDEF_Email.h"
-#include "libNDEF/lib_NDEF_Handover.h"
-#include "libNDEF/lib_NDEF_Geo.h"
-#include "libNDEF/lib_NDEF_MyApp.h"
-#include "libNDEF/lib_NDEF_SMS.h"
-#include "libNDEF/lib_NDEF_Text.h"
-#include "libNDEF/lib_NDEF_Vcard.h"
-#include "libNDEF/lib_NDEF_Wifi.h"
 #include <Wire.h>
 #include <Stream.h>
-#include "ST25DV/st25dv.h"
-
-#define ST25DV_OK NDEF_OK
-/**
- * @brief  ST25DV Ack Nack enumerator definition
- */
-typedef enum {
-  I2CANSW_ACK = 0,
-  I2CANSW_NACK
-} ST25DV_I2CANSW_E;
+#include "ST25DV_IO/st25dv_io.h"
+#include "libNDEF/NDEF_class.h"
 
 #if defined(ARDUINO_SAM_DUE)
-#define WIRE Wire1
+  #define WIRE Wire1
 #else
-#define WIRE Wire
+  #define WIRE Wire
 #endif
 
 class ST25DV {
   public:
-    ST25DV(void);
-    int begin(int32_t gpo, int32_t ldp, TwoWire *pwire = &WIRE);
+    ST25DV(int32_t gpo, int32_t lpd, TwoWire *i2c, Stream *serial = NULL) : st25dv_io(gpo, lpd, i2c, serial), ndef(&st25dv_io) {}
+
+    int begin();
     int writeURI(String protocol, String uri, String info);
     int readURI(String *s);
+    NDEF *getNDEF();
 
+  protected:
+    NFCTAG_StatusTypeDef ST25DV_Init(void);
     void ST25DV_GPO_Init(void);
     void ST25DV_GPO_DeInit(void);
     uint8_t ST25DV_GPO_ReadPin(void);
@@ -69,12 +51,9 @@ class ST25DV {
     void ST25DV_I2C_Init(void);
     void ST25DV_SelectI2cSpeed(uint8_t i2cspeedchoice);
 
-    TwoWire *_pwire;
-
-  private:
-    int32_t _gpo;
-    int32_t _lpd;
+    ST25DV_IO st25dv_io;
+    NDEF ndef;
+    uint8_t NfctagInitialized = 0;
 };
 
-extern ST25DV st25dv;
 #endif

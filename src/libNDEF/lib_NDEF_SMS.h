@@ -31,10 +31,6 @@
 #ifndef __LIB_NDEF_SMS_H
 #define __LIB_NDEF_SMS_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /* Includes ------------------------------------------------------------------*/
 #include "lib_NDEF.h"
 
@@ -44,14 +40,6 @@ typedef struct {
   char Message[400];
   char Information[400];
 } sSMSInfo;
-
-uint16_t NDEF_ReadSMS(sRecordInfo_t *pRecordStruct, sSMSInfo *pSMSStruct);
-uint16_t NDEF_WriteSMS(sSMSInfo *pSMSStruct);
-void NDEF_PrepareSMSMessage(sSMSInfo *pSMSStruct, uint8_t *pNDEFMessage, uint16_t *size);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* __LIB_NDEF_SMS_H */
 

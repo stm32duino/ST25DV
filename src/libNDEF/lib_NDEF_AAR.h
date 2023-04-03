@@ -31,10 +31,6 @@
 #ifndef __LIB_NDEF_AAR_H
 #define __LIB_NDEF_AAR_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /* Includes ------------------------------------------------------------------*/
 #include "lib_NDEF.h"
 
@@ -42,11 +38,6 @@ typedef struct {
   char PackageName[80];
 } sAARInfo;
 
-uint16_t NDEF_AddAAR(const sAARInfo *pAARStruct);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* __LIB_NDEF_AAR_H */
 

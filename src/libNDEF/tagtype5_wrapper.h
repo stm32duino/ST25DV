@@ -33,52 +33,14 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "lib_NDEF.h"
+#include "NDEF_class.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 /** @addtogroup Tag_Type_5
   * @{
   */
 
-/* Exported types ------------------------------------------------------------*/
-/**
-  * @brief  Tag Type 5 State enumeration definition.
-  */
-typedef enum {
-  TT5_NO_NDEF = 0,  /**< No data detected in the tag. */
-  TT5_INITIALIZED,  /**< Capability container detected. */
-  TT5_READ_WRITE,   /**< Read-Write data detected. */
-  TT5_READ          /**< Read-Only data message detected. */
-} TT5_State;
 
-/** @brief Type5 Tag Capability Container Magic numbers as defined by the NFC Forum. */
-typedef enum {
-  NFCT5_MAGICNUMBER_E1_CCFILE = 0xE1, /**<  Complete data area can be read by 1-byte block adrdess commands. */
-  NFCT5_MAGICNUMBER_E2_CCFILE = 0xE2  /**<  Last part of the data area can be only read by 2-bytes block address commands.\n
-                                            The first 256 blocks can be read by 1-byte block address commands. */
-} TT5_MagicNumber_t;
 
-/**
-  * @brief  Type5 Tag Capability Container structure.
-  */
-typedef struct {
-  TT5_MagicNumber_t MagicNumber;  /**< CCfile[0]: Magic Number should be E1h or E2h (for extended API) */
-  uint8_t Version;                /**< CCfile[1]: Capability container version (b7-b4) and access conditions (b3-b0) */
-  uint8_t MemorySize;             /**< CCfile[2]: Memory size, expressed in 8 bytes blocks, set to 0 if tag size is greater than 16kbits. */
-  uint8_t TT5Tag;                 /**< CCfile[3]: Additionnal information on the Type5 Tag:\n
-                                                  b0: supports `read multiple block` commands\n
-                                                  b1: RFU\n
-                                                  b2: RFU\n
-                                                  b3: supports `lock block` commands\n
-                                                  b4: requires the `special frame` format
-                                    */
-  uint8_t rsved1;                 /**< RFU */
-  uint8_t rsved2;                 /**< RFU */
-  uint16_t ExtMemorySize;         /**< CCfile[6],CCfile[7]: Memory size, expressed in 8 bytes blocks, when tag size is greater than 16kbits. */
-  TT5_State State;                /**< Indicates if a NDEF message is present. */
-  uint32_t NDEF_offset;           /**< Indicates the address of a NDEF message in the tag. */
-} sCCFileInfo;
 
 /** @brief Type5 Tag Type-Length-Value structure as defined by the NFC Forum */
 typedef struct {
@@ -87,7 +49,7 @@ typedef struct {
   uint16_t  Length16; /**< Message length if greater than or equal to 255 bytes */
 } TT5_TLV_t;
 
-
+/* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
 /** @brief Memory size value indicating that this is a 8-bytes Capability Container */
 #define NFCT5_EXTENDED_CCFILE             0x00
@@ -109,17 +71,9 @@ typedef struct {
 
 /* Exported macro ------------------------------------------------------------*/
 /* External variables --------------------------------------------------------*/
-extern sCCFileInfo CCFileStruct;
+//extern sCCFileInfo CCFileStruct;
 
-/* Exported functions ------------------------------------------------------- */
-uint16_t NfcType5_WriteCCFile(const uint8_t *const pCCBuffer);
-uint16_t NfcType5_ReadCCFile(uint8_t *const pCCBuffer);
-uint16_t NfcType5_TT5Init(void);
-uint16_t NfcType5_NDEFDetection(void);
 
-#ifdef __cplusplus
-}
-#endif
 #endif /* __TAGTYPE5_WRAPPER_H */
 
 /* @}

@@ -29,6 +29,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "lib_NDEF_Text.h"
+#include "NDEF_class.h"
 
 /** @addtogroup NFC_libraries
   * @{
@@ -46,7 +47,7 @@
 /**
   * @brief  This buffer contains the data send/received by TAG
   */
-extern uint8_t NDEF_Buffer [];
+//extern uint8_t NDEF_Buffer [];
 
 /**
   * @}
@@ -67,7 +68,7 @@ extern uint8_t NDEF_Buffer [];
   * @retval NDEF_ERROR_MEMORY_TAG : Size not compatible with memory.
   * @retval NDEF_ERROR_LOCKED : Tag locked, cannot be write.
   */
-uint16_t NDEF_WriteText(char *text)
+uint16_t NDEF::NDEF_WriteText(char *text)
 {
   uint16_t status = NDEF_ERROR;
   uint32_t textSize, Offset = 0;
@@ -117,7 +118,7 @@ uint16_t NDEF_WriteText(char *text)
   * @retval NDEF_ERROR                 The record is not a Text record.
   * @retval NDEF_ERROR_MEMORY_INTERNAL Language code or Text length is too big for the buffers.
   */
-uint16_t NDEF_ReadText(sRecordInfo_t *pRecordStruct, NDEF_Text_info_t *pText)
+uint16_t NDEF::NDEF_ReadText(sRecordInfo_t *pRecordStruct, NDEF_Text_info_t *pText)
 {
   uint16_t status = NDEF_ERROR;
 

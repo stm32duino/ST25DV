@@ -28,6 +28,7 @@
   */
 /* Includes ------------------------------------------------------------------*/
 #include "lib_NDEF_AAR.h"
+#include "NDEF_class.h"
 
 /** @addtogroup NFC_libraries
  *  @{
@@ -42,10 +43,6 @@
   * @brief  This part of the library manage data which follow NFC forum organisation.
   */
 
-/**
- * @brief  This buffer contains the data send/received by TAG
- */
-extern uint8_t NDEF_Buffer [];
 
 /** @defgroup libAAR_Private_Functions
   * @{
@@ -71,7 +68,7 @@ extern uint8_t NDEF_Buffer [];
   * @retval NDEF_ERROR_MEMORY_TAG : Size not compatible with memory.
   * @retval NDEF_ERROR_LOCKED : Tag locked, cannot be write.
   */
-uint16_t NDEF_AddAAR(const sAARInfo *pAARStruct)
+uint16_t NDEF::NDEF_AddAAR(const sAARInfo *pAARStruct)
 {
   uint16_t status = NDEF_ERROR;
 

@@ -33,13 +33,8 @@
 
 /* Includes ------------------------------------------------------------------*/
 /* include file which match the HW configuration */
-#include "lib_wrapper.h"
+#include "NDEFcommon.h"
 #include <string.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 
 #define NDEF_ACTION_COMPLETED       0x9000
 
@@ -253,19 +248,6 @@ struct sRecordInfo {
   uint8_t NbOfRecordInSPPayload;
 };
 
-uint16_t NDEF_IdentifyNDEF(sRecordInfo_t *pRecordStruct, uint8_t *pNDEF);
-uint16_t NDEF_IdentifyBuffer(sRecordInfo_t *pRecordStruct, uint8_t *pNDEF);
-uint16_t NDEF_ReadNDEF(uint8_t *pNDEF);
-uint16_t NDEF_WriteNDEF(uint16_t NDEF_Size, uint8_t *pNDEF);
-uint16_t NDEF_ClearNDEF(void);
-uint16_t NDEF_getNDEFSize(uint16_t *Size);
-uint32_t NDEF_WriteRecord(sRecordInfo_t *pRecord, uint8_t *pNDEF);
-uint16_t NDEF_AppendRecord(sRecordInfo_t  *Record);
-uint32_t NDEF_GetRecordLength(sRecordInfo_t *pRecord);
-
-#ifdef __cplusplus
-}
-#endif
 #endif /* __LIB_NDEF_H */
 
 

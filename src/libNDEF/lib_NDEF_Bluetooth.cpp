@@ -30,6 +30,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "lib_NDEF_Bluetooth.h"
+#include "NDEF_class.h"
 
 
 
@@ -38,11 +39,11 @@
   * @{
   * @brief    This module is used to manage a Bluetooth Out-Of-Band NDEF message, to start a communication based on Bluetooth.
   * @details  The Bluetooth OOB format is described by the Bluetooth v4.0 core specification.
-  *           It consists in a list of Extended Inquiry Responses formated as length-type-value.
+  *           It consists in a list of Extended Inquiry Responses formatted as length-type-value.
   *           This module allows to build, write & read such data embedded in a NDEF message.
   * @section      Bluetooth_Library_Usage Bluetooth NDEF Library usage
   * @subsection   Bluetooth_Write_BrEdr How to write a Bluetooth Br/Edr OOB
-  *               1. Instanciate & initialize a `Ndef_Bluetooth_OOB_t` structure, specifying:
+  *               1. Instantiate & initialize a `Ndef_Bluetooth_OOB_t` structure, specifying:
   *                 - the `NDEF_BLUETOOTH_BREDR` type.
   *                 - the mandatory Device Address field.
   *                 - any other optional EIRs.
@@ -63,7 +64,7 @@
   *                      NDEF_AppendBluetoothOOB ( &w_bredr_oob, NULL );
   *                 @note Second parameter of `NDEF_AppendBluetoothOOB` can be used to specify an ID for the OOB record (useful for the NDEF Handover message, where specifying an ID is mandatory)
   * @subsection   Bluetooth_Write_Ble How to write a Bluetooth LE OOB
-  *               1. Instanciate & initialize a `Ndef_Bluetooth_OOB_t` structure, specifying:
+  *               1. Instantiate & initialize a `Ndef_Bluetooth_OOB_t` structure, specifying:
   *                 - the `NDEF_BLUETOOTH_BLE` type.
   *                 - the mandatory Device Address & LE Role fields.
   *                 - any other optional EIRs.
@@ -92,7 +93,7 @@
   *
   *                       Ndef_Bluetooth_OOB_t bluetooth_oob;
   *                       NDEF_ReadBluetoothOOB(&record,&bluetooth_oob);
-  *               3. Use the data from the `Ndef_Bluetooth_OOB_t` structure to start a Bluetooth connexion.
+  *               3. Use the data from the `Ndef_Bluetooth_OOB_t` structure to start a Bluetooth connection.
   *
   *
   *
@@ -100,13 +101,13 @@
 
 
 /**
-  * @brief  This function copies an array, changing its endianness, usefull to convert data to BLE endianess.
+  * @brief  This function copies an array, changing its endianness, useful to convert data to BLE endianness.
   * @param  dst Pointer on 1st element of the destination array.
   * @param  src pointer on 1st element of the source array .
   * @param  length Number of element to copy.
   * @return Pointer to the destination array.
   */
-uint8_t *NDEF_BluetoothCopy(uint8_t *dst, uint8_t *src, uint32_t length)
+uint8_t *NDEF::NDEF_BluetoothCopy(uint8_t *dst, uint8_t *src, uint32_t length)
 {
   uint32_t index;
   for (index = 0 ; index < length; index++) {
@@ -122,7 +123,7 @@ uint8_t *NDEF_BluetoothCopy(uint8_t *dst, uint8_t *src, uint32_t length)
   * @retval NDEF_OK       OOB information has been retrieved from the NDEF record.
   * @retval NDEF_ERROR    OOB information cannot be retrieved.
   */
-uint16_t NDEF_ReadBluetoothOOB(sRecordInfo_t *pRecord, Ndef_Bluetooth_OOB_t *pBluetooth)
+uint16_t NDEF::NDEF_ReadBluetoothOOB(sRecordInfo_t *pRecord, Ndef_Bluetooth_OOB_t *pBluetooth)
 {
   uint8_t *pData = pRecord->PayloadBufferAdd;
   uint8_t *OOBEnd = pRecord->PayloadBufferAdd + pRecord->PayloadLength;
@@ -278,7 +279,7 @@ uint16_t NDEF_ReadBluetoothOOB(sRecordInfo_t *pRecord, Ndef_Bluetooth_OOB_t *pBl
   * @retval NDEF_ERROR_MEMORY_INTERNAL  The Bluetooth OOB record cannot be appended due to memory size limitation.
   * @retval NDEF_ERROR                  The Bluetooth OOB record cannot be appended.
   */
-uint16_t NDEF_AppendBluetoothOOB(Ndef_Bluetooth_OOB_t *pBluetooth, char *RecordID)
+uint16_t NDEF::NDEF_AppendBluetoothOOB(Ndef_Bluetooth_OOB_t *pBluetooth, char *RecordID)
 {
   sRecordInfo_t Record;
   uint16_t status;
@@ -505,7 +506,7 @@ uint16_t NDEF_AppendBluetoothOOB(Ndef_Bluetooth_OOB_t *pBluetooth, char *RecordI
   * @param  pBluetooth Pointer on a `Ndef_Bluetooth_OOB_t` structure containing the OOB information.
   * @return Computed length in bytes.
   */
-uint32_t NDEF_GetBluetoothOOBLength(Ndef_Bluetooth_OOB_t *pBluetooth)
+uint32_t NDEF::NDEF_GetBluetoothOOBLength(Ndef_Bluetooth_OOB_t *pBluetooth)
 {
   uint32_t length = (pBluetooth->Type == NDEF_BLUETOOTH_BREDR) ? sizeof(pBluetooth->DeviceAddress) + 2 : 0; // +2 is for BR/EDR mandatory length
   length += NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_FLAGS) ? sizeof(pBluetooth->Flags) + 2    : 0 ;

@@ -31,10 +31,6 @@
 #ifndef __LIB_NDEF_WIFIT_H
 #define __LIB_NDEF_WIFIT_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /* Includes ------------------------------------------------------------------*/
 #include "lib_NDEF.h"
 
@@ -68,7 +64,7 @@ extern "C" {
 
 /**
   * @brief Network key to be used when the Authentication is set to None.
-  *  Althought WPS defines a 0 length network key in such case,
+  *  Although WPS defines a 0 length network key in such case,
   *  with tested phones a 8 digit value is required.
   */
 #define NDEF_WIFI_DEFAULT_NETWORK_KEY                       "00000000"
@@ -100,17 +96,9 @@ typedef struct {
 } sWifiTokenInfo;
 
 
-uint16_t NDEF_ReadWifiToken(struct sRecordInfo *pRecordStruct, sWifiTokenInfo *pWifiTokenStruct);
-uint16_t NDEF_WriteWifiToken(sWifiTokenInfo *pWifiTokenStruct);
-
 /**
   * @}
   */
-
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* __LIB_NDEF_WIFIT_H */
 

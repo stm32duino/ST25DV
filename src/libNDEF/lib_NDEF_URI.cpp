@@ -28,6 +28,7 @@
   */
 /* Includes ------------------------------------------------------------------*/
 #include "lib_NDEF_URI.h"
+#include "NDEF_class.h"
 
 /** @addtogroup NFC_libraries
   * @{
@@ -45,20 +46,19 @@
 /**
   * @brief  This buffer contains the data send/received by TAG
   */
-extern uint8_t NDEF_Buffer [];
+//extern uint8_t NDEF_Buffer [];
 
 /** @defgroup libURI_Private_Functions
   * @{
   */
 
-static void NDEF_Parse_WellKnowType(sRecordInfo_t *pRecordStruct, sURI_Info *pURI);
 
 /**
   * @brief  This function read the URI information and store data in a structure.
   * @param  pRecordStruct : Pointer on the record structure.
   * @param  pURI : pointer on the structure to fill.
   */
-static void NDEF_Parse_WellKnowType(sRecordInfo_t *pRecordStruct, sURI_Info *pURI)
+void NDEF::NDEF_Parse_WellKnowType(sRecordInfo_t *pRecordStruct, sURI_Info *pURI)
 {
   uint32_t PayloadSize;
   uint8_t Offset;
@@ -276,7 +276,7 @@ static void NDEF_Parse_WellKnowType(sRecordInfo_t *pRecordStruct, sURI_Info *pUR
   * @retval NDEF_OK : URI information from NDEF have been retrieved.
   * @retval NDEF_ERROR : Not able to retrieve URI information.
   */
-uint16_t NDEF_ReadURI(sRecordInfo_t *pRecordStruct, sURI_Info *pURI)
+uint16_t NDEF::NDEF_ReadURI(sRecordInfo_t *pRecordStruct, sURI_Info *pURI)
 {
   uint16_t status = NDEF_ERROR;
   sRecordInfo_t *pSPRecordStruct;
@@ -298,7 +298,7 @@ uint16_t NDEF_ReadURI(sRecordInfo_t *pRecordStruct, sURI_Info *pURI)
 
         /* The instruction content the UTF-8 language code that is not used here */
         pData = (uint8_t *)pSPRecordStruct->PayloadBufferAdd;
-        PayloadSize -= *pData + 1; /* remove not usefull data */
+        PayloadSize -= *pData + 1; /* remove not useful data */
         pData += *pData + 1;
 
         memcpy(pURI->Information, pData, PayloadSize);
@@ -317,7 +317,7 @@ uint16_t NDEF_ReadURI(sRecordInfo_t *pRecordStruct, sURI_Info *pURI)
   * @param  pNDEFMessage : pointer on the NDEF message.
   * @param  size : to store the size of the NDEF message generated.
   */
-void NDEF_PrepareURIMessage(sURI_Info *pURI, uint8_t *pNDEFMessage, uint16_t *size)
+void NDEF::NDEF_PrepareURIMessage(sURI_Info *pURI, uint8_t *pNDEFMessage, uint16_t *size)
 {
   uint32_t uriSize, totalSize, Offset = 0;
   uint32_t infoSize = 0;
@@ -348,10 +348,10 @@ void NDEF_PrepareURIMessage(sURI_Info *pURI, uint8_t *pNDEFMessage, uint16_t *si
   /*               ID                 */  /* <---- Not Used  */
   /************************************/
 
-  /* We need to know the URI type in order to define if an abreviation is available */
+  /* We need to know the URI type in order to define if an abbreviation is available */
   type = getUriType(pURI->protocol);
 
-  /* URI : 1+URI for abreviate protocol*/
+  /* URI : 1+URI for abbreviate protocol*/
   if (type != URI_ID_0x00) {
     uriSize = 1 + strlen(pURI->URI_Message);
   } else { /*: 1+protocol+URI else*/
@@ -411,7 +411,7 @@ void NDEF_PrepareURIMessage(sURI_Info *pURI, uint8_t *pNDEFMessage, uint16_t *si
   Offset += URI_TYPE_STRING_LENGTH;
 
   pNDEFMessage[Offset++] = type;
-  if (type == URI_ID_0x00) { // No abreviation
+  if (type == URI_ID_0x00) { // No abbreviation
     memcpy(&pNDEFMessage[Offset], pURI->protocol, strlen(pURI->protocol));
     Offset += strlen(pURI->protocol);
   }
@@ -458,7 +458,7 @@ void NDEF_PrepareURIMessage(sURI_Info *pURI, uint8_t *pNDEFMessage, uint16_t *si
   * @retval NDEF_ERROR_MEMORY_TAG : Size not compatible with memory.
   * @retval NDEF_ERROR_LOCKED : Tag locked, cannot be write.
   */
-uint16_t NDEF_WriteURI(sURI_Info *pURI)
+uint16_t NDEF::NDEF_WriteURI(sURI_Info *pURI)
 {
   uint16_t status = NDEF_ERROR, Offset = 0;
 
@@ -469,7 +469,7 @@ uint16_t NDEF_WriteURI(sURI_Info *pURI)
   return status;
 }
 
-char getUriType(char *protocol)
+char NDEF::getUriType(char *protocol)
 {
   if (!memcmp(protocol, URI_ID_0x01_STRING, strlen(URI_ID_0x01_STRING))) {
     return URI_ID_0x01;
@@ -542,7 +542,7 @@ char getUriType(char *protocol)
   } else if (!memcmp(protocol, URI_ID_0x23_STRING, strlen(URI_ID_0x23_STRING))) {
     return URI_ID_0x23;
   } else {
-    return URI_ID_0x00;  // No abreviation for this protocol
+    return URI_ID_0x00;  // No abbreviation for this protocol
   }
 }
 

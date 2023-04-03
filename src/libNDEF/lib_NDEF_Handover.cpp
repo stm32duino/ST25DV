@@ -29,10 +29,11 @@
   */
 /* Includes ------------------------------------------------------------------*/
 #include "lib_NDEF_Handover.h"
+#include "NDEF_class.h"
 
 /** @addtogroup lib_NDEF_Handover NDEF Handover library
   * @ingroup libNDEF
-  * @brief  This module is used to manage the NDEF Handover messages, to negociate the switch to a non-nfc protocol of communication.
+  * @brief  This module is used to manage the NDEF Handover messages, to negotiate the switch to a non-nfc protocol of communication.
   * @details
   *          The NDEF Handover process is described by the NFC Forum Connection Handover specification.
   *          It consists in a specific NDEF message construct, as:
@@ -56,7 +57,7 @@
   *          @subsection Static_Handover Static Handover
   *          The Static Handover is used when a device is only equipped with a NFC Tag (no peer-to-peer) to directly propose a set of Alternative Carriers (ACs: bluetooth, wifi,...)
   *          without running the full handover request-select process.\n
-  *          The Handover Select record use in that case is similar to the one used during a regular Handover negociation.\n
+  *          The Handover Select record use in that case is similar to the one used during a regular Handover negotiation.\n
   *          1. Declare & initialize an instance of `Ndef_Handover_t`, such as:
   *
   *                 Ndef_Handover_t wHandover = {.type = NDEF_HANDOVER_SELECT_TYPE, .version = NDEF_HANDOVER_VERSION_1_2};
@@ -130,7 +131,7 @@
   *                   }
   *                   // Process this AC (Extract OOB/or whatever data), and decide if this Carrier is supported or not.
   *                 }
-  *          4. Choose the prefered Carrier and write a Handover Select record with the prefered AC as described in the @ref Static_Handover section.
+  *          4. Choose the preferred Carrier and write a Handover Select record with the preferred AC as described in the @ref Static_Handover section.
   * @{
   */
 
@@ -144,7 +145,7 @@
   * @retval NDEF_OK     The Auxiliary Data record has been retrieved.
   * @retval NDEF_ERROR  Not able to find the Auxiliary Data in the NDEF message.
   */
-uint16_t NDEF_ReadAuxData(uint8_t aux_data_nb, Ndef_Handover_alternative_carrier_t *pAC, sRecordInfo_t *pRecord)
+uint16_t NDEF::NDEF_ReadAuxData(uint8_t aux_data_nb, Ndef_Handover_alternative_carrier_t *pAC, sRecordInfo_t *pRecord)
 {
   uint16_t status;
   uint8_t *pData = pAC->aux_data_ref_start;
@@ -204,7 +205,7 @@ uint16_t NDEF_ReadAuxData(uint8_t aux_data_nb, Ndef_Handover_alternative_carrier
   * @retval NDEF_OK     The Alternative Carrier record has been retrieved.
   * @retval NDEF_ERROR  Not able to find the Alternative Carrier in the NDEF message.
   */
-uint16_t NDEF_ReadAC(uint8_t ac_nb, Ndef_Handover_t *pHandover, Ndef_Handover_alternative_carrier_t *pAC)
+uint16_t NDEF::NDEF_ReadAC(uint8_t ac_nb, Ndef_Handover_t *pHandover, Ndef_Handover_alternative_carrier_t *pAC)
 {
   uint16_t status;
   uint8_t *pData = pHandover->ac_start;
@@ -283,7 +284,7 @@ uint16_t NDEF_ReadAC(uint8_t ac_nb, Ndef_Handover_t *pHandover, Ndef_Handover_al
   * @retval NDEF_OK       Handover information has been retrieved from the record.
   * @retval NDEF_ERROR    Not able to read the Handover information from the record.
   */
-uint16_t NDEF_ReadHandover(sRecordInfo_t *pRecord,  Ndef_Handover_t *pHandover)
+uint16_t NDEF::NDEF_ReadHandover(sRecordInfo_t *pRecord,  Ndef_Handover_t *pHandover)
 {
   uint16_t status;
   uint8_t *pData = pRecord->PayloadBufferAdd;
@@ -359,7 +360,7 @@ uint16_t NDEF_ReadHandover(sRecordInfo_t *pRecord,  Ndef_Handover_t *pHandover)
   * @retval NDEF_OK     The record has been prepared.
   * @retval NDEF_ERROR  The record has not been prepared.
   */
-uint16_t NDEF_CreateHandover(Ndef_Handover_t  *pHandover, sRecordInfo_t *pRecord)
+uint16_t NDEF::NDEF_CreateHandover(Ndef_Handover_t  *pHandover, sRecordInfo_t *pRecord)
 {
   uint16_t status = NDEF_ERROR;
 
@@ -386,7 +387,7 @@ uint16_t NDEF_CreateHandover(Ndef_Handover_t  *pHandover, sRecordInfo_t *pRecord
   pRecord->PayloadLength = sizeof(pHandover->version);
   *pRecord->PayloadBufferAdd = pHandover->version;
 
-  /* Don't write the record for now, additionnal Alternative Carriers to come as nested records. */
+  /* Don't write the record for now, additional Alternative Carriers to come as nested records. */
 
   return status;
 }
@@ -402,7 +403,7 @@ uint16_t NDEF_CreateHandover(Ndef_Handover_t  *pHandover, sRecordInfo_t *pRecord
   * @retval NDEF_ERROR                  The Handover record cannot be updated with the AC information.
   * @retval NDEF_ERROR_MEMORY_INTERNAL  The internal buffer for records is too small to add the AC information.
   */
-uint16_t NDEF_AddAlternativeCarrier(Ndef_Handover_alternative_carrier_t *pAC, char *CarrierDataRef, char **AuxDataRefID, sRecordInfo_t *pRecord)
+uint16_t NDEF::NDEF_AddAlternativeCarrier(Ndef_Handover_alternative_carrier_t *pAC, char *CarrierDataRef, char **AuxDataRefID, sRecordInfo_t *pRecord)
 {
   /* Specific buffer to prepare the Alternative Carrier record */
   uint8_t NDEF_AlternativeCarrier_Buffer[NDEF_AC_BUFFER_SIZE];
@@ -459,7 +460,7 @@ uint16_t NDEF_AddAlternativeCarrier(Ndef_Handover_alternative_carrier_t *pAC, ch
   * @param  AuxDataRefID    Array with the Auxiliary Data References (as many as defined in the pAC structure).
   * @return The computed length in bytes corresponding to the provided Alternative Carrier information.
   */
-uint32_t NDEF_GetACDataLength(Ndef_Handover_alternative_carrier_t *pAC, char *CarrierDataRef, char **AuxDataRefID)
+uint32_t NDEF::NDEF_GetACDataLength(Ndef_Handover_alternative_carrier_t *pAC, char *CarrierDataRef, char **AuxDataRefID)
 {
   uint8_t AuxDataIndex;
 
@@ -488,7 +489,7 @@ uint32_t NDEF_GetACDataLength(Ndef_Handover_alternative_carrier_t *pAC, char *Ca
   * @retval NDEF_ERROR_MEMORY_TAG Size not compatible with memory.
   * @retval NDEF_ERROR_LOCKED Tag locked, cannot be write.
   */
-uint16_t NDEF_WriteHandover(sRecordInfo_t *pRecord, uint8_t *pNdef)
+uint16_t NDEF::NDEF_WriteHandover(sRecordInfo_t *pRecord, uint8_t *pNdef)
 {
   /* Note: in case of Handover Select for no matching alternative carrier, the ME bit flag must be set by the caller */
 

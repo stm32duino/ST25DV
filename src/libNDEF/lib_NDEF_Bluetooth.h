@@ -31,10 +31,6 @@
 #ifndef __LIB_NDEF_BLUETOOTH_H
 #define __LIB_NDEF_BLUETOOTH_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /* Includes ------------------------------------------------------------------*/
 #include "lib_NDEF.h"
 
@@ -54,7 +50,7 @@ typedef enum {
                                                               b0: LE limited Discoverable Mode,\n
                                                               b1: LE general Discoverable Mode,\n
                                                               b2: BR/EDR not supported,\n
-                                                              b3: Simultaneous LE & BR/EDR Conroller,\n
+                                                              b3: Simultaneous LE & BR/EDR Controller,\n
                                                               b4: Simultaneous LE & BR/EDR Host
                                                           */
   BLUETOOTH_EIR_SERVICE_CLASS_UUID_PARTIAL_16   = 0x02, /**< Bluetooth service UUID on 16-bits (partial list) */
@@ -82,7 +78,7 @@ typedef enum {
   BLUETOOTH_EIR_SERVICE_DATA                    = 0x16, /**< Service Data (2 or more octets): The first 2 octets contain the 16 bit Service UUID followed by additional service data */
   BLUETOOTH_EIR_APPEARANCE                      = 0x19, /**< UUID for `Appearance`: The Appearance characteristic value shall be the enumerated value as defined by Bluetooth Assigned Numbers document. */
   BLUETOOTH_EIR_BLE_DEVICE_ADDRESS              = 0x1B, /**< 6 LSB bytes: Device address, 7th byte: Address type (Public/Random) */
-  BLUETOOTH_EIR_BLE_ROLE                        = 0x1C, /**< Device Role: Periph only, Central only, Periph prefered, Central prefered */
+  BLUETOOTH_EIR_BLE_ROLE                        = 0x1C, /**< Device Role: Periph only, Central only, Periph preferred, Central preferred */
   BLUETOOTH_EIR_MANUFACTURER_DATA               = 0xFF  /**< Manufacturer Specific Data (2 or more octets): The first 2 octets contain the Company Identifier Code followed by additional manufacturer specific data */
 } Ndef_Bluetooth_Eir_Types_t;
 
@@ -145,16 +141,16 @@ typedef struct {
   /* Mandatory fields */
   Ndef_Bluetooth_type_t   Type;                               /**< *Mandatory*: Bluetooth type (Br/Edr or LE). */
   char                    DeviceAddress[6];                   /**< *Mandatory*: Device address. For LE: 6 LSB of Device Address EIR. */
-  /* Optionnal common fields */
+  /* Optional common fields */
   uint32_t                OptionalMask;                       /**< This Mask is used to keep track of EIRs present in the OOB: each bit index corresponds to a `Ndef_Bluetooth_Eir_Types_t` value. */
   uint8_t                 Flags;                              /**< Flags from BLUETOOTH_EIR_FLAGS. */
 
   uint16_t                ClassUUID16[0xff / 2];              /**< UUIDs from BLUETOOTH_EIR_SERVICE_CLASS_UUID_PARTIAL_16 or BLUETOOTH_EIR_SERVICE_CLASS_UUID_COMPLETE_16. */
   uint32_t                ClassUUID32[0xff / 4];              /**< UUIDs from BLUETOOTH_EIR_SERVICE_CLASS_UUID_PARTIAL_32 or BLUETOOTH_EIR_SERVICE_CLASS_UUID_COMPLETE_32. */
   uint32_t                ClassUUID128[0xff / 16][4];         /**< UUIDs from BLUETOOTH_EIR_SERVICE_CLASS_UUID_PARTIAL_128 or BLUETOOTH_EIR_SERVICE_CLASS_UUID_COMPLETE_128. */
-  uint8_t                 nbUUID16;                           /**< Number of UUIDs speficied in ClassUUID16. */
-  uint8_t                 nbUUID32;                           /**< Number of UUIDs speficied in ClassUUID32. */
-  uint8_t                 nbUUID128;                          /**< Number of UUIDs speficied in ClassUUID128. */
+  uint8_t                 nbUUID16;                           /**< Number of UUIDs specified in ClassUUID16. */
+  uint8_t                 nbUUID32;                           /**< Number of UUIDs specified in ClassUUID32. */
+  uint8_t                 nbUUID128;                          /**< Number of UUIDs specified in ClassUUID128. */
 
   char                    LocalName[0xff];                    /**< Device local name from BLUETOOTH_EIR_SHORT_LOCAL_NAME or BLUETOOTH_EIR_COMPLETE_LOCAL_NAME. */
   uint8_t                 DeviceClass[3];                     /**< Class of device from BLUETOOTH_EIR_DEVICE_CLASS. */
@@ -190,15 +186,6 @@ typedef  struct {
   uint8_t type;     /**< EIR type as defined in `Ndef_Bluetooth_Eir_Types_t`. */
   uint8_t value[1]; /**< single-element array, to keep track of the address of the EIR data */
 }  NDEF_EIR_t ;
-
-uint16_t NDEF_ReadBluetoothOOB(sRecordInfo_t *pRecordStruct, Ndef_Bluetooth_OOB_t *pBluetooth);
-uint16_t NDEF_AppendBluetoothOOB(Ndef_Bluetooth_OOB_t *pBluetooth, char *RecordID);
-void NDEF_PrepareBluetoothMessage(Ndef_Bluetooth_OOB_t  *pBluetooth, uint8_t *pNDEFMessage, uint16_t *size);
-uint32_t NDEF_GetBluetoothOOBLength(Ndef_Bluetooth_OOB_t *pBluetooth);
-
-#ifdef __cplusplus
-}
-#endif
 
 /** @}
   */

@@ -31,10 +31,6 @@
 #ifndef __LIB_NDEF_HANDOVER_H
 #define __LIB_NDEF_HANDOVER_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /* Includes ------------------------------------------------------------------*/
 #include "lib_NDEF.h"
 
@@ -59,7 +55,7 @@ extern "C" {
 /** @brief NFC Forum Handover record implemented version */
 #define NDEF_HANDOVER_VERSION_1_2           0x12
 
-/** @brief NFC Forum Well-Known Type name for a Colision Resolution record */
+/** @brief NFC Forum Well-Known Type name for a Collision Resolution record */
 #define NDEF_HANDOVER_COLLISION_RESOLUTION_TYPE_STR     "cr"
 /** @brief NFC Forum Well-Known Type name for an Alternative Carrier record */
 #define NDEF_HANDOVER_ALTERNATIVE_CARRIER_TYPE_STR      "ac"
@@ -96,23 +92,6 @@ typedef struct {
   uint8_t  *ac_start;                               /**< Internal field, managed by the library, to keep track of the Alternative Carrier Reference Data start address in the Handover record. */
   uint8_t  *ac_end;                                 /**< Internal field, managed by the library, to keep track of the Alternative Carrier Reference Data end address in the Handover record. */
 } Ndef_Handover_t;
-
-
-
-uint16_t NDEF_ReadHandover(sRecordInfo_t *pRecord,  Ndef_Handover_t *pHandover);
-uint16_t NDEF_ReadAC(uint8_t ac_nb, Ndef_Handover_t *pHandover, Ndef_Handover_alternative_carrier_t *pAC);
-uint16_t NDEF_ReadAuxData(uint8_t aux_data_nb, Ndef_Handover_alternative_carrier_t *pAC, sRecordInfo_t *pRecord);
-
-uint16_t NDEF_CreateHandover(Ndef_Handover_t  *pHandover, sRecordInfo_t *pRecord);
-uint16_t NDEF_AddAlternativeCarrier(Ndef_Handover_alternative_carrier_t *pAC, char *CarrierDataRef, char **AuxDataRefID, sRecordInfo_t *pRecord);
-uint16_t NDEF_WriteHandover(sRecordInfo_t *pRecord, uint8_t *pNdef);
-
-uint32_t NDEF_GetACDataLength(Ndef_Handover_alternative_carrier_t *pAC, char *CarrierDataRef, char **AuxDataRefID);
-
-
-#ifdef __cplusplus
-}
-#endif
 
 /** @}
   */

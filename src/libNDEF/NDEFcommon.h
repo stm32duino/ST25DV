@@ -52,7 +52,7 @@ typedef struct {
 
 /* Exported macro ------------------------------------------------------------*/
 #ifndef MIN
-#define MIN(x, y) (((x) < (y)) ? (x) : (y))
+  #define MIN(x, y) (((x) < (y)) ? (x) : (y))
 #endif
 
 /*

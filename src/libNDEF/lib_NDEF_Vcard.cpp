@@ -29,6 +29,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "lib_NDEF_Vcard.h"
+#include "NDEF_class.h"
 
 
 /** @addtogroup lib_NDEF_Vcard
@@ -38,10 +39,8 @@
   */
 
 /*  This buffer contains the data sent/received by TAG */
-extern uint8_t NDEF_Buffer [];
+//extern uint8_t NDEF_Buffer [];
 
-static void NDEF_FillVcardStruct(uint8_t *pPayload, uint32_t PayloadSize, char *pKeyWord, uint32_t SizeOfKeyWord, uint8_t *pString);
-static void NDEF_ExtractVcard(sRecordInfo_t *pRecordStruct, sVcardInfo *pVcardStruct);
 
 /**
   * @brief  This function extracts a Vcard particular property from a vCard.
@@ -51,14 +50,14 @@ static void NDEF_ExtractVcard(sRecordInfo_t *pRecordStruct, sVcardInfo *pVcardSt
   * @param  SizeOfKeyWord Number of bytes of the vCard property keyword we are looking for.
   * @param  pString       Pointer on a string used to return the vCard property read.
   */
-static void NDEF_FillVcardStruct(uint8_t *pPayload, uint32_t PayloadSize, char *pKeyWord, uint32_t SizeOfKeyWord, uint8_t *pString)
+void NDEF_FillVcardStruct(uint8_t *pPayload, uint32_t PayloadSize, const char *pKeyWord, uint32_t SizeOfKeyWord, uint8_t *pString)
 {
   uint8_t *pLastByteAdd, *pLook4Word, *pEndString;
 
   /* First character force to NULL in case not matching found */
   *pString = 0;
 
-  /* Interresting information are stored before picture if any */
+  /* Interesting information are stored before picture if any */
   /* Moreover picture is not used in this demonstration SW */
   pLastByteAdd = pPayload;
   while (memcmp(pLastByteAdd, JPEG, JPEG_STRING_SIZE) && (pLastByteAdd < (pPayload + PayloadSize))) {
@@ -91,7 +90,7 @@ static void NDEF_FillVcardStruct(uint8_t *pPayload, uint32_t PayloadSize, char *
   * @param  pRecordStruct Pointer on the vCard record structure.
   * @param  pVcardStruct  Pointer on the `sCardInfo` structure to fill.
   */
-static void NDEF_ExtractVcard(sRecordInfo_t *pRecordStruct, sVcardInfo *pVcardStruct)
+void NDEF_ExtractVcard(sRecordInfo_t *pRecordStruct, sVcardInfo *pVcardStruct)
 {
   uint32_t PayloadSize;
   uint8_t *pPayload;
@@ -131,7 +130,7 @@ static void NDEF_ExtractVcard(sRecordInfo_t *pRecordStruct, sVcardInfo *pVcardSt
   * @retval NDEF_OK     The Vcard information has been retrieved.
   * @retval NDEF_ERROR  Not able to retrieve the Vcard information.
   */
-uint16_t NDEF_ReadVcard(sRecordInfo_t *pRecordStruct, sVcardInfo *pVcardStruct)
+uint16_t NDEF::NDEF_ReadVcard(sRecordInfo_t *pRecordStruct, sVcardInfo *pVcardStruct)
 {
   uint16_t status = NDEF_ERROR;
 
@@ -153,7 +152,7 @@ uint16_t NDEF_ReadVcard(sRecordInfo_t *pRecordStruct, sVcardInfo *pVcardStruct)
   * @retval NDEF_ERROR_MEMORY_TAG       Size not compatible with memory.
   * @retval NDEF_ERROR_LOCKED           Tag locked, cannot be write.
   */
-uint16_t NDEF_WriteVcard(sVcardInfo *pVcardStruct)
+uint16_t NDEF::NDEF_WriteVcard(sVcardInfo *pVcardStruct)
 {
   uint16_t status = NDEF_ERROR, Offset = 0;
 
@@ -271,7 +270,7 @@ uint32_t NDEF_GetVcardLength(sVcardInfo *pVcardStruct)
   * @param  pNDEFMessage : pointer on the NDEF message.
   * @param  size : to store the size of the NDEF message generated.
   */
-void NDEF_PrepareVcardMessage(sVcardInfo *pVcardStruct, uint8_t *pNDEFMessage, uint16_t *size)
+void NDEF::NDEF_PrepareVcardMessage(sVcardInfo *pVcardStruct, uint8_t *pNDEFMessage, uint16_t *size)
 {
 
   uint32_t PayloadSize = 0;
@@ -315,7 +314,7 @@ void NDEF_PrepareVcardMessage(sVcardInfo *pVcardStruct, uint8_t *pNDEFMessage, u
     pNDEFMessage[2] = length >> 24;
     memcpy(&pNDEFMessage[6], XVCARD_TYPE_STRING, XVCARD_TYPE_STRING_LENGTH);
 
-    /* Payload is positionned in the NDEF after record header */
+    /* Payload is positioned in the NDEF after record header */
     PayloadSize = 6 + XVCARD_TYPE_STRING_LENGTH;
   } else {
     pNDEFMessage[0] = 0xD2;   /* Record Flag */
@@ -323,7 +322,7 @@ void NDEF_PrepareVcardMessage(sVcardInfo *pVcardStruct, uint8_t *pNDEFMessage, u
     pNDEFMessage[2] =  length;
     memcpy(&pNDEFMessage[3], XVCARD_TYPE_STRING, XVCARD_TYPE_STRING_LENGTH);
 
-    /* Payload is positionned in the NDEF after record header */
+    /* Payload is positioned in the NDEF after record header */
     PayloadSize = 3 + XVCARD_TYPE_STRING_LENGTH;
   }
 
@@ -528,7 +527,7 @@ static uint8_t *from_base64(uint8_t *input64, uint32_t *binary)
   * @param  PayloadSize : number of data in the payload.
   * @param  pPict : Pointer on the dpicture buffer (must be big enough to contain the picture - warning: no check is done in the function).
  */
-int NDEF_getVcardPicture(uint8_t *pPayload, uint32_t PayloadSize,  uint8_t *pPict)
+int NDEF::NDEF_getVcardPicture(uint8_t *pPayload, uint32_t PayloadSize,  uint8_t *pPict)
 {
   uint8_t *pSrcPict;
 

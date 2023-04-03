@@ -30,6 +30,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "lib_NDEF_Wifi.h"
+#include "NDEF_class.h"
 #define ATTRIBUTE_ID_SSID_LSB                                               0X10
 #define ATTRIBUTE_ID_SSID_MSB                                               0X45
 
@@ -42,7 +43,7 @@
   * @ingroup  libNDEF
   * @brief    This module is used to manage a Wifi Out-Of-Band NDEF message, to start a communication based on Wifi.
   * @details  The Wifi OOB format is described by the Wifi Protected Setup specification.
-  *           It consists in a list of data elements formated as type-length-value.
+  *           It consists in a list of data elements formatted as type-length-value.
   *           This module allows to build, write & read such data embedded in a NDEF message.
   * @section  Wifi_Library_Usage Wifi NDEF library usage
   * @subsection  Write_Wifi_OOB How to write a Wifi OOB
@@ -61,7 +62,7 @@
                   - Version2
 
                 To write a Wifi OOB, the user must:
-                1. Instanciate & initialize a `sWifiTokenInfo` structure, such as:
+                1. Instantiate & initialize a `sWifiTokenInfo` structure, such as:
 
                        sWifiTokenInfo wps_oob = {.NetworkSSID        = "MY_SSID",
                                                  .AuthenticationType = NDEF_WIFI_AUTHENTICATION_NONE,
@@ -91,11 +92,9 @@
   */
 
 /* This buffer contains the data send/received by the TAG */
-extern uint8_t NDEF_Buffer [NDEF_MAX_SIZE];
+//extern uint8_t NDEF_Buffer [NDEF_MAX_SIZE];
 
 
-static void NDEF_FillWifiTokenStruct(uint8_t *pPayload, uint32_t PayloadSize, sWifiTokenInfo *pWifiTokenStruct);
-static void NDEF_Read_WifiToken(struct sRecordInfo *pRecordStruct, sWifiTokenInfo *pWifiTokenStruct);
 
 /**
   * @brief  This function fills a WifiToken structure with information from the NDEF message.
@@ -104,7 +103,7 @@ static void NDEF_Read_WifiToken(struct sRecordInfo *pRecordStruct, sWifiTokenInf
   * @param  pWifiTokenStruct pointer on the structure to fill.
   * @retval NONE
   */
-static void NDEF_FillWifiTokenStruct(uint8_t *pPayload, uint32_t PayloadSize, sWifiTokenInfo *pWifiTokenStruct)
+void NDEF::NDEF_FillWifiTokenStruct(uint8_t *pPayload, uint32_t PayloadSize, sWifiTokenInfo *pWifiTokenStruct)
 {
   uint8_t *pLastByteAdd, data1, data2, *temp, *temp_br ;
   uint16_t SSIDLen, NetWorkKeyLen;
@@ -159,12 +158,12 @@ static void NDEF_FillWifiTokenStruct(uint8_t *pPayload, uint32_t PayloadSize, sW
 }
 
 /**
-  * @brief  This fonction reads the WifiToken and store data in a structure.
+  * @brief  This function reads the WifiToken and store data in a structure.
   * @param  pRecordStruct Pointer on the record structure.
   * @param  pWifiTokenStruct Pointer on the structure to fill.
   * @retval NONE
   */
-static void NDEF_Read_WifiToken(struct sRecordInfo *pRecordStruct, sWifiTokenInfo *pWifiTokenStruct)
+void NDEF::NDEF_Read_WifiToken(struct sRecordInfo *pRecordStruct, sWifiTokenInfo *pWifiTokenStruct)
 {
   uint8_t *pPayload;
   uint32_t PayloadSize;
@@ -182,13 +181,13 @@ static void NDEF_Read_WifiToken(struct sRecordInfo *pRecordStruct, sWifiTokenInf
 
 
 /**
-  * @brief  This fonction reads a NDEF record and retrieves a WifiToken information if any.
+  * @brief  This function reads a NDEF record and retrieves a WifiToken information if any.
   * @param  pRecordStruct Pointer on the record structure.
   * @param  pWifiTokenStruct Pointer on a `sWifiTokenInfo` structure to fill with the WifiToken information.
   * @retval NDEF_OK WifiToken information from NDEF have been retrieved.
   * @retval NDEF_ERROR Not able to retrieve the WifiToken information.
   */
-uint16_t NDEF_ReadWifiToken(struct sRecordInfo *pRecordStruct, sWifiTokenInfo *pWifiTokenStruct)
+uint16_t NDEF::NDEF_ReadWifiToken(struct sRecordInfo *pRecordStruct, sWifiTokenInfo *pWifiTokenStruct)
 {
   uint16_t status = NDEF_ERROR;
 
@@ -202,12 +201,12 @@ uint16_t NDEF_ReadWifiToken(struct sRecordInfo *pRecordStruct, sWifiTokenInfo *p
 
 
 /**
-  * @brief  This fonction writes a NDEF message built with the WifiToken data given in the structure.
+  * @brief  This function writes a NDEF message built with the WifiToken data given in the structure.
   * @param  pWifiTokenStruct Pointer on the structure containing the WifiToken information.
   * @retval NDEF_OK The NDEF message has been successfully written.
   * @retval NDEF_ERROR Not able to store the NDEF message inside the tag.
   */
-uint16_t NDEF_WriteWifiToken(sWifiTokenInfo *pWifiTokenStruct)
+uint16_t NDEF::NDEF_WriteWifiToken(sWifiTokenInfo *pWifiTokenStruct)
 {
   uint16_t status = NDEF_ERROR;
   uint8_t *pPayload, initStage = 0;
@@ -273,7 +272,7 @@ uint16_t NDEF_WriteWifiToken(sWifiTokenInfo *pWifiTokenStruct)
   const uint32_t CONFIG_TOKEN_3 = sizeof(configToken3);
   const uint32_t CONFIG_TOKEN_5 = sizeof(configToken5);
 
-  /* Update Token3 for Autentication & Encryption Types, their default value is coded in token3 */
+  /* Update Token3 for Authentication & Encryption Types, their default value is coded in token3 */
   configToken3[CONFIG_TOKEN_3_AUTHENTICATION_TYPE_INDEX] = pWifiTokenStruct->AuthenticationType & 0xFF;
   configToken3[CONFIG_TOKEN_3_ENCRYPTION_TYPE_INDEX] = pWifiTokenStruct->EncryptionType & 0xFF;
 

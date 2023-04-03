@@ -32,7 +32,7 @@
 #include "lib_NDEF_Bluetooth.h"
 #include "lib_NDEF_Handover.h"
 #include "lib_NDEF_Wifi.h"
-
+#include "NDEF_class.h"
 /** @addtogroup NFC_libraries
  *  @{
  *  @brief  <b>This is the library used to manage the content of the TAG (data)
@@ -51,34 +51,37 @@
   */
 
 
-static uint16_t NDEF_IsNDEFPresent(void);
-static uint16_t NDEF_ParseRecordHeader(sRecordInfo_t *pRecordStruct);
-static void NDEF_ParseWellKnownType(sRecordInfo_t *pRecordStruct);
-static void NDEF_ParseMediaType(sRecordInfo_t *pRecordStruct);
-static void NDEF_ParseForumExternalType(sRecordInfo_t *pRecordStruct);
-static void NDEF_ParseURI(sRecordInfo_t *pRecordStruct);
-static void NDEF_ParseSP(sRecordInfo_t *pRecordStruct);
-static uint16_t NDEF_IdentifySPRecord(sRecordInfo_t *pRecordStruct, uint8_t *pPayload);
-
-/** @brief This buffer is used to store the data sent/received by the TAG. */
-uint8_t NDEF_Buffer [NDEF_MAX_SIZE];
-/** @brief Size of the buffer used to build the NDEF messages. */
-uint32_t NDEF_Buffer_size = NDEF_MAX_SIZE;
-/** @brief This buffer is used when it's required to prepare a record before adding it to the NDEF_Buffer. */
-uint8_t NDEF_Record_Buffer [NDEF_RECORD_MAX_SIZE];
-/** @brief Size of the buffer used when a record has to be prepared. */
-uint32_t NDEF_Record_Buffer_size = NDEF_RECORD_MAX_SIZE;
-
-/* In case of smart Poster composed with different record, 3 records supported so far */
-sRecordInfo_t SPRecordStruct1, SPRecordStruct2, SPRecordStruct3, SPRecordStruct4;
-sRecordInfo_t *SPRecordStructAdd[SP_MAX_RECORD] = { &SPRecordStruct1, &SPRecordStruct2, &SPRecordStruct3, &SPRecordStruct4 };
-
 /**
   * @brief  This function checks that the tag contain a NDEF message.
   * @retval NDEF_OK : There is a NDEF file stored in tag.
   * @retval NDEF_ERROR : No NDEF in the tag.
   */
-static uint16_t NDEF_IsNDEFPresent(void)
+
+NDEF::NDEF(ST25DV_IO *dev)
+{
+  mydev = dev;
+  SPRecordStructAdd[0] = &SPRecordStruct1;
+  SPRecordStructAdd[1] = &SPRecordStruct2;
+  SPRecordStructAdd[2] = &SPRecordStruct3;
+  SPRecordStructAdd[3] = &SPRecordStruct4;
+}
+
+uint16_t NDEF::begin()
+{
+  int ret = NDEF_OK;
+
+  if (NfcType5_NDEFDetection() != NDEF_OK) {
+    CCFileStruct.MagicNumber = NFCT5_MAGICNUMBER_E1_CCFILE;
+    CCFileStruct.Version = NFCT5_VERSION_V1_0;
+    CCFileStruct.MemorySize = (ST25DV_MAX_SIZE / 8) & 0xFF;
+    CCFileStruct.TT5Tag = 0x05;
+    /* Init of the Type Tag 5 component (M24LR) */
+    ret = NfcType5_TT5Init();
+  }
+  return ret;
+}
+
+uint16_t NDEF::NDEF_IsNDEFPresent(void)
 {
   uint16_t FileSize;
 
@@ -98,7 +101,7 @@ static uint16_t NDEF_IsNDEFPresent(void)
   * @param  pPayload : pointer on the payload.
   * @retval Status : Status of the operation.
   */
-static uint16_t NDEF_IdentifySPRecord(sRecordInfo_t *pRecordStruct, uint8_t *pPayload)
+uint16_t NDEF::NDEF_IdentifySPRecord(sRecordInfo_t *pRecordStruct, uint8_t *pPayload)
 {
   uint16_t status = NDEF_ERROR;
   uint16_t SizeOfRecordHeader, TypeNbByte, PayloadLengthField, IDLengthField, IDNbByte;
@@ -166,7 +169,7 @@ static uint16_t NDEF_IdentifySPRecord(sRecordInfo_t *pRecordStruct, uint8_t *pPa
   * @retval NDEF_OK : record identified and structure filled.
   * @retval NDEF_ERROR : Not supported.
   */
-static uint16_t NDEF_ParseRecordHeader(sRecordInfo_t *pRecordStruct)
+uint16_t NDEF::NDEF_ParseRecordHeader(sRecordInfo_t *pRecordStruct)
 {
   uint16_t status = NDEF_OK;
 
@@ -195,7 +198,7 @@ static uint16_t NDEF_ParseRecordHeader(sRecordInfo_t *pRecordStruct)
   * @brief  This function parse the Well Known type record.
   * @param  pRecordStruct : pointer on the record structure to fill.
   */
-static void NDEF_ParseWellKnownType(sRecordInfo_t *pRecordStruct)
+void NDEF::NDEF_ParseWellKnownType(sRecordInfo_t *pRecordStruct)
 {
   uint8_t *pPayload;
 
@@ -238,7 +241,7 @@ static void NDEF_ParseWellKnownType(sRecordInfo_t *pRecordStruct)
   * @brief  This function parse the Media type record.
   * @param  pRecordStruct : pointer on the record structure to fill.
   */
-static void NDEF_ParseMediaType(sRecordInfo_t *pRecordStruct)
+void NDEF::NDEF_ParseMediaType(sRecordInfo_t *pRecordStruct)
 {
   if (!memcmp(&(pRecordStruct->Type), VCARD_TYPE_STRING, pRecordStruct->TypeLength)) {
     pRecordStruct->NDEF_Type = VCARD_TYPE;
@@ -261,7 +264,7 @@ static void NDEF_ParseMediaType(sRecordInfo_t *pRecordStruct)
   * @brief  This function parse the Forum External type record.
   * @param  pRecordStruct : pointer on the record structure to fill.
   */
-static void NDEF_ParseForumExternalType(sRecordInfo_t *pRecordStruct)
+void NDEF::NDEF_ParseForumExternalType(sRecordInfo_t *pRecordStruct)
 {
   if (!memcmp(&(pRecordStruct->Type), M24SR_DISCOVERY_APP_STRING, pRecordStruct->TypeLength)) {
     pRecordStruct->NDEF_Type = M24SR_DISCOVERY_APP_TYPE;
@@ -274,7 +277,7 @@ static void NDEF_ParseForumExternalType(sRecordInfo_t *pRecordStruct)
   * @brief  This function parse the URI type record.
   * @param  pRecordStruct : pointer on the record structure to fill.
   */
-static void NDEF_ParseURI(sRecordInfo_t *pRecordStruct)
+void NDEF::NDEF_ParseURI(sRecordInfo_t *pRecordStruct)
 {
   uint8_t *pPayload;
 
@@ -294,7 +297,7 @@ static void NDEF_ParseURI(sRecordInfo_t *pRecordStruct)
   * @brief  This function parse the Smart Poster.
   * @param  pRecordStruct : pointer on the record structure to fill.
   */
-static void NDEF_ParseSP(sRecordInfo_t *pRecordStruct)
+void NDEF::NDEF_ParseSP(sRecordInfo_t *pRecordStruct)
 {
   uint8_t *pPayload;
   uint32_t PayloadSize = 0;
@@ -303,14 +306,14 @@ static void NDEF_ParseSP(sRecordInfo_t *pRecordStruct)
   uint32_t RecordPosition = 0;
   sRecordInfo_t *pSPRecordStruct;
 
-  /* initialize variable with size of the payload and poiter on data */
+  /* initialize variable with size of the payload and pointer on data */
   PayloadSize = pRecordStruct->PayloadLength;
 
   pPayload = (uint8_t *)(pRecordStruct->PayloadBufferAdd);
 
   pSPRecordStruct = SPRecordStructAdd[0];
 
-  /* Initailize the number of record find in the SP payload */
+  /* Initialize the number of record find in the SP payload */
   pRecordStruct->NbOfRecordInSPPayload = 0;
 
   do {
@@ -349,7 +352,7 @@ static void NDEF_ParseSP(sRecordInfo_t *pRecordStruct)
   * @retval NDEF_OK : record struct filled.
   * @retval NDEF_ERROR : record struct not updated.
   */
-uint16_t NDEF_IdentifyNDEF(sRecordInfo_t *pRecordStruct, uint8_t *pNDEF)
+uint16_t NDEF::NDEF_IdentifyNDEF(sRecordInfo_t *pRecordStruct, uint8_t *pNDEF)
 {
   uint16_t SizeOfRecordHeader, TypeNbByte, PayloadLengthField, IDLengthField, IDNbByte;
 
@@ -431,7 +434,7 @@ uint16_t NDEF_IdentifyNDEF(sRecordInfo_t *pRecordStruct, uint8_t *pNDEF)
   * @retval NDEF_ERROR_MEMORY_TAG : Size not compatible with memory.
   * @retval NDEF_ERROR_LOCKED : Tag locked, cannot be read.
   */
-uint16_t NDEF_ReadNDEF(uint8_t *pNDEF)
+uint16_t NDEF::NDEF_ReadNDEF(uint8_t *pNDEF)
 {
   return NfcTag_ReadNDEF(pNDEF);
 }
@@ -448,7 +451,7 @@ uint16_t NDEF_ReadNDEF(uint8_t *pNDEF)
   * @retval NDEF_ERROR_MEMORY_TAG : Size not compatible with memory.
   * @retval NDEF_ERROR_LOCKED : Tag locked, cannot be read.
   */
-uint16_t NDEF_getNDEFSize(uint16_t *Size)
+uint16_t NDEF::NDEF_getNDEFSize(uint16_t *Size)
 {
   return NfcTag_GetLength(Size);
 }
@@ -462,7 +465,7 @@ uint16_t NDEF_getNDEFSize(uint16_t *Size)
   * @retval NDEF_ERROR_MEMORY_TAG : Size not compatible with memory.
   * @retval NDEF_ERROR_LOCKED : Tag locked, cannot be write.
   */
-uint16_t NDEF_WriteNDEF(uint16_t NDEF_Size, uint8_t *pNDEF)
+uint16_t NDEF::NDEF_WriteNDEF(uint16_t NDEF_Size, uint8_t *pNDEF)
 {
   return NfcTag_WriteNDEF(NDEF_Size, pNDEF);
 
@@ -478,7 +481,7 @@ uint16_t NDEF_WriteNDEF(uint16_t NDEF_Size, uint8_t *pNDEF)
   * @retval NDEF_ERROR_MEMORY_TAG : Size not compatible with memory.
   * @retval NDEF_ERROR_LOCKED : Tag locked, cannot be write.
   */
-uint16_t NDEF_AppendRecord(sRecordInfo_t  *Record)
+uint16_t NDEF::NDEF_AppendRecord(sRecordInfo_t  *Record)
 {
   uint16_t status;
   uint16_t NDEF_Size = 0;
@@ -529,7 +532,7 @@ uint16_t NDEF_AppendRecord(sRecordInfo_t  *Record)
   * @retval NDEF_OK : record struct filled.
   * @retval NDEF_ERROR : record struct not updated.
   */
-uint16_t NDEF_IdentifyBuffer(sRecordInfo_t *pRecordStruct, uint8_t *pNDEF)
+uint16_t NDEF::NDEF_IdentifyBuffer(sRecordInfo_t *pRecordStruct, uint8_t *pNDEF)
 {
   uint16_t SizeOfRecordHeader, TypeNbByte, PayloadLengthField, IDLengthField, IDNbByte;
 
@@ -667,7 +670,7 @@ uint32_t NDEF_WriteRecord(sRecordInfo_t *pRecord, uint8_t *pNDEF)
   * @param  pRecord : Structure with record information
   * @retval Length : Length of the data (in bytes)
   */
-uint32_t NDEF_GetRecordLength(sRecordInfo_t *pRecord)
+uint32_t NDEF::NDEF_GetRecordLength(sRecordInfo_t *pRecord)
 {
   // start by considering payload length
   if (pRecord->PayloadLength <= 0xFF) {
@@ -692,7 +695,7 @@ uint32_t NDEF_GetRecordLength(sRecordInfo_t *pRecord)
   * @brief  This function clears the NDEF file
   * @retval NDEF Status
   */
-uint16_t NDEF_ClearNDEF(void)
+uint16_t NDEF::NDEF_ClearNDEF(void)
 {
   return NDEF_WriteNDEF(0, NULL);
 }

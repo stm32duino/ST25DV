@@ -1,0 +1,70 @@
+name: X_NUCLEO_53L7A1 Continuous Integration
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '*'
+      - '**.md'
+      - '**.txt'
+  pull_request:
+    paths-ignore:
+      - '*'
+      - '**.md'
+      - '**.txt'
+jobs:
+  astyle_check:
+    runs-on: ubuntu-latest
+    name: AStyle check
+    steps:
+    # First of all, clone the repo using the checkout action.
+    - name: Checkout
+      uses: actions/checkout@main
+
+    - name: Astyle check
+      id: Astyle
+      uses: stm32duino/actions/astyle-check@main
+
+    # Use the output from the `Astyle` step
+    - name: Astyle Errors
+      if: failure()
+      run: |
+        cat ${{ steps.Astyle.outputs.astyle-result }}
+        exit 1
+  codespell:
+    name: Check for spelling errors
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@main
+
+    # See: https://github.com/codespell-project/actions-codespell/blob/master/README.md
+    - name: Spell check
+      uses: codespell-project/actions-codespell@master
+      with:
+        check_filenames: true
+        check_hidden: true
+        # In the event of a false positive, add the word in all lower case to this file:
+        ignore_words_file: ./extras/codespell-ignore-words-list.txt
+  lib_build:
+    runs-on: ubuntu-latest
+    name: Library compilation
+    steps:
+
+    # First of all, clone the repo using the checkout action.
+    - name: Checkout
+      uses: actions/checkout@main
+
+    - name: Compilation
+      id: compile
+      uses: stm32duino/actions/compile-examples@main
+      with:
+        board-pattern: "NUCLEO_L476RG"
+        libraries: "STM32duino VL53L7CX"
+
+    # Use the output from the `Compilation` step
+    - name: Compilation Errors
+      if: failure()
+      run: |
+        cat ${{ steps.compile.outputs.compile-result }}
+        exit 1

@@ -18,7 +18,7 @@ It is then required to call begin API:
 Or you can make your own instance of the component
 ```cpp
     TwoWire MyWire(SDA_PIN, SCL_PIN);
-    ST25DV st25dv(gpo_pin, lpd_pin, MyWire, MySerial);
+    ST25DV st25dv(gpo_pin, lpd_pin, &MyWire);
 ```
 
 

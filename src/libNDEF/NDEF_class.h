@@ -190,6 +190,8 @@ class NDEF {
     uint8_t NDEF_Record_Buffer [NDEF_RECORD_MAX_SIZE];
     /** @brief Size of the buffer used when a record has to be prepared. */
     uint32_t NDEF_Record_Buffer_size = NDEF_RECORD_MAX_SIZE;
+    /* Specific buffer to prepare the Alternative Carrier record */
+    uint8_t NDEF_AlternativeCarrier_Buffer[NDEF_AC_BUFFER_SIZE];
 
     /* In case of smart Poster composed with different record, 3 records supported so far */
     sRecordInfo_t SPRecordStruct1;

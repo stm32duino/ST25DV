@@ -42,7 +42,7 @@
 #define VCARD_VERSION_3_0_SIZE        3
 
 
-#define BEGIN                         "BEGIN:"
+#define VCARD_BEGIN                   "BEGIN:"
 #define VCARD                         "VCARD"
 #define VERSION                       "VERSION:"
 #define VCARD_NAME                     "N:"
@@ -60,12 +60,12 @@
 #define TITLE                         "TITLE:"
 #define ORG                           "ORG:"
 #define URL                           "URL:"
-#define END                           "END:"
+#define VCARD_END                     "END:"
 #define JPEG                          "JPEG"
 
 #define LIMIT                         "\r\n"
 
-#define BEGIN_STRING_SIZE             6
+#define VCARD_BEGIN_STRING_SIZE       6
 #define VCARD_STRING_SIZE             5
 #define VERSION_STRING_SIZE           8
 #define VCARD_NAME_STRING_SIZE        2
@@ -81,7 +81,7 @@
 #define TITLE_STRING_SIZE             6
 #define ORG_STRING_SIZE               4
 #define URL_STRING_SIZE               4
-#define END_STRING_SIZE               4
+#define VCARD_END_STRING_SIZE         4
 #define JPEG_STRING_SIZE              4
 
 #define LIMIT_STRING_SIZE             2

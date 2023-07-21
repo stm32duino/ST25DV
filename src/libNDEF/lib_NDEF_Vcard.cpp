@@ -174,7 +174,7 @@ uint32_t NDEF_GetVcardLength(sVcardInfo *pVcardStruct)
   uint32_t PayloadSize = 0;
 
   /* "BEGIN:VCARD\r\n" */
-  PayloadSize += BEGIN_STRING_SIZE;
+  PayloadSize += VCARD_BEGIN_STRING_SIZE;
   PayloadSize += VCARD_STRING_SIZE;
   PayloadSize += LIMIT_STRING_SIZE;
 
@@ -256,7 +256,7 @@ uint32_t NDEF_GetVcardLength(sVcardInfo *pVcardStruct)
     PayloadSize += LIMIT_STRING_SIZE;
   }
   /* "END:VCARD\r\n" */
-  PayloadSize += END_STRING_SIZE;
+  PayloadSize += VCARD_END_STRING_SIZE;
   PayloadSize += VCARD_STRING_SIZE;
   /* PayloadSize += LIMIT_STRING_SIZE;*/
 
@@ -327,8 +327,8 @@ void NDEF::NDEF_PrepareVcardMessage(sVcardInfo *pVcardStruct, uint8_t *pNDEFMess
   }
 
   /* "BEGIN:VCARD\r\n" */
-  memcpy(&pNDEFMessage[PayloadSize], BEGIN, BEGIN_STRING_SIZE);
-  PayloadSize += BEGIN_STRING_SIZE;
+  memcpy(&pNDEFMessage[PayloadSize], VCARD_BEGIN, VCARD_BEGIN_STRING_SIZE);
+  PayloadSize += VCARD_BEGIN_STRING_SIZE;
   memcpy(&pNDEFMessage[PayloadSize], VCARD, VCARD_STRING_SIZE);
   PayloadSize += VCARD_STRING_SIZE;
   memcpy(&pNDEFMessage[PayloadSize], LIMIT, LIMIT_STRING_SIZE);
@@ -460,8 +460,8 @@ void NDEF::NDEF_PrepareVcardMessage(sVcardInfo *pVcardStruct, uint8_t *pNDEFMess
   }
 
   /* "END:VCARD\r\n" */
-  memcpy(&pNDEFMessage[PayloadSize], END, END_STRING_SIZE);
-  PayloadSize += END_STRING_SIZE;
+  memcpy(&pNDEFMessage[PayloadSize], VCARD_END, VCARD_END_STRING_SIZE);
+  PayloadSize += VCARD_END_STRING_SIZE;
   memcpy(&pNDEFMessage[PayloadSize], VCARD, VCARD_STRING_SIZE);
   PayloadSize += VCARD_STRING_SIZE;
   //  memcpy( &pNDEFMessage[PayloadSize], LIMIT, LIMIT_STRING_SIZE );

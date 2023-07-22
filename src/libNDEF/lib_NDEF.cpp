@@ -364,64 +364,7 @@ uint16_t NDEF::NDEF_IdentifyNDEF(sRecordInfo_t *pRecordStruct, uint8_t *pNDEF)
   /* Read the NDEF file */
   NfcTag_ReadNDEF(pNDEF);
 
-  /* Is ID length field present */
-  if ((*pNDEF) & IL_Mask) {
-    IDLengthField = ID_LENGTH_FIELD;
-  } else {
-    IDLengthField = 0;
-  }
-
-  /* it's a SR */
-  if ((*pNDEF) & SR_Mask) {
-    /* Analyse short record layout */
-    TypeNbByte = pNDEF[1];
-    PayloadLengthField = 1;
-    if (IDLengthField == ID_LENGTH_FIELD) {
-      IDNbByte = pNDEF[3];
-    } else {
-      IDNbByte = 0;
-    }
-  } else {
-    /* Analyse normal record layout */
-    TypeNbByte = pNDEF[1];
-    PayloadLengthField = 4;
-    if (IDLengthField == ID_LENGTH_FIELD) {
-      IDNbByte = pNDEF[6];
-    } else {
-      IDNbByte = 0;
-    }
-  }
-
-  SizeOfRecordHeader = RECORD_FLAG_FIELD + TYPE_LENGTH_FIELD + PayloadLengthField + IDLengthField + TypeNbByte + IDNbByte;
-
-  /* Read record header */
-  /* it's a SR */
-  if (pNDEF[0] & SR_Mask) {
-    pRecordStruct->RecordFlags = pNDEF[0];
-    pRecordStruct->TypeLength = TypeNbByte;
-    pRecordStruct->PayloadLength = pNDEF[2];
-    pRecordStruct->IDLength = IDNbByte;
-    memcpy(pRecordStruct->Type, &pNDEF[3 + IDNbByte], TypeNbByte);
-    memcpy(pRecordStruct->ID, &pNDEF[3 + IDNbByte + TypeNbByte], IDNbByte);
-    pRecordStruct->PayloadOffset = SizeOfRecordHeader;
-  } else {
-    pRecordStruct->RecordFlags = pNDEF[0];
-    pRecordStruct->TypeLength = TypeNbByte;
-    pRecordStruct->PayloadLength = (((uint32_t)pNDEF[2]) << 24) |
-                                   (((uint32_t)pNDEF[3]) << 16) |
-                                   (((uint32_t)pNDEF[4]) << 8)
-                                   | pNDEF[5] ;
-    pRecordStruct->IDLength = IDNbByte;
-    memcpy(pRecordStruct->Type, &pNDEF[6 + IDNbByte], TypeNbByte);
-    memcpy(pRecordStruct->ID, &pNDEF[6 + IDNbByte + TypeNbByte], IDNbByte);
-    pRecordStruct->PayloadOffset = SizeOfRecordHeader;
-  }
-
-  pRecordStruct->PayloadBufferAdd = &pNDEF[pRecordStruct->PayloadOffset];
-
-  NDEF_ParseRecordHeader(pRecordStruct);
-
-  return NDEF_OK;
+  return NDEF_IdentifyBuffer(pRecordStruct, pNDEF);
 }
 
 /**

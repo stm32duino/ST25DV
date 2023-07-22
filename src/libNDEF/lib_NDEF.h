@@ -209,7 +209,7 @@
 #define URI_ID_0x23_STRING          "urn:nfc:\0"
 
 // exported variables
-extern uint8_t NDEF_Buffer[NDEF_MAX_SIZE];
+extern uint8_t* NDEF_Buffer;
 extern uint32_t NDEF_Buffer_size;
 extern uint8_t NDEF_Record_Buffer [NDEF_RECORD_MAX_SIZE];
 extern uint32_t NDEF_Record_Buffer_size;

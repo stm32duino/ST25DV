@@ -21,6 +21,11 @@
 
 int ST25DV::begin()
 {
+  return begin(NULL, 0);
+}
+
+int ST25DV::begin(uint8_t* buffer, uint16_t bufferLength)
+{
   uint8_t nfctag_id = 0;
 
   if (!NfctagInitialized) {
@@ -39,13 +44,13 @@ int ST25DV::begin()
       return NFCTAG_ERROR;
     }
 
-    int ret = ndef.begin();
+    int ret = ndef.begin(buffer, bufferLength);
     if (ret != NDEF_OK) {
       return ret;
     }
   }
   return NFCTAG_OK;
-}
+};
 
 int ST25DV::writeURI(String protocol, String uri, String info)
 {

@@ -68,7 +68,21 @@ NDEF::NDEF(ST25DV_IO *dev)
 
 uint16_t NDEF::begin()
 {
+  return begin(NULL, 0);
+}
+
+uint16_t NDEF::begin(uint8_t* buffer, uint16_t bufferLength)
+{
   int ret = NDEF_OK;
+
+  if (buffer == NULL) {
+    NDEF_Buffer = NDEF_Default_Buffer;
+    NDEF_Buffer_size = NDEF_MAX_SIZE;
+  } else {
+    // TODO should we check minimum buffer length?
+    NDEF_Buffer = buffer;
+    NDEF_Buffer_size = bufferLength;
+  }
 
   if (NfcType5_NDEFDetection() != NDEF_OK) {
     CCFileStruct.MagicNumber = NFCT5_MAGICNUMBER_E1_CCFILE;

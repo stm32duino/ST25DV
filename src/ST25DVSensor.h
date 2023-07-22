@@ -35,6 +35,7 @@ class ST25DV {
     ST25DV(int32_t gpo, int32_t lpd, TwoWire *i2c, Stream *serial = NULL) : st25dv_io(gpo, lpd, i2c, serial), ndef(&st25dv_io) {}
 
     int begin();
+    int begin(uint8_t* buffer, uint16_t bufferLength);
     int writeURI(String protocol, String uri, String info);
     int readURI(String *s);
     NDEF *getNDEF();

@@ -417,7 +417,7 @@ uint16_t NDEF::NDEF_IdentifyNDEF(sRecordInfo_t *pRecordStruct, uint8_t *pNDEF)
     pRecordStruct->PayloadOffset = SizeOfRecordHeader;
   }
 
-  pRecordStruct->PayloadBufferAdd = pNDEF;
+  pRecordStruct->PayloadBufferAdd = &pNDEF[pRecordStruct->PayloadOffset];
 
   NDEF_ParseRecordHeader(pRecordStruct);
 

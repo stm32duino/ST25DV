@@ -344,6 +344,30 @@ void NDEF::NDEF_ParseSP(sRecordInfo_t *pRecordStruct)
   * @{
   */
 
+/**
+  * @brief  This function identify the NDEF message stored in tag.
+  * @param  pRecordStruct : Structure to fill with record information.
+  * @param  pNDEF : pointer on the NDEF message data.
+  * @retval NDEF_OK : record struct filled.
+  * @retval NDEF_ERROR : record struct not updated.
+  */
+uint16_t NDEF::NDEF_IdentifyNDEF(sRecordInfo_t *pRecordStruct)
+{
+  return NDEF_IdentifyNDEF(pRecordStruct, NDEF_Buffer, NDEF_Buffer_size);
+}
+
+/**
+  * @brief  This function identify the NDEF message stored in tag.
+  * @deprecated use one-arg or three-arg variant
+  * @param  pRecordStruct : Structure to fill with record information.
+  * @param  pNDEF : pointer on the NDEF message data.
+  * @retval NDEF_OK : record struct filled.
+  * @retval NDEF_ERROR : record struct not updated.
+  */
+uint16_t NDEF::NDEF_IdentifyNDEF(sRecordInfo_t *pRecordStruct, uint8_t *pNDEF)
+{
+  return NDEF_IdentifyNDEF(pRecordStruct, pNDEF, NDEF_MAX_SIZE);
+}
 
 /**
   * @brief  This function identify the NDEF message stored in tag.
@@ -352,7 +376,7 @@ void NDEF::NDEF_ParseSP(sRecordInfo_t *pRecordStruct)
   * @retval NDEF_OK : record struct filled.
   * @retval NDEF_ERROR : record struct not updated.
   */
-uint16_t NDEF::NDEF_IdentifyNDEF(sRecordInfo_t *pRecordStruct, uint8_t *pNDEF)
+uint16_t NDEF::NDEF_IdentifyNDEF(sRecordInfo_t *pRecordStruct, uint8_t *pNDEF, uint16_t bufferLength)
 {
   uint16_t SizeOfRecordHeader, TypeNbByte, PayloadLengthField, IDLengthField, IDNbByte;
 
@@ -361,8 +385,8 @@ uint16_t NDEF::NDEF_IdentifyNDEF(sRecordInfo_t *pRecordStruct, uint8_t *pNDEF)
     return NDEF_ERROR;
   }
 
-  /* Read the NDEF file */
-  NfcTag_ReadNDEF(pNDEF);
+  /* Read the NDEF file up to the max length of the record header*/
+  NfcTag_ReadNDEF(pNDEF, bufferLength);
 
   return NDEF_IdentifyBuffer(pRecordStruct, pNDEF);
 }

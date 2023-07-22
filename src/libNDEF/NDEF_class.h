@@ -60,7 +60,9 @@ class NDEF {
     uint16_t begin();
 
     //lib_NDEF
+    uint16_t NDEF_IdentifyNDEF(sRecordInfo_t *pRecordStruct);
     uint16_t NDEF_IdentifyNDEF(sRecordInfo_t *pRecordStruct, uint8_t *pNDEF);
+    uint16_t NDEF_IdentifyNDEF(sRecordInfo_t *pRecordStruct, uint8_t *pNDEF, uint16_t bufferLength);
     uint16_t NDEF_IdentifyBuffer(sRecordInfo_t *pRecordStruct, uint8_t *pNDEF);
     uint16_t NDEF_ReadNDEF(uint8_t *pNDEF);
     uint16_t NDEF_WriteNDEF(uint16_t NDEF_Size, uint8_t *pNDEF);
@@ -131,6 +133,7 @@ class NDEF {
 
     //lib_wrapper
     uint16_t NfcTag_ReadNDEF(uint8_t *pData);
+    uint16_t NfcTag_ReadNDEF(uint8_t *pData, uint16_t MaxLength);
     uint16_t NfcTag_WriteNDEF(uint16_t Length, uint8_t *pData);
     uint16_t NfcTag_WriteProprietary(uint16_t Length, uint8_t *pData);
     uint16_t NfcTag_GetLength(uint16_t *Length);

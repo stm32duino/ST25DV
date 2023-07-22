@@ -407,6 +407,20 @@ uint16_t NDEF::NDEF_IdentifyNDEF(sRecordInfo_t *pRecordStruct, uint8_t *pNDEF, u
 
 /**
   * @brief  This function read the NDEF content of the TAG.
+  * @retval NDEF_OK : NDEF file data retrieve and store in the buffer.
+  * @retval NDEF_ERROR : not able to read NDEF from tag.
+  * @retval NDEF_ERROR_MEMORY_INTERNAL : Cannot read tag.
+  * @retval NDEF_ERROR_NOT_FORMATED : CCFile data not supported or not present.
+  * @retval NDEF_ERROR_MEMORY_TAG : Size not compatible with memory.
+  * @retval NDEF_ERROR_LOCKED : Tag locked, cannot be read.
+  */
+uint16_t NDEF::NDEF_ReadNDEF()
+{
+  return NfcTag_ReadNDEF(NDEF_Buffer, NDEF_Buffer_size);
+}
+
+/**
+  * @brief  This function read the NDEF content of the TAG.
   * @param  pNDEF : pointer on the buffer to store NDEF data.
   * @retval NDEF_OK : NDEF file data retrieve and store in the buffer.
   * @retval NDEF_ERROR : not able to read NDEF from tag.
@@ -417,9 +431,23 @@ uint16_t NDEF::NDEF_IdentifyNDEF(sRecordInfo_t *pRecordStruct, uint8_t *pNDEF, u
   */
 uint16_t NDEF::NDEF_ReadNDEF(uint8_t *pNDEF)
 {
-  return NfcTag_ReadNDEF(pNDEF);
+  return NfcTag_ReadNDEF(pNDEF, NDEF_MAX_SIZE);
 }
 
+/**
+  * @brief  This function read the NDEF content of the TAG.
+  * @param  pNDEF : pointer on the buffer to store NDEF data.
+  * @retval NDEF_OK : NDEF file data retrieve and store in the buffer.
+  * @retval NDEF_ERROR : not able to read NDEF from tag.
+  * @retval NDEF_ERROR_MEMORY_INTERNAL : Cannot read tag.
+  * @retval NDEF_ERROR_NOT_FORMATED : CCFile data not supported or not present.
+  * @retval NDEF_ERROR_MEMORY_TAG : Size not compatible with memory.
+  * @retval NDEF_ERROR_LOCKED : Tag locked, cannot be read.
+  */
+uint16_t NDEF::NDEF_ReadNDEF(uint8_t *pNDEF, uint16_t bufferLength)
+{
+  return NfcTag_ReadNDEF(pNDEF, bufferLength);
+}
 
 
 /**

@@ -65,7 +65,9 @@ class NDEF {
     uint16_t NDEF_IdentifyNDEF(sRecordInfo_t *pRecordStruct, uint8_t *pNDEF);
     uint16_t NDEF_IdentifyNDEF(sRecordInfo_t *pRecordStruct, uint8_t *pNDEF, uint16_t bufferLength);
     uint16_t NDEF_IdentifyBuffer(sRecordInfo_t *pRecordStruct, uint8_t *pNDEF);
+    uint16_t NDEF_ReadNDEF();
     uint16_t NDEF_ReadNDEF(uint8_t *pNDEF);
+    uint16_t NDEF_ReadNDEF(uint8_t *pNDEF, uint16_t bufferLength);
     uint16_t NDEF_WriteNDEF(uint16_t NDEF_Size, uint8_t *pNDEF);
     uint16_t NDEF_ClearNDEF(void);
     uint16_t NDEF_getNDEFSize(uint16_t *Size);

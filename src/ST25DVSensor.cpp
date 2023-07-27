@@ -55,6 +55,13 @@ int ST25DV::begin(uint8_t* buffer, uint16_t bufferLength)
 int ST25DV::writeURI(String protocol, String uri, String info)
 {
   sURI_Info _URI;
+
+  // Unabridged protocols must be written using
+  // `writeUnabridgedURI()`
+  if (protocol.equals("")) {
+    return NDEF_ERROR;
+  }
+
   strcpy(_URI.protocol, protocol.c_str());
   strcpy(_URI.URI_Message, uri.c_str());
   strcpy(_URI.Information, info.c_str());
@@ -82,10 +89,212 @@ int ST25DV::readURI(String *s)
   return 0;
 }
 
+/*
+ * @brief Writes an unabbrieved URI
+ * 
+ * The NFC NDEF format uses URI identifer code 0x00
+ * to indicate a URI that is not abbreviated.
+ * 
+ * @param uri the uri to write
+ * @param info to write
+ * @retval success or failure
+ */
+int ST25DV::writeUnabridgedURI(String uri, String info)
+{
+  sURI_Info _URI;
+  
+  strcpy(_URI.protocol, "");
+  strcpy(_URI.URI_Message, uri.c_str());
+  strcpy(_URI.Information, info.c_str());
+
+  return ndef.NDEF_WriteURI(&_URI);
+}
+
+/*
+ * @brief Reads an unabbrieved URI
+ * @param s the uri read
+ * @retval success or failure
+ */
+int ST25DV::readUnabridgedURI(String *s)
+{
+  uint16_t ret;
+  sURI_Info uri = {"", "", ""};
+  sRecordInfo_t recordInfo;
+
+  ret = ndef.NDEF_IdentifyNDEF(&recordInfo);
+  if (ret) {
+    return ret;
+  }
+
+  ret = ndef.NDEF_ReadURI(&recordInfo, &uri);
+  if (ret) {
+    return ret;
+  }
+
+  // If the URI is abbreivated return error
+  if (strncmp("", uri.protocol, 1) != 0) {
+    return ret; //NDEF_ERROR;
+  }
+
+  *s = String(uri.URI_Message);
+
+  return 0;
+}
+
+/*
+ * @brief Writes an SMS record
+ * 
+ * @param phoneNumber
+ * @param message
+ * @param info
+ * @retval success or failure
+ */
+int ST25DV::writeSMS(String phoneNumber, String message, String info)
+{
+  sSMSInfo _SMS;
+
+  strncpy(_SMS.PhoneNumber, phoneNumber.c_str(), 16);
+  strncpy(_SMS.Message, message.c_str(), 400);
+  strncpy(_SMS.Information, info.c_str(), 400);
+
+  return ndef.NDEF_WriteSMS(&_SMS);
+}
+
+/*
+ * @brief Reads an SMS record
+ * 
+ * @param phoneNumber
+ * @param message
+ * @retval success or failure
+ */
+int ST25DV::readSMS(String *phoneNumber, String *message)
+{
+  uint16_t ret;
+  sSMSInfo _SMS;
+  sRecordInfo_t recordInfo;
+
+  ret = ndef.NDEF_IdentifyNDEF(&recordInfo);
+  if (ret) {
+    return ret;
+  }
+
+  ret = ndef.NDEF_ReadSMS(&recordInfo, &_SMS);
+  if (ret) {
+    return ret;
+  }
+
+  *phoneNumber = String(_SMS.PhoneNumber);
+  *message = String(_SMS.Message);
+
+  return NDEF_OK;
+}
+
+/*
+ * @brief Writes a GEO record
+ * 
+ * @param latitude
+ * @param longitude
+ * @param info
+ * @retval success or failure
+ */
+int ST25DV::writeGEO(String latitude, String longitude, String info)
+{
+  sGeoInfo _GEO;
+
+  strncpy(_GEO.Latitude, latitude.c_str(), 20);
+  strncpy(_GEO.Longitude, longitude.c_str(), 20);
+  strncpy(_GEO.Information, info.c_str(), 100);
+
+  return ndef.NDEF_WriteGeo(&_GEO);
+}
+
+/*
+ * @brief Reads a GEO record
+ * 
+ * @param latitude
+ * @param longitude
+ * @retval success or failure
+ */
+int ST25DV::readGEO(String *latitude, String *longitude)
+{
+  uint16_t ret;
+  sGeoInfo _GEO;
+  sRecordInfo_t recordInfo;
+
+  ret = ndef.NDEF_IdentifyNDEF(&recordInfo);
+  if (ret) {
+    return ret;
+  }
+
+  ret = ndef.NDEF_ReadGeo(&recordInfo, &_GEO);
+  if (ret) {
+    return ret;
+  }
+
+  *latitude = String(_GEO.Latitude);
+  *longitude = String(_GEO.Longitude);
+
+  return NDEF_OK;
+}
+
+
+int ST25DV::writeEMail(String emailAdd, String subject, String message, String info)
+{
+  sEmailInfo _EMAIL;
+
+  strncpy(_EMAIL.EmailAdd, emailAdd.c_str(), 64);
+  strncpy(_EMAIL.Subject, subject.c_str(), 100);
+  strncpy(_EMAIL.Message, message.c_str(), 2000);
+  strncpy(_EMAIL.Information, info.c_str(), 400);
+
+  return ndef.NDEF_WriteEmail(&_EMAIL);
+}
+
+int ST25DV::readEMail(String *emailAdd, String *subject, String *message)
+{
+  uint16_t ret;
+  sEmailInfo _EMAIL;
+  sRecordInfo_t recordInfo;
+
+  ret = ndef.NDEF_IdentifyNDEF(&recordInfo);
+  if (ret) {
+    return ret;
+  }
+
+  ret = ndef.NDEF_ReadEmail(&recordInfo, &_EMAIL);
+  if (ret) {
+    return ret;
+  }
+
+  *emailAdd = String(_EMAIL.EmailAdd);
+  *subject = String(_EMAIL.Subject);
+  *message = String(_EMAIL.Message);
+
+  return NDEF_OK;
+}
+
+/**
+  * @brief  reads the type of NDEF on the tag
+  * @param  None
+  * @retval the type or UNKNOWN_TYPE if errors occur
+  */
+NDEF_TypeDef ST25DV::readNDEFType(void)
+{
+  uint16_t ret;
+  sRecordInfo_t recordInfo;
+
+  ret = ndef.NDEF_IdentifyNDEF(&recordInfo);
+  if (ret) {
+    return UNKNOWN_TYPE;
+  }
+
+  return recordInfo.NDEF_Type;
+}
+
 /**
   * @brief  Returns the NDEF class instance used by the component
   * @param  None
-  * @retval NDEF class
+  * @retval success or failure
   */
 NDEF *ST25DV::getNDEF(void)
 {

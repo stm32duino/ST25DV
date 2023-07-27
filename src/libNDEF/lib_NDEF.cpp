@@ -303,7 +303,7 @@ void NDEF::NDEF_ParseURI(sRecordInfo_t *pRecordStruct)
   } else if (!memcmp(pPayload, GEO_TYPE_STRING, strlen(GEO_TYPE_STRING))) {
     pRecordStruct->NDEF_Type = URI_GEO_TYPE;
   } else {
-    pRecordStruct->NDEF_Type = UNKNOWN_TYPE;
+    pRecordStruct->NDEF_Type = UNABRIDGED_URI_TYPE;
   }
 }
 

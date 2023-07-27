@@ -283,7 +283,10 @@ uint16_t NDEF::NDEF_ReadURI(sRecordInfo_t *pRecordStruct, sURI_Info *pURI)
   uint32_t PayloadSize, RecordPosition;
   uint8_t *pData;
 
-  if (pRecordStruct->NDEF_Type == WELL_KNOWN_ABRIDGED_URI_TYPE) {
+  if (pRecordStruct->NDEF_Type == UNABRIDGED_URI_TYPE) {
+    NDEF_Parse_WellKnowType(pRecordStruct, pURI);
+    status = NDEF_OK;
+  } else if (pRecordStruct->NDEF_Type == WELL_KNOWN_ABRIDGED_URI_TYPE) {
     NDEF_Parse_WellKnowType(pRecordStruct, pURI);
     status = NDEF_OK;
   } else if (pRecordStruct->NDEF_Type == SMARTPOSTER_TYPE) {

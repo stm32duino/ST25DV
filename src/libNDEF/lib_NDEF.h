@@ -217,6 +217,7 @@ extern uint32_t NDEF_Record_Buffer_size;
 typedef enum {
   UNKNOWN_TYPE = 0,
   VCARD_TYPE,
+  UNABRIDGED_URI_TYPE,
   WELL_KNOWN_ABRIDGED_URI_TYPE,
   URI_SMS_TYPE,
   URI_GEO_TYPE,

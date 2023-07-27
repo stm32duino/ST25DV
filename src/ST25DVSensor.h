@@ -38,6 +38,15 @@ class ST25DV {
     int begin(uint8_t* buffer, uint16_t bufferLength);
     int writeURI(String protocol, String uri, String info);
     int readURI(String *s);
+    int writeUnabridgedURI(String uri, String info);
+    int readUnabridgedURI(String *s);
+    int writeSMS(String phoneNumber, String message, String info);
+    int readSMS(String *phoneNumber, String *message);
+    int writeGEO(String latitude, String longitude, String info);
+    int readGEO(String *latitude, String *longitude);
+    int writeEMail(String emailAdd, String subject, String message, String info);
+    int readEMail(String *emailAdd, String *subject, String *message);
+    NDEF_TypeDef readNDEFType();
     NDEF *getNDEF();
 
   protected:

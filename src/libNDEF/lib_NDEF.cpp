@@ -71,7 +71,7 @@ uint16_t NDEF::begin()
   return begin(NULL, 0);
 }
 
-uint16_t NDEF::begin(uint8_t* buffer, uint16_t bufferLength)
+uint16_t NDEF::begin(uint8_t *buffer, uint16_t bufferLength)
 {
   int ret = NDEF_OK;
 

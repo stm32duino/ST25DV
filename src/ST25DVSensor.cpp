@@ -24,7 +24,7 @@ int ST25DV::begin()
   return begin(NULL, 0);
 }
 
-int ST25DV::begin(uint8_t* buffer, uint16_t bufferLength)
+int ST25DV::begin(uint8_t *buffer, uint16_t bufferLength)
 {
   uint8_t nfctag_id = 0;
 
@@ -91,10 +91,10 @@ int ST25DV::readURI(String *s)
 
 /*
  * @brief Writes an unabbrieved URI
- * 
+ *
  * The NFC NDEF format uses URI identifier code 0x00
  * to indicate a URI that is not abbreviated.
- * 
+ *
  * @param uri the uri to write
  * @param info to write
  * @retval success or failure
@@ -102,7 +102,7 @@ int ST25DV::readURI(String *s)
 int ST25DV::writeUnabridgedURI(String uri, String info)
 {
   sURI_Info _URI;
-  
+
   strcpy(_URI.protocol, "");
   strcpy(_URI.URI_Message, uri.c_str());
   strcpy(_URI.Information, info.c_str());
@@ -143,7 +143,7 @@ int ST25DV::readUnabridgedURI(String *s)
 
 /*
  * @brief Writes an SMS record
- * 
+ *
  * @param phoneNumber
  * @param message
  * @param info
@@ -162,7 +162,7 @@ int ST25DV::writeSMS(String phoneNumber, String message, String info)
 
 /*
  * @brief Reads an SMS record
- * 
+ *
  * @param phoneNumber
  * @param message
  * @retval success or failure
@@ -191,7 +191,7 @@ int ST25DV::readSMS(String *phoneNumber, String *message)
 
 /*
  * @brief Writes a GEO record
- * 
+ *
  * @param latitude
  * @param longitude
  * @param info
@@ -210,7 +210,7 @@ int ST25DV::writeGEO(String latitude, String longitude, String info)
 
 /*
  * @brief Reads a GEO record
- * 
+ *
  * @param latitude
  * @param longitude
  * @retval success or failure

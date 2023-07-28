@@ -92,7 +92,7 @@ int ST25DV::readURI(String *s)
 /*
  * @brief Writes an unabbrieved URI
  * 
- * The NFC NDEF format uses URI identifer code 0x00
+ * The NFC NDEF format uses URI identifier code 0x00
  * to indicate a URI that is not abbreviated.
  * 
  * @param uri the uri to write

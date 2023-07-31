@@ -68,7 +68,21 @@ NDEF::NDEF(ST25DV_IO *dev)
 
 uint16_t NDEF::begin()
 {
+  return begin(NULL, 0);
+}
+
+uint16_t NDEF::begin(uint8_t *buffer, uint16_t bufferLength)
+{
   int ret = NDEF_OK;
+
+  if (buffer == NULL) {
+    NDEF_Buffer = NDEF_Default_Buffer;
+    NDEF_Buffer_size = NDEF_MAX_SIZE;
+  } else {
+    // TODO should we check minimum buffer length?
+    NDEF_Buffer = buffer;
+    NDEF_Buffer_size = bufferLength;
+  }
 
   if (NfcType5_NDEFDetection() != NDEF_OK) {
     CCFileStruct.MagicNumber = NFCT5_MAGICNUMBER_E1_CCFILE;
@@ -289,7 +303,7 @@ void NDEF::NDEF_ParseURI(sRecordInfo_t *pRecordStruct)
   } else if (!memcmp(pPayload, GEO_TYPE_STRING, strlen(GEO_TYPE_STRING))) {
     pRecordStruct->NDEF_Type = URI_GEO_TYPE;
   } else {
-    pRecordStruct->NDEF_Type = UNKNOWN_TYPE;
+    pRecordStruct->NDEF_Type = UNABRIDGED_URI_TYPE;
   }
 }
 
@@ -344,6 +358,30 @@ void NDEF::NDEF_ParseSP(sRecordInfo_t *pRecordStruct)
   * @{
   */
 
+/**
+  * @brief  This function identify the NDEF message stored in tag.
+  * @param  pRecordStruct : Structure to fill with record information.
+  * @param  pNDEF : pointer on the NDEF message data.
+  * @retval NDEF_OK : record struct filled.
+  * @retval NDEF_ERROR : record struct not updated.
+  */
+uint16_t NDEF::NDEF_IdentifyNDEF(sRecordInfo_t *pRecordStruct)
+{
+  return NDEF_IdentifyNDEF(pRecordStruct, NDEF_Buffer, NDEF_Buffer_size);
+}
+
+/**
+  * @brief  This function identify the NDEF message stored in tag.
+  * @deprecated use one-arg or three-arg variant
+  * @param  pRecordStruct : Structure to fill with record information.
+  * @param  pNDEF : pointer on the NDEF message data.
+  * @retval NDEF_OK : record struct filled.
+  * @retval NDEF_ERROR : record struct not updated.
+  */
+uint16_t NDEF::NDEF_IdentifyNDEF(sRecordInfo_t *pRecordStruct, uint8_t *pNDEF)
+{
+  return NDEF_IdentifyNDEF(pRecordStruct, pNDEF, NDEF_MAX_SIZE);
+}
 
 /**
   * @brief  This function identify the NDEF message stored in tag.
@@ -352,7 +390,7 @@ void NDEF::NDEF_ParseSP(sRecordInfo_t *pRecordStruct)
   * @retval NDEF_OK : record struct filled.
   * @retval NDEF_ERROR : record struct not updated.
   */
-uint16_t NDEF::NDEF_IdentifyNDEF(sRecordInfo_t *pRecordStruct, uint8_t *pNDEF)
+uint16_t NDEF::NDEF_IdentifyNDEF(sRecordInfo_t *pRecordStruct, uint8_t *pNDEF, uint16_t bufferLength)
 {
   uint16_t SizeOfRecordHeader, TypeNbByte, PayloadLengthField, IDLengthField, IDNbByte;
 
@@ -361,67 +399,24 @@ uint16_t NDEF::NDEF_IdentifyNDEF(sRecordInfo_t *pRecordStruct, uint8_t *pNDEF)
     return NDEF_ERROR;
   }
 
-  /* Read the NDEF file */
-  NfcTag_ReadNDEF(pNDEF);
+  /* Read the NDEF file up to the max length of the record header*/
+  NfcTag_ReadNDEF(pNDEF, bufferLength);
 
-  /* Is ID length field present */
-  if ((*pNDEF) & IL_Mask) {
-    IDLengthField = ID_LENGTH_FIELD;
-  } else {
-    IDLengthField = 0;
-  }
+  return NDEF_IdentifyBuffer(pRecordStruct, pNDEF);
+}
 
-  /* it's a SR */
-  if ((*pNDEF) & SR_Mask) {
-    /* Analyse short record layout */
-    TypeNbByte = pNDEF[1];
-    PayloadLengthField = 1;
-    if (IDLengthField == ID_LENGTH_FIELD) {
-      IDNbByte = pNDEF[3];
-    } else {
-      IDNbByte = 0;
-    }
-  } else {
-    /* Analyse normal record layout */
-    TypeNbByte = pNDEF[1];
-    PayloadLengthField = 4;
-    if (IDLengthField == ID_LENGTH_FIELD) {
-      IDNbByte = pNDEF[6];
-    } else {
-      IDNbByte = 0;
-    }
-  }
-
-  SizeOfRecordHeader = RECORD_FLAG_FIELD + TYPE_LENGTH_FIELD + PayloadLengthField + IDLengthField + TypeNbByte + IDNbByte;
-
-  /* Read record header */
-  /* it's a SR */
-  if (pNDEF[0] & SR_Mask) {
-    pRecordStruct->RecordFlags = pNDEF[0];
-    pRecordStruct->TypeLength = TypeNbByte;
-    pRecordStruct->PayloadLength = pNDEF[2];
-    pRecordStruct->IDLength = IDNbByte;
-    memcpy(pRecordStruct->Type, &pNDEF[3 + IDNbByte], TypeNbByte);
-    memcpy(pRecordStruct->ID, &pNDEF[3 + IDNbByte + TypeNbByte], IDNbByte);
-    pRecordStruct->PayloadOffset = SizeOfRecordHeader;
-  } else {
-    pRecordStruct->RecordFlags = pNDEF[0];
-    pRecordStruct->TypeLength = TypeNbByte;
-    pRecordStruct->PayloadLength = (((uint32_t)pNDEF[2]) << 24) |
-                                   (((uint32_t)pNDEF[3]) << 16) |
-                                   (((uint32_t)pNDEF[4]) << 8)
-                                   | pNDEF[5] ;
-    pRecordStruct->IDLength = IDNbByte;
-    memcpy(pRecordStruct->Type, &pNDEF[6 + IDNbByte], TypeNbByte);
-    memcpy(pRecordStruct->ID, &pNDEF[6 + IDNbByte + TypeNbByte], IDNbByte);
-    pRecordStruct->PayloadOffset = SizeOfRecordHeader;
-  }
-
-  pRecordStruct->PayloadBufferAdd = pNDEF;
-
-  NDEF_ParseRecordHeader(pRecordStruct);
-
-  return NDEF_OK;
+/**
+  * @brief  This function read the NDEF content of the TAG.
+  * @retval NDEF_OK : NDEF file data retrieve and store in the buffer.
+  * @retval NDEF_ERROR : not able to read NDEF from tag.
+  * @retval NDEF_ERROR_MEMORY_INTERNAL : Cannot read tag.
+  * @retval NDEF_ERROR_NOT_FORMATED : CCFile data not supported or not present.
+  * @retval NDEF_ERROR_MEMORY_TAG : Size not compatible with memory.
+  * @retval NDEF_ERROR_LOCKED : Tag locked, cannot be read.
+  */
+uint16_t NDEF::NDEF_ReadNDEF()
+{
+  return NfcTag_ReadNDEF(NDEF_Buffer, NDEF_Buffer_size);
 }
 
 /**
@@ -436,9 +431,23 @@ uint16_t NDEF::NDEF_IdentifyNDEF(sRecordInfo_t *pRecordStruct, uint8_t *pNDEF)
   */
 uint16_t NDEF::NDEF_ReadNDEF(uint8_t *pNDEF)
 {
-  return NfcTag_ReadNDEF(pNDEF);
+  return NfcTag_ReadNDEF(pNDEF, NDEF_MAX_SIZE);
 }
 
+/**
+  * @brief  This function read the NDEF content of the TAG.
+  * @param  pNDEF : pointer on the buffer to store NDEF data.
+  * @retval NDEF_OK : NDEF file data retrieve and store in the buffer.
+  * @retval NDEF_ERROR : not able to read NDEF from tag.
+  * @retval NDEF_ERROR_MEMORY_INTERNAL : Cannot read tag.
+  * @retval NDEF_ERROR_NOT_FORMATED : CCFile data not supported or not present.
+  * @retval NDEF_ERROR_MEMORY_TAG : Size not compatible with memory.
+  * @retval NDEF_ERROR_LOCKED : Tag locked, cannot be read.
+  */
+uint16_t NDEF::NDEF_ReadNDEF(uint8_t *pNDEF, uint16_t bufferLength)
+{
+  return NfcTag_ReadNDEF(pNDEF, bufferLength);
+}
 
 
 /**

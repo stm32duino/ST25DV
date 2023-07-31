@@ -80,6 +80,19 @@
   */
 uint16_t NDEF::NfcTag_ReadNDEF(uint8_t *pData)
 {
+  return NfcTag_ReadNDEF(pData, NDEF_MAX_SIZE);
+}
+
+/**
+  * @brief  This function reads the data stored in the NDEF message.
+  * @param  pData Pointer on the buffer used to store the read data.
+  * @retval NDEF_ERROR_MEMORY_INTERNAL  The buffer is too small for the NDEF message.
+  * @retval NDEF_ERROR_NOT_FORMATED     No Capability Container detected.
+  * @retval NDEF_ERROR                  Error when reading the NDEF message.
+  * @retval NDEF_OK                     NDEF message successfully read.
+  */
+uint16_t NDEF::NfcTag_ReadNDEF(uint8_t *pData, uint16_t bufferLength)
+{
   uint16_t status = NDEF_ERROR;
   TT5_TLV_t tlv;
   uint8_t tlv_size = 0;
@@ -105,8 +118,9 @@ uint16_t NDEF::NfcTag_ReadNDEF(uint8_t *pData)
     tlv_size = 2;
     DataLength = tlv.Length;
   }
+
   /* If too many data to write return error */
-  if (DataLength > NDEF_MAX_SIZE) {
+  if (DataLength > bufferLength) {
     return NDEF_ERROR_MEMORY_INTERNAL;
   }
 

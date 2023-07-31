@@ -58,11 +58,16 @@ class NDEF {
     NDEF(ST25DV_IO *dev);
 
     uint16_t begin();
+    uint16_t begin(uint8_t *buffer, uint16_t bufferLength);
 
     //lib_NDEF
+    uint16_t NDEF_IdentifyNDEF(sRecordInfo_t *pRecordStruct);
     uint16_t NDEF_IdentifyNDEF(sRecordInfo_t *pRecordStruct, uint8_t *pNDEF);
+    uint16_t NDEF_IdentifyNDEF(sRecordInfo_t *pRecordStruct, uint8_t *pNDEF, uint16_t bufferLength);
     uint16_t NDEF_IdentifyBuffer(sRecordInfo_t *pRecordStruct, uint8_t *pNDEF);
+    uint16_t NDEF_ReadNDEF();
     uint16_t NDEF_ReadNDEF(uint8_t *pNDEF);
+    uint16_t NDEF_ReadNDEF(uint8_t *pNDEF, uint16_t bufferLength);
     uint16_t NDEF_WriteNDEF(uint16_t NDEF_Size, uint8_t *pNDEF);
     uint16_t NDEF_ClearNDEF(void);
     uint16_t NDEF_getNDEFSize(uint16_t *Size);
@@ -131,6 +136,7 @@ class NDEF {
 
     //lib_wrapper
     uint16_t NfcTag_ReadNDEF(uint8_t *pData);
+    uint16_t NfcTag_ReadNDEF(uint8_t *pData, uint16_t MaxLength);
     uint16_t NfcTag_WriteNDEF(uint16_t Length, uint8_t *pData);
     uint16_t NfcTag_WriteProprietary(uint16_t Length, uint8_t *pData);
     uint16_t NfcTag_GetLength(uint16_t *Length);
@@ -182,10 +188,12 @@ class NDEF {
     void NDEF_Read_WifiToken(struct sRecordInfo *pRecordStruct, sWifiTokenInfo *pWifiTokenStruct);
 
     //libNDEF.c
+    /** @brief This buffer is used if begin isn't called with a buffer. */
+    uint8_t NDEF_Default_Buffer[NDEF_MAX_SIZE];
     /** @brief This buffer is used to store the data sent/received by the TAG. */
-    uint8_t NDEF_Buffer [NDEF_MAX_SIZE];
+    uint8_t *NDEF_Buffer;
     /** @brief Size of the buffer used to build the NDEF messages. */
-    uint32_t NDEF_Buffer_size = NDEF_MAX_SIZE;
+    uint32_t NDEF_Buffer_size;
     /** @brief This buffer is used when it's required to prepare a record before adding it to the NDEF_Buffer. */
     uint8_t NDEF_Record_Buffer [NDEF_RECORD_MAX_SIZE];
     /** @brief Size of the buffer used when a record has to be prepared. */

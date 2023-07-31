@@ -15,6 +15,14 @@ ST25DV	KEYWORD1
 begin	KEYWORD2
 writeURI	KEYWORD2
 readURI	KEYWORD2
+writeUnabridgedURI  KEYWORD2
+readUnabridgedURI  KEYWORD2
+writeSMS  KEYWORD2
+readSMS  KEYWORD2
+writeGEO  KEYWORD2
+readGEO  KEYWORD2
+writeEMail  KEYWORD2
+readEMail  KEYWORD2
 
 #######################################
 # Constants (LITERAL1)

@@ -610,7 +610,7 @@ uint16_t NDEF::NDEF_IdentifyBuffer(sRecordInfo_t *pRecordStruct, uint8_t *pNDEF)
   * @param  pNDEF : pointer on the NDEF buffer.
   * @retval Length : Length of the written data (in bytes)
   */
-uint32_t NDEF_WriteRecord(sRecordInfo_t *pRecord, uint8_t *pNDEF)
+uint32_t NDEF::NDEF_WriteRecord(sRecordInfo_t *pRecord, uint8_t *pNDEF)
 {
   /************************************/
   /*  7 |  6 |  5 |  4 |  3 | 2  1  0 */

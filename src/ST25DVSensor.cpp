@@ -131,7 +131,7 @@ int ST25DV::readUnabridgedURI(String *s)
     return ret;
   }
 
-  // If the URI is abbreivated return error
+  // If the URI is abbreviated return error
   if (strncmp("", uri.protocol, 1) != 0) {
     return ret; //NDEF_ERROR;
   }

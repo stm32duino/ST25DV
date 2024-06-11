@@ -130,7 +130,7 @@ void NDEF::NDEF_FillWifiTokenStruct(uint8_t *pPayload, uint32_t PayloadSize, sWi
           SSIDLen |= data2;
           pPayload += 4;
           memcpy(pWifiTokenStruct->NetworkSSID, pPayload, SSIDLen);
-          /* add end of string charactere */
+          /* add end of string character */
           pWifiTokenStruct->NetworkSSID[SSIDLen] = '\0';
           pPayload += SSIDLen - 1;
         } else if (dbg1 == ATTRIBUTE_ID_NETWORK_MSB) {
@@ -141,7 +141,7 @@ void NDEF::NDEF_FillWifiTokenStruct(uint8_t *pPayload, uint32_t PayloadSize, sWi
           NetWorkKeyLen |= data2;
           pPayload += 4;
           memcpy(pWifiTokenStruct->NetworkKey, pPayload, NetWorkKeyLen);
-          /* add end of string charactere */
+          /* add end of string character */
           pWifiTokenStruct->NetworkKey[NetWorkKeyLen] = '\0';
           pPayload += NetWorkKeyLen - 1;
         } else {

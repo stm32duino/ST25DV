@@ -115,7 +115,7 @@ class NDEF {
     void NDEF_PrepareSMSMessage(sSMSInfo *pSMSStruct, uint8_t *pNDEFMessage, uint16_t *size);
 
     //lib_NDEF_Text
-    uint16_t NDEF_WriteText(char *text);
+    uint16_t NDEF_WriteText(NDEF_Text_info_t *text_info);
     uint16_t NDEF_ReadText(sRecordInfo_t *pRecordStruct, NDEF_Text_info_t *pText);
 
     //lib_NDEF_URI

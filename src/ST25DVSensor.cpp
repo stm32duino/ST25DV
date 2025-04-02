@@ -52,6 +52,38 @@ int ST25DV::begin(uint8_t *buffer, uint16_t bufferLength)
   return NFCTAG_OK;
 };
 
+int ST25DV::writeText(String text, String iso_lang, NDEF_Text_encoding_t encoding)
+{
+  NDEF_Text_info_t text_info;
+
+
+  strcpy(text_info.text, text.c_str());
+  strcpy(text_info.language_code, iso_lang.c_str());
+  text_info.encoding = encoding;
+
+  return ndef.NDEF_WriteText(&text_info);
+}
+
+int ST25DV::readText(String *text)
+{
+  uint16_t ret;
+  NDEF_Text_info_t info;
+  sRecordInfo_t recordInfo;
+
+  ret = ndef.NDEF_IdentifyNDEF(&recordInfo);
+  if (ret) {
+    return ret;
+  }
+
+  ret = ndef.NDEF_ReadText(&recordInfo, &info);
+  if (ret) {
+    return ret;
+  }
+  *text = String(info.text);
+
+  return 0;
+}
+
 int ST25DV::writeURI(String protocol, String uri, String info)
 {
   sURI_Info _URI;
@@ -271,6 +303,80 @@ int ST25DV::readEMail(String *emailAdd, String *subject, String *message)
   *message = String(_EMAIL.Message);
 
   return NDEF_OK;
+}
+
+/**
+ * @brief Writes a WIFI record
+ *
+ * @param SSID
+ * @param auth: authentication type
+ * @param enc: Encryption type
+ * @param key
+ * @retval success or failure
+ */
+int ST25DV::writeWifi(String SSID, Ndef_Wifi_Authentication_t auth, Ndef_Wifi_Encryption_t enc, String key)
+{
+  sWifiTokenInfo _wifi;
+
+  strncpy(_wifi.NetworkSSID, SSID.c_str(), 32);
+  strncpy(_wifi.NetworkKey, key.c_str(), 32);
+
+  _wifi.AuthenticationType = auth;
+  _wifi.EncryptionType = enc;
+
+  return ndef.NDEF_WriteWifiToken(&_wifi);
+}
+
+int ST25DV::readWifi(sWifiTokenInfo *wifitoken)
+{
+  uint16_t ret;
+  sRecordInfo_t recordInfo;
+
+  ret = ndef.NDEF_IdentifyNDEF(&recordInfo);
+  if (ret) {
+    return ret;
+  }
+
+  return ndef.NDEF_ReadWifiToken(&recordInfo, wifitoken);
+
+}
+
+int ST25DV::writeVcard(sVcardInfo vcard)
+{
+
+  return ndef.NDEF_WriteVcard(&vcard);
+}
+
+int ST25DV::readVcard(sVcardInfo *vcard)
+{
+  uint16_t ret;
+  sRecordInfo_t recordInfo;
+
+  ret = ndef.NDEF_IdentifyNDEF(&recordInfo);
+  if (ret) {
+    return ret;
+  }
+
+  return ndef.NDEF_ReadVcard(&recordInfo, vcard);
+
+}
+
+int ST25DV::appendAAR(String pkgName)
+{
+  sAARInfo _info;
+  strncpy(_info.PackageName, pkgName.c_str(), 80);
+
+  return ndef.NDEF_AddAAR(&_info);
+}
+
+int ST25DV::appendBluetoothOOB(Ndef_Bluetooth_OOB_t bluetooth, char *recordId)
+{
+  return ndef.NDEF_AppendBluetoothOOB(&bluetooth, recordId);
+}
+
+int ST25DV::writeMyApp(sMyAppInfo *pMyAppStruct)
+{
+  return ndef.NDEF_WriteMyApp(pMyAppStruct);
 }
 
 /**

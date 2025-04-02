@@ -50,7 +50,7 @@
   * @param  SizeOfKeyWord Number of bytes of the vCard property keyword we are looking for.
   * @param  pString       Pointer on a string used to return the vCard property read.
   */
-void NDEF_FillVcardStruct(uint8_t *pPayload, uint32_t PayloadSize, const char *pKeyWord, uint32_t SizeOfKeyWord, uint8_t *pString)
+void NDEF::NDEF_FillVcardStruct(uint8_t *pPayload, uint32_t PayloadSize, const char *pKeyWord, uint32_t SizeOfKeyWord, uint8_t *pString)
 {
   uint8_t *pLastByteAdd, *pLook4Word, *pEndString;
 
@@ -90,7 +90,7 @@ void NDEF_FillVcardStruct(uint8_t *pPayload, uint32_t PayloadSize, const char *p
   * @param  pRecordStruct Pointer on the vCard record structure.
   * @param  pVcardStruct  Pointer on the `sCardInfo` structure to fill.
   */
-void NDEF_ExtractVcard(sRecordInfo_t *pRecordStruct, sVcardInfo *pVcardStruct)
+void NDEF::NDEF_ExtractVcard(sRecordInfo_t *pRecordStruct, sVcardInfo *pVcardStruct)
 {
   uint32_t PayloadSize;
   uint8_t *pPayload;

@@ -115,7 +115,7 @@ class NDEF {
     void NDEF_PrepareSMSMessage(sSMSInfo *pSMSStruct, uint8_t *pNDEFMessage, uint16_t *size);
 
     //lib_NDEF_Text
-    uint16_t NDEF_WriteText(char *text);
+    uint16_t NDEF_WriteText(NDEF_Text_info_t *text_info);
     uint16_t NDEF_ReadText(sRecordInfo_t *pRecordStruct, NDEF_Text_info_t *pText);
 
     //lib_NDEF_URI
@@ -131,7 +131,7 @@ class NDEF {
     int NDEF_getVcardPicture(uint8_t *pPayload, uint32_t PayloadSize,  uint8_t *pPict);
 
     //lib_NDEF_Wifi
-    uint16_t NDEF_ReadWifiToken(struct sRecordInfo *pRecordStruct, sWifiTokenInfo *pWifiTokenStruct);
+    uint16_t NDEF_ReadWifiToken(sRecordInfo *pRecordStruct, sWifiTokenInfo *pWifiTokenStruct);
     uint16_t NDEF_WriteWifiToken(sWifiTokenInfo *pWifiTokenStruct);
 
     //lib_wrapper
@@ -180,7 +180,7 @@ class NDEF {
 
 
     //Vcard static
-    void NDEF_FillVcardStruct(uint8_t *pPayload, uint32_t PayloadSize, char *pKeyWord, uint32_t SizeOfKeyWord, uint8_t *pString);
+    void NDEF_FillVcardStruct(uint8_t *pPayload, uint32_t PayloadSize, const char *pKeyWord, uint32_t SizeOfKeyWord, uint8_t *pString);
     void NDEF_ExtractVcard(sRecordInfo_t *pRecordStruct, sVcardInfo *pVcardStruct);
 
     //Wifi static

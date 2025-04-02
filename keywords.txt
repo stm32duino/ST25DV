@@ -23,6 +23,15 @@ writeGEO  KEYWORD2
 readGEO  KEYWORD2
 writeEMail  KEYWORD2
 readEMail  KEYWORD2
+writeWifi   KEYWORD2
+readWifi    KEYWORD2
+writeVcard  KEYWORD2
+readVcard   KEYWORD2
+appendAAR   KEYWORD2
+appendBluetoothOOB  KEYWORD2
+writeMyApp  KEYWORD2
+writeText   KEYWORD2
+readText    KEYWORD2
 
 #######################################
 # Constants (LITERAL1)

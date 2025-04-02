@@ -34,11 +34,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include "lib_NDEF.h"
 
-/** @brief NDEF Text buffer length. */
-#define NDEF_TEXT_MAX_LENGTH 40
-/** @brief NDEF Language code buffer length. */
-#define NDEF_TEXT_LANGUAGE_CODE_MAX_LENGTH 10
-
 /** @brief NDEF Text encoding possible values. */
 typedef enum {
   NDEF_TEXT_UTF8  = 0,
@@ -48,8 +43,8 @@ typedef enum {
 /** @brief This structure is used to handle information from a NDEF Text record. */
 typedef struct {
   NDEF_Text_encoding_t  encoding;                                           /**< metadata: UTF-8 / UTF-16. */
-  char                  language_code[NDEF_TEXT_LANGUAGE_CODE_MAX_LENGTH];  /**< metadata: Language code as specified by IANA. */
-  char                  text[NDEF_TEXT_MAX_LENGTH];                         /**< The text itself. */
+  char                  language_code[TEXT_LANGUAGE_CODE_MAX_SIZE];  /**< metadata: Language code as specified by IANA. */
+  char                  text[TEXT_MAX_SIZE];                         /**< The text itself. */
 } NDEF_Text_info_t;
 
 

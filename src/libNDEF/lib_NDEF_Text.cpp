@@ -60,7 +60,7 @@
 
 /**
   * @brief  This function write the text in the TAG.
-  * @param  text : text to write.
+  * @param  text_info: text_info struct containing text, lang and encoding
   * @retval NDEF_OK : NDEF file data written in the tag.
   * @retval NDEF_ERROR : not able to store NDEF in tag.
   * @retval NDEF_ERROR_MEMORY_INTERNAL : Cannot write to tag.
@@ -68,17 +68,20 @@
   * @retval NDEF_ERROR_MEMORY_TAG : Size not compatible with memory.
   * @retval NDEF_ERROR_LOCKED : Tag locked, cannot be write.
   */
-uint16_t NDEF::NDEF_WriteText(char *text)
+uint16_t NDEF::NDEF_WriteText(NDEF_Text_info_t *text_info)
 {
   uint16_t status = NDEF_ERROR;
   uint32_t textSize, Offset = 0;
 
+  if (strlen(text_info->language_code) > 10) {
+    return status;
+  }
 
   /* TEXT : 1+en+message */
-  textSize = 3 + strlen(text);
+  textSize = 1 + strlen(text_info->language_code) + strlen(text_info->text);
 
   /* TEXT header */
-  NDEF_Buffer[Offset] = 0xD1;
+  NDEF_Buffer[Offset] = 0xC1;
   if (textSize < 256) {
     NDEF_Buffer[Offset] |= 0x10;  // Set the SR bit
   }
@@ -97,12 +100,13 @@ uint16_t NDEF::NDEF_WriteText(char *text)
   Offset += TEXT_TYPE_STRING_LENGTH;
 
   /* TEXT payload */
-  NDEF_Buffer[Offset++] = ISO_ENGLISH_CODE_STRING_LENGTH;
-  memcpy(&NDEF_Buffer[Offset], ISO_ENGLISH_CODE_STRING, ISO_ENGLISH_CODE_STRING_LENGTH);
-  Offset += ISO_ENGLISH_CODE_STRING_LENGTH;
+  NDEF_Buffer[Offset++] = strlen(text_info->language_code) | text_info->encoding << 7;
 
-  memcpy(&NDEF_Buffer[Offset], text, strlen(text));
-  Offset += strlen(text);
+  memcpy(&NDEF_Buffer[Offset], text_info->language_code, strlen(text_info->language_code));
+  Offset += strlen(text_info->language_code);
+
+  memcpy(&NDEF_Buffer[Offset], text_info->text, strlen(text_info->text));
+  Offset += strlen(text_info->text);
 
   status = NfcTag_WriteNDEF(Offset, NDEF_Buffer);
 
@@ -130,8 +134,8 @@ uint16_t NDEF::NDEF_ReadText(sRecordInfo_t *pRecordStruct, NDEF_Text_info_t *pTe
                            - text_record_info->language_length    /* minus language code length */
                            - sizeof(uint8_t);                     /* minus the status byte length */
 
-    if ((text_record_info->language_length >= NDEF_TEXT_LANGUAGE_CODE_MAX_LENGTH) ||
-        (text_length >= NDEF_TEXT_MAX_LENGTH)) {
+    if ((text_record_info->language_length >= TEXT_LANGUAGE_CODE_MAX_SIZE) ||
+        (text_length >= TEXT_MAX_SIZE)) {
       /* One of the text info structure buffer is too small */
       return NDEF_ERROR_MEMORY_INTERNAL;
     }

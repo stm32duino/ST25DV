@@ -308,21 +308,25 @@ uint16_t NDEF::NDEF_WriteWifiToken(sWifiTokenInfo *pWifiTokenStruct)
 
   /*Fill SSID length and SSID value*/
   SSIDSize = strlen(pWifiTokenStruct->NetworkSSID);
-  *pPayload = 0x00; pPayload++;
-  *pPayload = SSIDSize & 0x000000FF; pPayload++;
+  *pPayload = 0x00;
+  pPayload++;
+  *pPayload = SSIDSize & 0x000000FF;
+  pPayload++;
 
   strcpy((char *)pPayload, pWifiTokenStruct->NetworkSSID);
   pPayload = pPayload + strlen(pWifiTokenStruct->NetworkSSID);
 
-  for (initStage = 0; initStage < CONFIG_TOKEN_3; initStage++) {
+  for (initStage = 0;  initStage < CONFIG_TOKEN_3; initStage++) {
     *pPayload = configToken3[initStage];
     pPayload++;
   }
 
   /* Fill the SSIDKey length and SSIDKey value */
   SSIDKeySize = strlen(pWifiTokenStruct->NetworkKey);
-  *pPayload = 0x00; pPayload++;
-  *pPayload = SSIDKeySize & 0x000000FF; pPayload++;
+  *pPayload = 0x00;
+  pPayload++;
+  *pPayload = SSIDKeySize & 0x000000FF;
+  pPayload++;
 
   memcpy((char *)pPayload, pWifiTokenStruct->NetworkKey, SSIDKeySize);
   pPayload = pPayload + SSIDKeySize;

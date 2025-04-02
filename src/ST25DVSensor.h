@@ -38,6 +38,8 @@ class ST25DV {
     int begin(uint8_t *buffer, uint16_t bufferLength);
     int writeURI(String protocol, String uri, String info);
     int readURI(String *s);
+    int writeText(String text, String iso_lang,  NDEF_Text_encoding_t encoding);
+    int readText(String *text);
     int writeUnabridgedURI(String uri, String info);
     int readUnabridgedURI(String *s);
     int writeSMS(String phoneNumber, String message, String info);
@@ -46,6 +48,13 @@ class ST25DV {
     int readGEO(String *latitude, String *longitude);
     int writeEMail(String emailAdd, String subject, String message, String info);
     int readEMail(String *emailAdd, String *subject, String *message);
+    int writeWifi(String SSID, Ndef_Wifi_Authentication_t auth, Ndef_Wifi_Encryption_t enc, String key);
+    int readWifi(sWifiTokenInfo *wifitoken);
+    int writeVcard(sVcardInfo vcard);
+    int readVcard(sVcardInfo *vcard);
+    int appendAAR(String pkgName);
+    int appendBluetoothOOB(Ndef_Bluetooth_OOB_t bluetooth, char *recordId);
+    int writeMyApp(sMyAppInfo *pMyAppStruct);
     NDEF_TypeDef readNDEFType();
     NDEF *getNDEF();
 

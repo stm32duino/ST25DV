@@ -314,7 +314,7 @@ uint16_t NDEF::NDEF_WriteWifiToken(sWifiTokenInfo *pWifiTokenStruct)
   strcpy((char *)pPayload, pWifiTokenStruct->NetworkSSID);
   pPayload = pPayload + strlen(pWifiTokenStruct->NetworkSSID);
 
-  for (initStage = 0; initStage < CONFIG_TOKEN_3; initStage++) {
+  for (initStage = 0;  initStage < CONFIG_TOKEN_3; initStage++) {
     *pPayload = configToken3[initStage];
     pPayload++;
   }

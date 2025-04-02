@@ -53,7 +53,7 @@
 
 //#define NDEF_MAX_SIZE               NFC_DEVICE_MAX_NDEFMEMORY
 //#define NDEF_RECORD_MAX_SIZE        (512)
-#define NDEF_MAX_SIZE               (100)
+#define NDEF_MAX_SIZE               (512)
 #define NDEF_RECORD_MAX_SIZE        (100)
 
 #define NDEF_SIZE_OFFSET            0

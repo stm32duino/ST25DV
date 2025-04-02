@@ -54,20 +54,20 @@
 #define MYAPP_LED_CONF_BLINKING     ((uint8_t) 0x2)
 
 typedef struct {
-  uint8_t LedConf[4];
-  uint8_t Speed;
+    uint8_t LedConf[4];
+    uint8_t Speed;
 } sLedBlinkConfig;
 
 typedef struct {
-  uint8_t LineNb;
-  uint16_t BackGroundColor;
-  uint16_t FontColor;
-  char String[20];
+    uint8_t LineNb;
+    uint16_t BackGroundColor;
+    uint16_t FontColor;
+    char String[20];
 } sLineConfig;
 
 typedef struct {
-  sLedBlinkConfig LedBlinkConf;
-  sLineConfig LineX[MYAPP_NB_LINES];
+    sLedBlinkConfig LedBlinkConf;
+    sLineConfig LineX[MYAPP_NB_LINES];
 } sMyAppInfo;
 
 #endif /* __LIB_NDEF_MYAPP_H */

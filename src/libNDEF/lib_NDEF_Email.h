@@ -38,17 +38,17 @@
 
 #ifdef NDEF_DYN_ALLOC
 typedef struct {
-  char *EmailAdd;
-  char *Subject;
-  char *Message;
-  char *Information;
+    char *EmailAdd;
+    char *Subject;
+    char *Message;
+    char *Information;
 } sEmailInfo;
 #else
 typedef struct {
-  char EmailAdd[64];
-  char Subject[100];
-  char Message[2000];
-  char Information[400];
+    char EmailAdd[64];
+    char Subject[100];
+    char Message[2000];
+    char Information[400];
 } sEmailInfo;
 #endif
 

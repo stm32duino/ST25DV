@@ -19,16 +19,16 @@
   * @brief  Tag Type 5 State enumeration definition.
   */
 typedef enum {
-  TT5_NO_NDEF = 0,  /**< No data detected in the tag. */
-  TT5_INITIALIZED,  /**< Capability container detected. */
-  TT5_READ_WRITE,   /**< Read-Write data detected. */
-  TT5_READ          /**< Read-Only data message detected. */
+    TT5_NO_NDEF = 0,  /**< No data detected in the tag. */
+    TT5_INITIALIZED,  /**< Capability container detected. */
+    TT5_READ_WRITE,   /**< Read-Write data detected. */
+    TT5_READ          /**< Read-Only data message detected. */
 } TT5_State;
 
 /** @brief Type5 Tag Capability Container Magic numbers as defined by the NFC Forum. */
 typedef enum {
-  NFCT5_MAGICNUMBER_E1_CCFILE = 0xE1, /**<  Complete data area can be read by 1-byte block adrdess commands. */
-  NFCT5_MAGICNUMBER_E2_CCFILE = 0xE2  /**<  Last part of the data area can be only read by 2-bytes block address commands.\n
+    NFCT5_MAGICNUMBER_E1_CCFILE = 0xE1, /**<  Complete data area can be read by 1-byte block adrdess commands. */
+    NFCT5_MAGICNUMBER_E2_CCFILE = 0xE2  /**<  Last part of the data area can be only read by 2-bytes block address commands.\n
                                             The first 256 blocks can be read by 1-byte block address commands. */
 } TT5_MagicNumber_t;
 
@@ -36,25 +36,25 @@ typedef enum {
   * @brief  Type5 Tag Capability Container structure.
   */
 typedef struct {
-  TT5_MagicNumber_t MagicNumber;  /**< CCfile[0]: Magic Number should be E1h or E2h (for extended API) */
-  uint8_t Version;                /**< CCfile[1]: Capability container version (b7-b4) and access conditions (b3-b0) */
-  uint8_t MemorySize;             /**< CCfile[2]: Memory size, expressed in 8 bytes blocks, set to 0 if tag size is greater than 16kbits. */
-  uint8_t TT5Tag;                 /**< CCfile[3]: Additional information on the Type5 Tag:\n
+    TT5_MagicNumber_t MagicNumber;  /**< CCfile[0]: Magic Number should be E1h or E2h (for extended API) */
+    uint8_t Version;                /**< CCfile[1]: Capability container version (b7-b4) and access conditions (b3-b0) */
+    uint8_t MemorySize;             /**< CCfile[2]: Memory size, expressed in 8 bytes blocks, set to 0 if tag size is greater than 16kbits. */
+    uint8_t TT5Tag;                 /**< CCfile[3]: Additional information on the Type5 Tag:\n
                                                   b0: supports `read multiple block` commands\n
                                                   b1: RFU\n
                                                   b2: RFU\n
                                                   b3: supports `lock block` commands\n
                                                   b4: requires the `special frame` format
                                     */
-  uint8_t rsved1;                 /**< RFU */
-  uint8_t rsved2;                 /**< RFU */
-  uint16_t ExtMemorySize;         /**< CCfile[6],CCfile[7]: Memory size, expressed in 8 bytes blocks, when tag size is greater than 16kbits. */
-  TT5_State State;                /**< Indicates if a NDEF message is present. */
-  uint32_t NDEF_offset;           /**< Indicates the address of a NDEF message in the tag. */
+    uint8_t rsved1;                 /**< RFU */
+    uint8_t rsved2;                 /**< RFU */
+    uint16_t ExtMemorySize;         /**< CCfile[6],CCfile[7]: Memory size, expressed in 8 bytes blocks, when tag size is greater than 16kbits. */
+    TT5_State State;                /**< Indicates if a NDEF message is present. */
+    uint32_t NDEF_offset;           /**< Indicates the address of a NDEF message in the tag. */
 } sCCFileInfo;
 
 class NDEF {
-  public:
+public:
     NDEF(ST25DV_IO *dev);
 
     uint16_t begin();
@@ -162,7 +162,7 @@ class NDEF {
     //Email static
     void NDEF_FillEmailStruct(uint8_t *pPayload, uint32_t PayloadSize, sEmailInfo *pEmailStruct);
     void NDEF_ReadURI_Email(sRecordInfo_t *pRecordStruct, sEmailInfo *pEmailStruct);
-  private:
+private:
 
     //Geo static
     void NDEF_FillGeoStruct(uint8_t *pPayload, uint32_t PayloadSize, sGeoInfo *pGeoStruct);
@@ -219,7 +219,7 @@ class NDEF {
     /** @brief Capability Container structure instance (global). */
     sCCFileInfo CCFileStruct;
 
-  private:
+private:
 
     ST25DV_IO *mydev;
 };

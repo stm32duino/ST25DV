@@ -44,9 +44,9 @@
 
 /** @brief Type5 Tag Type-Length-Value structure as defined by the NFC Forum */
 typedef struct {
-  uint8_t   Type;     /**< NFC Forum message Type */
-  uint8_t   Length;   /**< Message length if lesser than 255 bytes */
-  uint16_t  Length16; /**< Message length if greater than or equal to 255 bytes */
+    uint8_t   Type;     /**< NFC Forum message Type */
+    uint8_t   Length;   /**< Message length if lesser than 255 bytes */
+    uint16_t  Length16; /**< Message length if greater than or equal to 255 bytes */
 } TT5_TLV_t;
 
 /* Exported types ------------------------------------------------------------*/

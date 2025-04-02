@@ -63,48 +63,48 @@
   */
 void NDEF::NDEF_FillSMSStruct(uint8_t *pPayload, uint32_t PayloadSize, sSMSInfo *pSMSStruct)
 {
-  uint8_t *pLastByteAdd, *pLook4Word, *pEndString;
-  const char *pKeyWord = SMS_TYPE_STRING;
-  uint32_t SizeOfKeyWord = SMS_TYPE_STRING_LENGTH;
-  pEndString = 0;
+    uint8_t *pLastByteAdd, *pLook4Word, *pEndString;
+    const char *pKeyWord = SMS_TYPE_STRING;
+    uint32_t SizeOfKeyWord = SMS_TYPE_STRING_LENGTH;
+    pEndString = 0;
 
-  /* First character force to NULL in case not matching found */
-  *pSMSStruct->PhoneNumber = 0;
-  *pSMSStruct->Message = 0;
+    /* First character force to NULL in case not matching found */
+    *pSMSStruct->PhoneNumber = 0;
+    *pSMSStruct->Message = 0;
 
-  /* Interesting information are stored before picture if any */
-  /* Moreover picture is not used in this demonstration SW */
-  pLastByteAdd = (uint8_t *)(pPayload + PayloadSize);
+    /* Interesting information are stored before picture if any */
+    /* Moreover picture is not used in this demonstration SW */
+    pLastByteAdd = (uint8_t *)(pPayload + PayloadSize);
 
-  pLook4Word = pPayload;
-  while (memcmp(pLook4Word, pKeyWord, SizeOfKeyWord) && (pLook4Word < pLastByteAdd)) {
-    pLook4Word++;
-  }
-
-  /* Retrieve phone number */
-  if (pLook4Word != pLastByteAdd) {
-    pLook4Word += SizeOfKeyWord;
-    pEndString = pLook4Word;
-    while (memcmp(pEndString, URI_FIRST_DATA_END, URI_FIRST_DATA_END_LENGTH) && (pEndString < pLastByteAdd)) {
-      pEndString++;
+    pLook4Word = pPayload;
+    while (memcmp(pLook4Word, pKeyWord, SizeOfKeyWord) && (pLook4Word < pLastByteAdd)) {
+        pLook4Word++;
     }
-    if (pEndString != pLastByteAdd) {
-      memcpy(pSMSStruct->PhoneNumber, pLook4Word, pEndString - pLook4Word);
-      /* add end of string character */
-      pSMSStruct->PhoneNumber[pEndString - pLook4Word] = 0;
-    }
-  }
-  pEndString += URI_FIRST_DATA_END_LENGTH;
-  pLook4Word = pEndString;
 
-  /* check if e-mail subject is present */
-  if (!memcmp(pLook4Word, MESSAGE_BEGIN_STRING, MESSAGE_BEGIN_STRING_LENGTH)) {
-    pEndString += MESSAGE_BEGIN_STRING_LENGTH;
-    /* Retrieve message */
-    memcpy(pSMSStruct->Message, pEndString, PayloadSize - (pEndString - pPayload));
-    /* add end of string character */
-    pSMSStruct->Message[PayloadSize - (pEndString - pPayload)] = 0;
-  }
+    /* Retrieve phone number */
+    if (pLook4Word != pLastByteAdd) {
+        pLook4Word += SizeOfKeyWord;
+        pEndString = pLook4Word;
+        while (memcmp(pEndString, URI_FIRST_DATA_END, URI_FIRST_DATA_END_LENGTH) && (pEndString < pLastByteAdd)) {
+            pEndString++;
+        }
+        if (pEndString != pLastByteAdd) {
+            memcpy(pSMSStruct->PhoneNumber, pLook4Word, pEndString - pLook4Word);
+            /* add end of string character */
+            pSMSStruct->PhoneNumber[pEndString - pLook4Word] = 0;
+        }
+    }
+    pEndString += URI_FIRST_DATA_END_LENGTH;
+    pLook4Word = pEndString;
+
+    /* check if e-mail subject is present */
+    if (!memcmp(pLook4Word, MESSAGE_BEGIN_STRING, MESSAGE_BEGIN_STRING_LENGTH)) {
+        pEndString += MESSAGE_BEGIN_STRING_LENGTH;
+        /* Retrieve message */
+        memcpy(pSMSStruct->Message, pEndString, PayloadSize - (pEndString - pPayload));
+        /* add end of string character */
+        pSMSStruct->Message[PayloadSize - (pEndString - pPayload)] = 0;
+    }
 }
 
 /**
@@ -114,17 +114,17 @@ void NDEF::NDEF_FillSMSStruct(uint8_t *pPayload, uint32_t PayloadSize, sSMSInfo 
   */
 void NDEF::NDEF_ReadURI_SMS(sRecordInfo_t *pRecordStruct, sSMSInfo *pSMSStruct)
 {
-  uint8_t *pPayload;
-  uint32_t PayloadSize;
+    uint8_t *pPayload;
+    uint32_t PayloadSize;
 
-  PayloadSize = pRecordStruct->PayloadLength;
+    PayloadSize = pRecordStruct->PayloadLength;
 
-  /* Read record header */
-  pPayload = (uint8_t *)(pRecordStruct->PayloadBufferAdd);
+    /* Read record header */
+    pPayload = (uint8_t *)(pRecordStruct->PayloadBufferAdd);
 
-  if (pRecordStruct->NDEF_Type == URI_SMS_TYPE) {
-    NDEF_FillSMSStruct(pPayload, PayloadSize, pSMSStruct);
-  }
+    if (pRecordStruct->NDEF_Type == URI_SMS_TYPE) {
+        NDEF_FillSMSStruct(pPayload, PayloadSize, pSMSStruct);
+    }
 
 }
 
@@ -146,37 +146,37 @@ void NDEF::NDEF_ReadURI_SMS(sRecordInfo_t *pRecordStruct, sSMSInfo *pSMSStruct)
   */
 uint16_t NDEF::NDEF_ReadSMS(sRecordInfo_t *pRecordStruct, sSMSInfo *pSMSStruct)
 {
-  uint16_t status = NDEF_ERROR;
-  sRecordInfo_t *pSPRecordStruct;
-  uint32_t PayloadSize, RecordPosition;
-  uint8_t *pData;
+    uint16_t status = NDEF_ERROR;
+    sRecordInfo_t *pSPRecordStruct;
+    uint32_t PayloadSize, RecordPosition;
+    uint8_t *pData;
 
-  if (pRecordStruct->NDEF_Type == URI_SMS_TYPE) {
-    NDEF_ReadURI_SMS(pRecordStruct, pSMSStruct);
-    status = NDEF_OK;
-  } else if (pRecordStruct->NDEF_Type == SMARTPOSTER_TYPE) {
-    for (RecordPosition = 0; RecordPosition < pRecordStruct->NbOfRecordInSPPayload; RecordPosition++) {
-      pSPRecordStruct = pRecordStruct->SPRecordStructAdd[RecordPosition];
-      if (pSPRecordStruct->NDEF_Type == URI_SMS_TYPE) {
-        NDEF_ReadURI_SMS(pSPRecordStruct, pSMSStruct);
+    if (pRecordStruct->NDEF_Type == URI_SMS_TYPE) {
+        NDEF_ReadURI_SMS(pRecordStruct, pSMSStruct);
         status = NDEF_OK;
-      }
-      if (pSPRecordStruct->NDEF_Type == TEXT_TYPE) {
-        PayloadSize = pSPRecordStruct->PayloadLength;
+    } else if (pRecordStruct->NDEF_Type == SMARTPOSTER_TYPE) {
+        for (RecordPosition = 0; RecordPosition < pRecordStruct->NbOfRecordInSPPayload; RecordPosition++) {
+            pSPRecordStruct = pRecordStruct->SPRecordStructAdd[RecordPosition];
+            if (pSPRecordStruct->NDEF_Type == URI_SMS_TYPE) {
+                NDEF_ReadURI_SMS(pSPRecordStruct, pSMSStruct);
+                status = NDEF_OK;
+            }
+            if (pSPRecordStruct->NDEF_Type == TEXT_TYPE) {
+                PayloadSize = pSPRecordStruct->PayloadLength;
 
-        /* The instruction content the UTF-8 language code that is not used here */
-        pData = (uint8_t *)pSPRecordStruct->PayloadBufferAdd;
-        PayloadSize -= *pData + 1; /* remove not useful data */
-        pData += *pData + 1; /* set pointer on useful data */
+                /* The instruction content the UTF-8 language code that is not used here */
+                pData = (uint8_t *)pSPRecordStruct->PayloadBufferAdd;
+                PayloadSize -= *pData + 1; /* remove not useful data */
+                pData += *pData + 1; /* set pointer on useful data */
 
-        memcpy(pSMSStruct->Information, pData, PayloadSize);
-        /* add end of string character */
-        pSMSStruct->Information[PayloadSize] = 0;
-      }
+                memcpy(pSMSStruct->Information, pData, PayloadSize);
+                /* add end of string character */
+                pSMSStruct->Information[PayloadSize] = 0;
+            }
+        }
     }
-  }
 
-  return status;
+    return status;
 }
 
 /**
@@ -191,13 +191,13 @@ uint16_t NDEF::NDEF_ReadSMS(sRecordInfo_t *pRecordStruct, sSMSInfo *pSMSStruct)
   */
 uint16_t NDEF::NDEF_WriteSMS(sSMSInfo *pSMSStruct)
 {
-  uint16_t status = NDEF_ERROR, Offset = 0;
+    uint16_t status = NDEF_ERROR, Offset = 0;
 
-  NDEF_PrepareSMSMessage(pSMSStruct, NDEF_Buffer, &Offset);
+    NDEF_PrepareSMSMessage(pSMSStruct, NDEF_Buffer, &Offset);
 
-  status = NfcTag_WriteNDEF(Offset, NDEF_Buffer);
+    status = NfcTag_WriteNDEF(Offset, NDEF_Buffer);
 
-  return status;
+    return status;
 }
 
 /**
@@ -208,133 +208,133 @@ uint16_t NDEF::NDEF_WriteSMS(sSMSInfo *pSMSStruct)
   */
 void NDEF::NDEF_PrepareSMSMessage(sSMSInfo *pSMSStruct, uint8_t *pNDEFMessage, uint16_t *size)
 {
-  uint16_t Offset = 0;
-  uint32_t smsSize = 0;
-  uint32_t infoSize = 0;
-  uint32_t totalSize = 0;
+    uint16_t Offset = 0;
+    uint32_t smsSize = 0;
+    uint32_t infoSize = 0;
+    uint32_t totalSize = 0;
 
-  /* SMS is an URI but can be included in a smart poster to add text to give instruction to user for instance */
+    /* SMS is an URI but can be included in a smart poster to add text to give instruction to user for instance */
 
-  /* SMS (smart poster) Record Header */
-  /************************************/
-  /*  7 |  6 |  5 |  4 |  3 | 2  1  0 */
-  /*----------------------------------*/
-  /* MB   ME   CF   SR   IL    TNF    */  /* <---- CF=0, IL=0 and SR=1 TNF=1 NFC Forum Well-known type*/
-  /*----------------------------------*/
-  /*          TYPE LENGTH             */
-  /*----------------------------------*/
-  /*        PAYLOAD LENGTH 3          */  /* <---- Used only if SR=0 */
-  /*----------------------------------*/
-  /*        PAYLOAD LENGTH 2          */  /* <---- Used only if SR=0 */
-  /*----------------------------------*/
-  /*        PAYLOAD LENGTH 1          */  /* <---- Used only if SR=0 */
-  /*----------------------------------*/
-  /*        PAYLOAD LENGTH 0          */
-  /*----------------------------------*/
-  /*          ID LENGTH               */  /* <---- Not Used  */
-  /*----------------------------------*/
-  /*              TYPE                */
-  /*----------------------------------*/
-  /*               ID                 */  /* <---- Not Used  */
-  /************************************/
+    /* SMS (smart poster) Record Header */
+    /************************************/
+    /*  7 |  6 |  5 |  4 |  3 | 2  1  0 */
+    /*----------------------------------*/
+    /* MB   ME   CF   SR   IL    TNF    */  /* <---- CF=0, IL=0 and SR=1 TNF=1 NFC Forum Well-known type*/
+    /*----------------------------------*/
+    /*          TYPE LENGTH             */
+    /*----------------------------------*/
+    /*        PAYLOAD LENGTH 3          */  /* <---- Used only if SR=0 */
+    /*----------------------------------*/
+    /*        PAYLOAD LENGTH 2          */  /* <---- Used only if SR=0 */
+    /*----------------------------------*/
+    /*        PAYLOAD LENGTH 1          */  /* <---- Used only if SR=0 */
+    /*----------------------------------*/
+    /*        PAYLOAD LENGTH 0          */
+    /*----------------------------------*/
+    /*          ID LENGTH               */  /* <---- Not Used  */
+    /*----------------------------------*/
+    /*              TYPE                */
+    /*----------------------------------*/
+    /*               ID                 */  /* <---- Not Used  */
+    /************************************/
 
-  /* SMS : 1+sms:+tel+1+body=+message */
-  smsSize = 1 + SMS_TYPE_STRING_LENGTH + strlen(pSMSStruct->PhoneNumber) + URI_FIRST_DATA_END_LENGTH +
-            MESSAGE_BEGIN_STRING_LENGTH + strlen(pSMSStruct->Message);
+    /* SMS : 1+sms:+tel+1+body=+message */
+    smsSize = 1 + SMS_TYPE_STRING_LENGTH + strlen(pSMSStruct->PhoneNumber) + URI_FIRST_DATA_END_LENGTH +
+              MESSAGE_BEGIN_STRING_LENGTH + strlen(pSMSStruct->Message);
 
-  /* Check if a Smart poster is needed */
-  if (pSMSStruct->Information[0] != '\0') {
-    /* Info : 1+2+info */
-    infoSize = 1 + ISO_ENGLISH_CODE_STRING_LENGTH + strlen(pSMSStruct->Information);
-    /* Total */
-    totalSize = 4 + smsSize + 4 + infoSize;
+    /* Check if a Smart poster is needed */
+    if (pSMSStruct->Information[0] != '\0') {
+        /* Info : 1+2+info */
+        infoSize = 1 + ISO_ENGLISH_CODE_STRING_LENGTH + strlen(pSMSStruct->Information);
+        /* Total */
+        totalSize = 4 + smsSize + 4 + infoSize;
+        if (smsSize > 255) {
+            totalSize += 3;  /* Normal Email size */
+        }
+        if (infoSize > 255) {
+            totalSize += 3;  /* Normal Info size */
+        }
+
+        /* SmartPoster header */
+        if (totalSize > 255) {
+            pNDEFMessage[Offset++] = 0xC1;
+            pNDEFMessage[Offset++] = SMART_POSTER_TYPE_STRING_LENGTH;
+            pNDEFMessage[Offset++] = (totalSize & 0xFF000000) >> 24;
+            pNDEFMessage[Offset++] = (totalSize & 0x00FF0000) >> 16;
+            pNDEFMessage[Offset++] = (totalSize & 0x0000FF00) >> 8;
+            pNDEFMessage[Offset++] = totalSize & 0x000000FF;
+        } else {
+            pNDEFMessage[Offset++] = 0xD1;
+            pNDEFMessage[Offset++] = SMART_POSTER_TYPE_STRING_LENGTH;
+            pNDEFMessage[Offset++] = (uint8_t)totalSize;
+        }
+        memcpy(&pNDEFMessage[Offset], SMART_POSTER_TYPE_STRING, SMART_POSTER_TYPE_STRING_LENGTH);
+        Offset += SMART_POSTER_TYPE_STRING_LENGTH;
+    }
+
+    /* SMS header */
+    pNDEFMessage[Offset] = 0x81;
+    if (smsSize < 256) {
+        pNDEFMessage[Offset] |= 0x10;  // Set the SR bit
+    }
+    if (pSMSStruct->Information[0] == '\0') {
+        pNDEFMessage[Offset] |= 0x40;  // Set the ME bit
+    }
+    Offset++;
+
+    pNDEFMessage[Offset++] = URI_TYPE_STRING_LENGTH;
     if (smsSize > 255) {
-      totalSize += 3;  /* Normal Email size */
-    }
-    if (infoSize > 255) {
-      totalSize += 3;  /* Normal Info size */
-    }
-
-    /* SmartPoster header */
-    if (totalSize > 255) {
-      pNDEFMessage[Offset++] = 0xC1;
-      pNDEFMessage[Offset++] = SMART_POSTER_TYPE_STRING_LENGTH;
-      pNDEFMessage[Offset++] = (totalSize & 0xFF000000) >> 24;
-      pNDEFMessage[Offset++] = (totalSize & 0x00FF0000) >> 16;
-      pNDEFMessage[Offset++] = (totalSize & 0x0000FF00) >> 8;
-      pNDEFMessage[Offset++] = totalSize & 0x000000FF;
+        pNDEFMessage[Offset++] = (smsSize & 0xFF000000) >> 24;
+        pNDEFMessage[Offset++] = (smsSize & 0x00FF0000) >> 16;
+        pNDEFMessage[Offset++] = (smsSize & 0x0000FF00) >> 8;
+        pNDEFMessage[Offset++] = smsSize & 0x000000FF;
     } else {
-      pNDEFMessage[Offset++] = 0xD1;
-      pNDEFMessage[Offset++] = SMART_POSTER_TYPE_STRING_LENGTH;
-      pNDEFMessage[Offset++] = (uint8_t)totalSize;
+        pNDEFMessage[Offset++] = (uint8_t)smsSize;
     }
-    memcpy(&pNDEFMessage[Offset], SMART_POSTER_TYPE_STRING, SMART_POSTER_TYPE_STRING_LENGTH);
-    Offset += SMART_POSTER_TYPE_STRING_LENGTH;
-  }
+    memcpy(&pNDEFMessage[Offset], URI_TYPE_STRING, URI_TYPE_STRING_LENGTH);
+    Offset += URI_TYPE_STRING_LENGTH;
 
-  /* SMS header */
-  pNDEFMessage[Offset] = 0x81;
-  if (smsSize < 256) {
-    pNDEFMessage[Offset] |= 0x10;  // Set the SR bit
-  }
-  if (pSMSStruct->Information[0] == '\0') {
-    pNDEFMessage[Offset] |= 0x40;  // Set the ME bit
-  }
-  Offset++;
+    /* SMS payload */
+    pNDEFMessage[Offset++] = URI_ID_0x00;
+    memcpy(&pNDEFMessage[Offset], SMS_TYPE_STRING, SMS_TYPE_STRING_LENGTH);
+    Offset += SMS_TYPE_STRING_LENGTH;
+    memcpy(&pNDEFMessage[Offset], pSMSStruct->PhoneNumber, strlen(pSMSStruct->PhoneNumber));
+    Offset += strlen(pSMSStruct->PhoneNumber);
+    memcpy(&pNDEFMessage[Offset], URI_FIRST_DATA_END, URI_FIRST_DATA_END_LENGTH);
+    Offset += URI_FIRST_DATA_END_LENGTH;
 
-  pNDEFMessage[Offset++] = URI_TYPE_STRING_LENGTH;
-  if (smsSize > 255) {
-    pNDEFMessage[Offset++] = (smsSize & 0xFF000000) >> 24;
-    pNDEFMessage[Offset++] = (smsSize & 0x00FF0000) >> 16;
-    pNDEFMessage[Offset++] = (smsSize & 0x0000FF00) >> 8;
-    pNDEFMessage[Offset++] = smsSize & 0x000000FF;
-  } else {
-    pNDEFMessage[Offset++] = (uint8_t)smsSize;
-  }
-  memcpy(&pNDEFMessage[Offset], URI_TYPE_STRING, URI_TYPE_STRING_LENGTH);
-  Offset += URI_TYPE_STRING_LENGTH;
+    memcpy(&pNDEFMessage[Offset], MESSAGE_BEGIN_STRING, MESSAGE_BEGIN_STRING_LENGTH);
+    Offset += MESSAGE_BEGIN_STRING_LENGTH;
+    memcpy(&pNDEFMessage[Offset], pSMSStruct->Message, strlen(pSMSStruct->Message));
+    Offset += strlen(pSMSStruct->Message);
 
-  /* SMS payload */
-  pNDEFMessage[Offset++] = URI_ID_0x00;
-  memcpy(&pNDEFMessage[Offset], SMS_TYPE_STRING, SMS_TYPE_STRING_LENGTH);
-  Offset += SMS_TYPE_STRING_LENGTH;
-  memcpy(&pNDEFMessage[Offset], pSMSStruct->PhoneNumber, strlen(pSMSStruct->PhoneNumber));
-  Offset += strlen(pSMSStruct->PhoneNumber);
-  memcpy(&pNDEFMessage[Offset], URI_FIRST_DATA_END, URI_FIRST_DATA_END_LENGTH);
-  Offset += URI_FIRST_DATA_END_LENGTH;
+    /* Information header */
+    if (pSMSStruct->Information[0] != '\0') {
+        if (infoSize > 255) {
+            pNDEFMessage[Offset++] = 0x41;
+            pNDEFMessage[Offset++] = TEXT_TYPE_STRING_LENGTH;
+            pNDEFMessage[Offset++] = (infoSize & 0xFF000000) >> 24;
+            pNDEFMessage[Offset++] = (infoSize & 0x00FF0000) >> 16;
+            pNDEFMessage[Offset++] = (infoSize & 0x0000FF00) >> 8;
+            pNDEFMessage[Offset++] = infoSize & 0x000000FF;
+        } else {
+            pNDEFMessage[Offset++] = 0x51;
+            pNDEFMessage[Offset++] = TEXT_TYPE_STRING_LENGTH;
+            pNDEFMessage[Offset++] = (uint8_t)infoSize;
+        }
 
-  memcpy(&pNDEFMessage[Offset], MESSAGE_BEGIN_STRING, MESSAGE_BEGIN_STRING_LENGTH);
-  Offset += MESSAGE_BEGIN_STRING_LENGTH;
-  memcpy(&pNDEFMessage[Offset], pSMSStruct->Message, strlen(pSMSStruct->Message));
-  Offset += strlen(pSMSStruct->Message);
+        memcpy(&pNDEFMessage[Offset], TEXT_TYPE_STRING, TEXT_TYPE_STRING_LENGTH);
+        Offset += TEXT_TYPE_STRING_LENGTH;
+        pNDEFMessage[Offset++] = ISO_ENGLISH_CODE_STRING_LENGTH; /* UTF-8 with x byte language code */
+        memcpy(&pNDEFMessage[Offset], ISO_ENGLISH_CODE_STRING, ISO_ENGLISH_CODE_STRING_LENGTH);
+        Offset += ISO_ENGLISH_CODE_STRING_LENGTH;
 
-  /* Information header */
-  if (pSMSStruct->Information[0] != '\0') {
-    if (infoSize > 255) {
-      pNDEFMessage[Offset++] = 0x41;
-      pNDEFMessage[Offset++] = TEXT_TYPE_STRING_LENGTH;
-      pNDEFMessage[Offset++] = (infoSize & 0xFF000000) >> 24;
-      pNDEFMessage[Offset++] = (infoSize & 0x00FF0000) >> 16;
-      pNDEFMessage[Offset++] = (infoSize & 0x0000FF00) >> 8;
-      pNDEFMessage[Offset++] = infoSize & 0x000000FF;
-    } else {
-      pNDEFMessage[Offset++] = 0x51;
-      pNDEFMessage[Offset++] = TEXT_TYPE_STRING_LENGTH;
-      pNDEFMessage[Offset++] = (uint8_t)infoSize;
+        /* Information payload */
+        memcpy(&pNDEFMessage[Offset], pSMSStruct->Information, strlen(pSMSStruct->Information));
+        Offset += strlen(pSMSStruct->Information);
     }
 
-    memcpy(&pNDEFMessage[Offset], TEXT_TYPE_STRING, TEXT_TYPE_STRING_LENGTH);
-    Offset += TEXT_TYPE_STRING_LENGTH;
-    pNDEFMessage[Offset++] = ISO_ENGLISH_CODE_STRING_LENGTH; /* UTF-8 with x byte language code */
-    memcpy(&pNDEFMessage[Offset], ISO_ENGLISH_CODE_STRING, ISO_ENGLISH_CODE_STRING_LENGTH);
-    Offset += ISO_ENGLISH_CODE_STRING_LENGTH;
-
-    /* Information payload */
-    memcpy(&pNDEFMessage[Offset], pSMSStruct->Information, strlen(pSMSStruct->Information));
-    Offset += strlen(pSMSStruct->Information);
-  }
-
-  *size = (uint16_t)(Offset);
+    *size = (uint16_t)(Offset);
 }
 
 

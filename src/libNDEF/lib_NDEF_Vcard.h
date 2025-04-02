@@ -87,22 +87,22 @@
 #define LIMIT_STRING_SIZE             2
 
 typedef struct {
-  char Version [10];
-  char Name[80];
-  // TODO: rename FirstName into FormattedName
-  char FirstName[80];
-  char Title[80];
-  char Org[80];
-  char HomeAddress[80];
-  char WorkAddress[80];
-  char Address[80];
-  char HomeTel[40];
-  char WorkTel[40];
-  char CellTel[40];
-  char HomeEmail[80];
-  char WorkEmail[80];
-  char Email[80];
-  char Url[80];
+    char Version [10];
+    char Name[80];
+    // TODO: rename FirstName into FormattedName
+    char FirstName[80];
+    char Title[80];
+    char Org[80];
+    char HomeAddress[80];
+    char WorkAddress[80];
+    char Address[80];
+    char HomeTel[40];
+    char WorkTel[40];
+    char CellTel[40];
+    char HomeEmail[80];
+    char WorkEmail[80];
+    char Email[80];
+    char Url[80];
 } sVcardInfo;
 
 #endif /* __LIB_NDEF_VCARD_H */

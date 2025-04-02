@@ -147,52 +147,52 @@
   */
 uint16_t NDEF::NDEF_ReadAuxData(uint8_t aux_data_nb, Ndef_Handover_alternative_carrier_t *pAC, sRecordInfo_t *pRecord)
 {
-  uint16_t status;
-  uint8_t *pData = pAC->aux_data_ref_start;
-  uint8_t current_aux = 0;
-  uint8_t *aux_id = NULL;
-  uint8_t  aux_id_length = 0;
+    uint16_t status;
+    uint8_t *pData = pAC->aux_data_ref_start;
+    uint8_t current_aux = 0;
+    uint8_t *aux_id = NULL;
+    uint8_t  aux_id_length = 0;
 
-  if ((pAC->aux_data_ref_start == NULL) ||
-      (pAC->aux_data_ref_end == NULL) ||
-      (pAC->aux_data_ref_count == 0) ||
-      (aux_data_nb >= pAC->aux_data_ref_count)) {
+    if ((pAC->aux_data_ref_start == NULL) ||
+            (pAC->aux_data_ref_end == NULL) ||
+            (pAC->aux_data_ref_count == 0) ||
+            (aux_data_nb >= pAC->aux_data_ref_count)) {
+        return NDEF_ERROR;
+    }
+
+
+    while ((current_aux < aux_data_nb) && (pData < pAC->aux_data_ref_end)) {
+        aux_id_length = *pData++;
+        aux_id = pData;
+        pData += aux_id_length;
+        current_aux++;
+    }
+
+    pData = pAC->aux_data_ref_end;
+    /* if ac has been found */
+    if (current_aux == aux_data_nb) {
+        /* let's now look for the corresponding record - must be after the Handover record */
+        do {
+            status = NDEF_IdentifyBuffer(pRecord, pData);
+            if (status != NDEF_OK) {
+                return status;
+            }
+            pData  = pAC->ac_record.PayloadBufferAdd;
+
+            if ((pRecord->IDLength == aux_id_length) &&
+                    !memcmp(pRecord->ID, aux_id, aux_id_length)) {
+                /* this is the record we were looking for, so exit */
+                return NDEF_OK;
+            }
+
+            // go to next record
+            pData  = pRecord->PayloadBufferAdd + pRecord->PayloadLength;
+
+        } while (!(pRecord->RecordFlags & MB_Mask));
+
+    }
+    // if we go there, it means that the record ID is not found
     return NDEF_ERROR;
-  }
-
-
-  while ((current_aux < aux_data_nb) && (pData < pAC->aux_data_ref_end)) {
-    aux_id_length = *pData++;
-    aux_id = pData;
-    pData += aux_id_length;
-    current_aux++;
-  }
-
-  pData = pAC->aux_data_ref_end;
-  /* if ac has been found */
-  if (current_aux == aux_data_nb) {
-    /* let's now look for the corresponding record - must be after the Handover record */
-    do {
-      status = NDEF_IdentifyBuffer(pRecord, pData);
-      if (status != NDEF_OK) {
-        return status;
-      }
-      pData  = pAC->ac_record.PayloadBufferAdd;
-
-      if ((pRecord->IDLength == aux_id_length) &&
-          !memcmp(pRecord->ID, aux_id, aux_id_length)) {
-        /* this is the record we were looking for, so exit */
-        return NDEF_OK;
-      }
-
-      // go to next record
-      pData  = pRecord->PayloadBufferAdd + pRecord->PayloadLength;
-
-    } while (!(pRecord->RecordFlags & MB_Mask));
-
-  }
-  // if we go there, it means that the record ID is not found
-  return NDEF_ERROR;
 }
 
 
@@ -207,73 +207,73 @@ uint16_t NDEF::NDEF_ReadAuxData(uint8_t aux_data_nb, Ndef_Handover_alternative_c
   */
 uint16_t NDEF::NDEF_ReadAC(uint8_t ac_nb, Ndef_Handover_t *pHandover, Ndef_Handover_alternative_carrier_t *pAC)
 {
-  uint16_t status;
-  uint8_t *pData = pHandover->ac_start;
-  uint8_t current_ac = 0;
-  uint8_t *ac_id;
-  uint8_t  ac_id_length;
-  sRecordInfo_t NestedRecord;
-  uint8_t ac_found = 0;
+    uint16_t status;
+    uint8_t *pData = pHandover->ac_start;
+    uint8_t current_ac = 0;
+    uint8_t *ac_id;
+    uint8_t  ac_id_length;
+    sRecordInfo_t NestedRecord;
+    uint8_t ac_found = 0;
 
-  if ((pHandover->ac_start == NULL) ||
-      (pHandover->ac_end == NULL) ||
-      (pHandover->nb_alternative_carrier == 0) ||
-      (ac_nb >= pHandover->nb_alternative_carrier)) {
+    if ((pHandover->ac_start == NULL) ||
+            (pHandover->ac_end == NULL) ||
+            (pHandover->nb_alternative_carrier == 0) ||
+            (ac_nb >= pHandover->nb_alternative_carrier)) {
+        return NDEF_ERROR;
+    }
+
+    // Default handover init
+    pAC->aux_data_ref_count = 0;
+
+    while ((current_ac <= ac_nb) && (current_ac <= pHandover->nb_alternative_carrier) && (pData < pHandover->ac_end)) {
+        status = NDEF_IdentifyBuffer(&NestedRecord, pData);
+        if (status != NDEF_OK) {
+            return status;
+        }
+        // go to payload address
+        pData  = NestedRecord.PayloadBufferAdd;
+
+        if (!memcmp(NestedRecord.Type, NDEF_HANDOVER_ALTERNATIVE_CARRIER_TYPE_STR, strlen(NDEF_HANDOVER_ALTERNATIVE_CARRIER_TYPE_STR))) {
+            if (current_ac == ac_nb) {
+                // parse the AC now
+                pAC->cps = pData[0] & NDEF_HANDOVER_AC_CPS_MASK;
+                ac_id_length = pData[1];
+                ac_id = &pData[2];
+                pAC->aux_data_ref_count = pData[2 + ac_id_length];
+                pAC->aux_data_ref_start = &pData[3 + ac_id_length];
+                pAC->aux_data_ref_end = pData + NestedRecord.PayloadLength;
+                ac_found = 1;
+            }
+            current_ac++;
+        }
+        // go to next record
+        pData  += NestedRecord.PayloadLength;
+    }
+    pData = pHandover->ac_end;
+    /* if ac has been found */
+    if (ac_found) {
+        /* let's now look for the corresponding record - must be after the Handover record */
+        do {
+            status = NDEF_IdentifyBuffer(&pAC->ac_record, pData);
+            if (status != NDEF_OK) {
+                return status;
+            }
+            pData  = pAC->ac_record.PayloadBufferAdd;
+
+            if ((pAC->ac_record.IDLength == ac_id_length) &&
+                    !memcmp(pAC->ac_record.ID, ac_id, ac_id_length)) {
+                /* this is the record we were looking for, so exit */
+                return NDEF_OK;
+            }
+
+            // go to next record
+            pData  = pAC->ac_record.PayloadBufferAdd + pAC->ac_record.PayloadLength;
+            // TO DO: add a security condition to avoid infinite loop if NDEF file is corrupted
+        } while (!(pAC->ac_record.RecordFlags & ME_Mask));
+
+    }
+    // if we go there, it means that the record ID is not found
     return NDEF_ERROR;
-  }
-
-  // Default handover init
-  pAC->aux_data_ref_count = 0;
-
-  while ((current_ac <= ac_nb) && (current_ac <= pHandover->nb_alternative_carrier) && (pData < pHandover->ac_end)) {
-    status = NDEF_IdentifyBuffer(&NestedRecord, pData);
-    if (status != NDEF_OK) {
-      return status;
-    }
-    // go to payload address
-    pData  = NestedRecord.PayloadBufferAdd;
-
-    if (!memcmp(NestedRecord.Type, NDEF_HANDOVER_ALTERNATIVE_CARRIER_TYPE_STR, strlen(NDEF_HANDOVER_ALTERNATIVE_CARRIER_TYPE_STR))) {
-      if (current_ac == ac_nb) {
-        // parse the AC now
-        pAC->cps = pData[0] & NDEF_HANDOVER_AC_CPS_MASK;
-        ac_id_length = pData[1];
-        ac_id = &pData[2];
-        pAC->aux_data_ref_count = pData[2 + ac_id_length];
-        pAC->aux_data_ref_start = &pData[3 + ac_id_length];
-        pAC->aux_data_ref_end = pData + NestedRecord.PayloadLength;
-        ac_found = 1;
-      }
-      current_ac++;
-    }
-    // go to next record
-    pData  += NestedRecord.PayloadLength;
-  }
-  pData = pHandover->ac_end;
-  /* if ac has been found */
-  if (ac_found) {
-    /* let's now look for the corresponding record - must be after the Handover record */
-    do {
-      status = NDEF_IdentifyBuffer(&pAC->ac_record, pData);
-      if (status != NDEF_OK) {
-        return status;
-      }
-      pData  = pAC->ac_record.PayloadBufferAdd;
-
-      if ((pAC->ac_record.IDLength == ac_id_length) &&
-          !memcmp(pAC->ac_record.ID, ac_id, ac_id_length)) {
-        /* this is the record we were looking for, so exit */
-        return NDEF_OK;
-      }
-
-      // go to next record
-      pData  = pAC->ac_record.PayloadBufferAdd + pAC->ac_record.PayloadLength;
-      // TO DO: add a security condition to avoid infinite loop if NDEF file is corrupted
-    } while (!(pAC->ac_record.RecordFlags & ME_Mask));
-
-  }
-  // if we go there, it means that the record ID is not found
-  return NDEF_ERROR;
 }
 
 
@@ -286,71 +286,71 @@ uint16_t NDEF::NDEF_ReadAC(uint8_t ac_nb, Ndef_Handover_t *pHandover, Ndef_Hando
   */
 uint16_t NDEF::NDEF_ReadHandover(sRecordInfo_t *pRecord,  Ndef_Handover_t *pHandover)
 {
-  uint16_t status;
-  uint8_t *pData = pRecord->PayloadBufferAdd;
-  uint8_t *pEnd = pData + pRecord->PayloadLength;
-  sRecordInfo_t NestedRecord;
+    uint16_t status;
+    uint8_t *pData = pRecord->PayloadBufferAdd;
+    uint8_t *pEnd = pData + pRecord->PayloadLength;
+    sRecordInfo_t NestedRecord;
 
-  /* Default Handover Structure init */
-  pHandover->version = 0;
-  pHandover->nb_alternative_carrier = 0;
-  pHandover->has_cr = 0;
-  pHandover->ac_start = NULL;
-  pHandover->ac_end = NULL;
+    /* Default Handover Structure init */
+    pHandover->version = 0;
+    pHandover->nb_alternative_carrier = 0;
+    pHandover->has_cr = 0;
+    pHandover->ac_start = NULL;
+    pHandover->ac_end = NULL;
 
-  /* A Handover record should never be the end of the NDEF message */
-  if (pRecord->RecordFlags & ME_Mask) {
-    return NDEF_ERROR;
-  }
-
-  if (!memcmp(pRecord->Type, NDEF_HANDOVER_REQUEST_TYPE_STR, strlen(NDEF_HANDOVER_REQUEST_TYPE_STR))) {
-    pHandover->type = NDEF_HANDOVER_REQUEST_TYPE;
-  } else if (!memcmp(pRecord->Type, NDEF_HANDOVER_SELECT_TYPE_STR, strlen(NDEF_HANDOVER_SELECT_TYPE_STR))) {
-    pHandover->type = NDEF_HANDOVER_SELECT_TYPE;
-  } else {
-    /* This is not a Handover record! */
-    return NDEF_ERROR;
-  }
-
-  pHandover->version = *pData++;
-
-  /* Following records are nested into Hr/s record */
-  while (pData < pEnd) {
-    status = NDEF_IdentifyBuffer(&NestedRecord, pData);
-    if (status != NDEF_OK) {
-      return status;
-    }
-    /* save record address */
-    uint8_t *pACRecord = pData;
-    /* go to payload address */
-    pData  = NestedRecord.PayloadBufferAdd;
-
-    /* Parse Collision Resolution if Handover request */
-    if (pHandover->type == NDEF_HANDOVER_REQUEST_TYPE) {
-
-      if (!memcmp(NestedRecord.Type, NDEF_HANDOVER_COLLISION_RESOLUTION_TYPE_STR, strlen(NDEF_HANDOVER_COLLISION_RESOLUTION_TYPE_STR))) {
-        pHandover->has_cr = 1;
-        pHandover->cr_random_number = *(uint16_t *)pData;
-      }
+    /* A Handover record should never be the end of the NDEF message */
+    if (pRecord->RecordFlags & ME_Mask) {
+        return NDEF_ERROR;
     }
 
-    /* Parse AlternativeCarriers just to know how many they are */
-    else if (!memcmp(NestedRecord.Type, NDEF_HANDOVER_ALTERNATIVE_CARRIER_TYPE_STR, strlen(NDEF_HANDOVER_ALTERNATIVE_CARRIER_TYPE_STR))) {
-      pHandover->nb_alternative_carrier++;
-      if (pHandover->ac_start == NULL) {
-        pHandover->ac_start = pACRecord;
-      }
-      pHandover->ac_end = pData + NestedRecord.PayloadLength;
-      /* don't parse the AC now */
+    if (!memcmp(pRecord->Type, NDEF_HANDOVER_REQUEST_TYPE_STR, strlen(NDEF_HANDOVER_REQUEST_TYPE_STR))) {
+        pHandover->type = NDEF_HANDOVER_REQUEST_TYPE;
+    } else if (!memcmp(pRecord->Type, NDEF_HANDOVER_SELECT_TYPE_STR, strlen(NDEF_HANDOVER_SELECT_TYPE_STR))) {
+        pHandover->type = NDEF_HANDOVER_SELECT_TYPE;
     } else {
-      /* this is an unexpected type, just ignore it */
+        /* This is not a Handover record! */
+        return NDEF_ERROR;
     }
-    /* go to next record */
-    pData  += NestedRecord.PayloadLength;
 
-  }
+    pHandover->version = *pData++;
 
-  return NDEF_OK;
+    /* Following records are nested into Hr/s record */
+    while (pData < pEnd) {
+        status = NDEF_IdentifyBuffer(&NestedRecord, pData);
+        if (status != NDEF_OK) {
+            return status;
+        }
+        /* save record address */
+        uint8_t *pACRecord = pData;
+        /* go to payload address */
+        pData  = NestedRecord.PayloadBufferAdd;
+
+        /* Parse Collision Resolution if Handover request */
+        if (pHandover->type == NDEF_HANDOVER_REQUEST_TYPE) {
+
+            if (!memcmp(NestedRecord.Type, NDEF_HANDOVER_COLLISION_RESOLUTION_TYPE_STR, strlen(NDEF_HANDOVER_COLLISION_RESOLUTION_TYPE_STR))) {
+                pHandover->has_cr = 1;
+                pHandover->cr_random_number = *(uint16_t *)pData;
+            }
+        }
+
+        /* Parse AlternativeCarriers just to know how many they are */
+        else if (!memcmp(NestedRecord.Type, NDEF_HANDOVER_ALTERNATIVE_CARRIER_TYPE_STR, strlen(NDEF_HANDOVER_ALTERNATIVE_CARRIER_TYPE_STR))) {
+            pHandover->nb_alternative_carrier++;
+            if (pHandover->ac_start == NULL) {
+                pHandover->ac_start = pACRecord;
+            }
+            pHandover->ac_end = pData + NestedRecord.PayloadLength;
+            /* don't parse the AC now */
+        } else {
+            /* this is an unexpected type, just ignore it */
+        }
+        /* go to next record */
+        pData  += NestedRecord.PayloadLength;
+
+    }
+
+    return NDEF_OK;
 }
 
 /**
@@ -362,34 +362,34 @@ uint16_t NDEF::NDEF_ReadHandover(sRecordInfo_t *pRecord,  Ndef_Handover_t *pHand
   */
 uint16_t NDEF::NDEF_CreateHandover(Ndef_Handover_t  *pHandover, sRecordInfo_t *pRecord)
 {
-  uint16_t status = NDEF_ERROR;
+    uint16_t status = NDEF_ERROR;
 
-  /* Use a static buffer to prepare the Handover record */
-  pRecord->PayloadBufferAdd = NDEF_Record_Buffer;
-  /* Alternative, where the user must first allocate the Payload buffer in the record:
-   * if (pRecord->PayloadBufferAdd == NULL)
-   *  return NDEF_ERROR;
-   */
+    /* Use a static buffer to prepare the Handover record */
+    pRecord->PayloadBufferAdd = NDEF_Record_Buffer;
+    /* Alternative, where the user must first allocate the Payload buffer in the record:
+     * if (pRecord->PayloadBufferAdd == NULL)
+     *  return NDEF_ERROR;
+     */
 
-  /* Handover MUST be the first record (SR mask to be updated when actually writing the record) */
-  pRecord->RecordFlags = MB_Mask | ME_Mask | TNF_WellKnown;
+    /* Handover MUST be the first record (SR mask to be updated when actually writing the record) */
+    pRecord->RecordFlags = MB_Mask | ME_Mask | TNF_WellKnown;
 
-  if (pHandover->type == NDEF_HANDOVER_SELECT_TYPE) {
-    pRecord->TypeLength = strlen(NDEF_HANDOVER_SELECT_TYPE_STR);
-    memcpy(pRecord->Type, NDEF_HANDOVER_SELECT_TYPE_STR, pRecord->TypeLength);
-  } else if (pHandover->type == NDEF_HANDOVER_REQUEST_TYPE) {
-    pRecord->TypeLength = strlen(NDEF_HANDOVER_SELECT_TYPE_STR);
-    memcpy(pRecord->Type, NDEF_HANDOVER_REQUEST_TYPE_STR, pRecord->TypeLength);
-  } else {
-    return NDEF_ERROR;
-  }
+    if (pHandover->type == NDEF_HANDOVER_SELECT_TYPE) {
+        pRecord->TypeLength = strlen(NDEF_HANDOVER_SELECT_TYPE_STR);
+        memcpy(pRecord->Type, NDEF_HANDOVER_SELECT_TYPE_STR, pRecord->TypeLength);
+    } else if (pHandover->type == NDEF_HANDOVER_REQUEST_TYPE) {
+        pRecord->TypeLength = strlen(NDEF_HANDOVER_SELECT_TYPE_STR);
+        memcpy(pRecord->Type, NDEF_HANDOVER_REQUEST_TYPE_STR, pRecord->TypeLength);
+    } else {
+        return NDEF_ERROR;
+    }
 
-  pRecord->PayloadLength = sizeof(pHandover->version);
-  *pRecord->PayloadBufferAdd = pHandover->version;
+    pRecord->PayloadLength = sizeof(pHandover->version);
+    *pRecord->PayloadBufferAdd = pHandover->version;
 
-  /* Don't write the record for now, additional Alternative Carriers to come as nested records. */
+    /* Don't write the record for now, additional Alternative Carriers to come as nested records. */
 
-  return status;
+    return status;
 }
 
 
@@ -405,50 +405,50 @@ uint16_t NDEF::NDEF_CreateHandover(Ndef_Handover_t  *pHandover, sRecordInfo_t *p
   */
 uint16_t NDEF::NDEF_AddAlternativeCarrier(Ndef_Handover_alternative_carrier_t *pAC, char *CarrierDataRef, char **AuxDataRefID, sRecordInfo_t *pRecord)
 {
-  memset(NDEF_AlternativeCarrier_Buffer, 0x0, ((sizeof(uint8_t))*NDEF_AC_BUFFER_SIZE));
+    memset(NDEF_AlternativeCarrier_Buffer, 0x0, ((sizeof(uint8_t))*NDEF_AC_BUFFER_SIZE));
 
-  /* check that there is enough space in the buffers */
-  pAC->ac_record.PayloadLength = NDEF_GetACDataLength(pAC, CarrierDataRef, AuxDataRefID);
-  if (((pRecord->PayloadLength + pAC->ac_record.PayloadLength) > NDEF_RECORD_MAX_SIZE) ||
-      (pAC->ac_record.PayloadLength > NDEF_AC_BUFFER_SIZE)) {
-    return NDEF_ERROR_MEMORY_INTERNAL;
-  }
+    /* check that there is enough space in the buffers */
+    pAC->ac_record.PayloadLength = NDEF_GetACDataLength(pAC, CarrierDataRef, AuxDataRefID);
+    if (((pRecord->PayloadLength + pAC->ac_record.PayloadLength) > NDEF_RECORD_MAX_SIZE) ||
+            (pAC->ac_record.PayloadLength > NDEF_AC_BUFFER_SIZE)) {
+        return NDEF_ERROR_MEMORY_INTERNAL;
+    }
 
-  /* Use specific buffer to prepare the nested record */
-  uint8_t *pData =  NDEF_AlternativeCarrier_Buffer;
-  pAC->ac_record.PayloadBufferAdd = pData;
-  /* Following line is an alternative where the user must allocate the payload buffer of the ac_record:
-   * uint8_t* pData =   pAC->ac_record.PayloadBufferAdd ;
-   */
+    /* Use specific buffer to prepare the nested record */
+    uint8_t *pData =  NDEF_AlternativeCarrier_Buffer;
+    pAC->ac_record.PayloadBufferAdd = pData;
+    /* Following line is an alternative where the user must allocate the payload buffer of the ac_record:
+     * uint8_t* pData =   pAC->ac_record.PayloadBufferAdd ;
+     */
 
-  if ((pRecord->PayloadBufferAdd == NULL) ||
-      (pRecord->PayloadLength == 0)) {
-    return NDEF_ERROR;
-  }
+    if ((pRecord->PayloadBufferAdd == NULL) ||
+            (pRecord->PayloadLength == 0)) {
+        return NDEF_ERROR;
+    }
 
-  /* AC is not the first record */
-  pAC->ac_record.RecordFlags =   TNF_WellKnown;
+    /* AC is not the first record */
+    pAC->ac_record.RecordFlags =   TNF_WellKnown;
 
-  pAC->ac_record.TypeLength = strlen(NDEF_HANDOVER_ALTERNATIVE_CARRIER_TYPE_STR);
-  memcpy(pAC->ac_record.Type, NDEF_HANDOVER_ALTERNATIVE_CARRIER_TYPE_STR, pAC->ac_record.TypeLength);
+    pAC->ac_record.TypeLength = strlen(NDEF_HANDOVER_ALTERNATIVE_CARRIER_TYPE_STR);
+    memcpy(pAC->ac_record.Type, NDEF_HANDOVER_ALTERNATIVE_CARRIER_TYPE_STR, pAC->ac_record.TypeLength);
 
-  /* Length : cps byte + data ref length byte + auxiliary data ref count byte + data ref length */
-  *pData++ = pAC->cps & NDEF_HANDOVER_AC_CPS_MASK;
-  *pData++ = strlen(CarrierDataRef);
-  memcpy(pData, CarrierDataRef, strlen(CarrierDataRef));
-  pData += strlen(CarrierDataRef);
-  *pData++ = pAC->aux_data_ref_count;
+    /* Length : cps byte + data ref length byte + auxiliary data ref count byte + data ref length */
+    *pData++ = pAC->cps & NDEF_HANDOVER_AC_CPS_MASK;
+    *pData++ = strlen(CarrierDataRef);
+    memcpy(pData, CarrierDataRef, strlen(CarrierDataRef));
+    pData += strlen(CarrierDataRef);
+    *pData++ = pAC->aux_data_ref_count;
 
-  uint8_t AuxDataIndex;
-  for (AuxDataIndex = 0; AuxDataIndex < pAC->aux_data_ref_count; AuxDataIndex++) {
-    *pData++ = strlen(AuxDataRefID[AuxDataIndex]);
-    memcpy(pData, AuxDataRefID[AuxDataIndex], strlen(AuxDataRefID[AuxDataIndex]));
-    pData += strlen(AuxDataRefID[AuxDataIndex]);
-  }
+    uint8_t AuxDataIndex;
+    for (AuxDataIndex = 0; AuxDataIndex < pAC->aux_data_ref_count; AuxDataIndex++) {
+        *pData++ = strlen(AuxDataRefID[AuxDataIndex]);
+        memcpy(pData, AuxDataRefID[AuxDataIndex], strlen(AuxDataRefID[AuxDataIndex]));
+        pData += strlen(AuxDataRefID[AuxDataIndex]);
+    }
 
-  /* Append the nested record right after the Handover record - increase its length accordingly */
-  pRecord->PayloadLength += NDEF_WriteRecord(&pAC->ac_record, pRecord->PayloadBufferAdd + pRecord->PayloadLength);
-  return NDEF_OK;
+    /* Append the nested record right after the Handover record - increase its length accordingly */
+    pRecord->PayloadLength += NDEF_WriteRecord(&pAC->ac_record, pRecord->PayloadBufferAdd + pRecord->PayloadLength);
+    return NDEF_OK;
 }
 
 
@@ -461,21 +461,21 @@ uint16_t NDEF::NDEF_AddAlternativeCarrier(Ndef_Handover_alternative_carrier_t *p
   */
 uint32_t NDEF::NDEF_GetACDataLength(Ndef_Handover_alternative_carrier_t *pAC, char *CarrierDataRef, char **AuxDataRefID)
 {
-  uint8_t AuxDataIndex;
+    uint8_t AuxDataIndex;
 
-  /* First compute the Data length */
-  uint32_t length =       1 +                           // cps
-                          1 +                           // Carrier data ref length
-                          strlen(CarrierDataRef) +      // Carrier data ref
-                          1 +                           // auxiliary data count
-                          pAC->aux_data_ref_count * 1;  // auxiliary data lengths
+    /* First compute the Data length */
+    uint32_t length =       1 +                           // cps
+                            1 +                           // Carrier data ref length
+                            strlen(CarrierDataRef) +      // Carrier data ref
+                            1 +                           // auxiliary data count
+                            pAC->aux_data_ref_count * 1;  // auxiliary data lengths
 
-  /* Then adds the length of the Auxiliary Data */
-  for (AuxDataIndex = 0; AuxDataIndex < pAC->aux_data_ref_count; AuxDataIndex++) {
-    length += strlen(AuxDataRefID[AuxDataIndex]);
-  }
+    /* Then adds the length of the Auxiliary Data */
+    for (AuxDataIndex = 0; AuxDataIndex < pAC->aux_data_ref_count; AuxDataIndex++) {
+        length += strlen(AuxDataRefID[AuxDataIndex]);
+    }
 
-  return length;
+    return length;
 }
 
 /**
@@ -490,10 +490,10 @@ uint32_t NDEF::NDEF_GetACDataLength(Ndef_Handover_alternative_carrier_t *pAC, ch
   */
 uint16_t NDEF::NDEF_WriteHandover(sRecordInfo_t *pRecord, uint8_t *pNdef)
 {
-  /* Note: in case of Handover Select for no matching alternative carrier, the ME bit flag must be set by the caller */
+    /* Note: in case of Handover Select for no matching alternative carrier, the ME bit flag must be set by the caller */
 
-  uint32_t Size = NDEF_WriteRecord(pRecord, pNdef);
-  return NDEF_WriteNDEF(Size, pNdef);
+    uint32_t Size = NDEF_WriteRecord(pRecord, pNdef);
+    return NDEF_WriteNDEF(Size, pNdef);
 }
 
 /**

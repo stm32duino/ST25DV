@@ -36,24 +36,24 @@
 
 /** @brief NDEF Text encoding possible values. */
 typedef enum {
-  NDEF_TEXT_UTF8  = 0,
-  NDEF_TEXT_UTF16 = 1
+    NDEF_TEXT_UTF8  = 0,
+    NDEF_TEXT_UTF16 = 1
 } NDEF_Text_encoding_t;
 
 /** @brief This structure is used to handle information from a NDEF Text record. */
 typedef struct {
-  NDEF_Text_encoding_t  encoding;                                           /**< metadata: UTF-8 / UTF-16. */
-  char                  language_code[TEXT_LANGUAGE_CODE_MAX_SIZE];  /**< metadata: Language code as specified by IANA. */
-  char                  text[TEXT_MAX_SIZE];                         /**< The text itself. */
+    NDEF_Text_encoding_t  encoding;                                           /**< metadata: UTF-8 / UTF-16. */
+    char                  language_code[TEXT_LANGUAGE_CODE_MAX_SIZE];  /**< metadata: Language code as specified by IANA. */
+    char                  text[TEXT_MAX_SIZE];                         /**< The text itself. */
 } NDEF_Text_info_t;
 
 
 /** @brief This structure is used to parse the raw data from a text record and access its metadata. */
 typedef struct {
-  uint8_t  language_length: 4; /**< Language code length. */
-  uint8_t  rfu: 3;            /**< reserved for futur usage */
-  uint8_t  encoding: 1;       /**< UTF-8 (0) or UTF-16 (1) encoding. */
-  char     language[1];       /**< IANA language code. */
+    uint8_t  language_length: 4; /**< Language code length. */
+    uint8_t  rfu: 3;            /**< reserved for futur usage */
+    uint8_t  encoding: 1;       /**< UTF-8 (0) or UTF-16 (1) encoding. */
+    char     language[1];       /**< IANA language code. */
 } NDEF_Text_metadata_t;
 
 #endif /* __LIB_NDEF_TEXT_H */

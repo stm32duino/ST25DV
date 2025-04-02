@@ -61,43 +61,43 @@
   */
 void NDEF::NDEF_FillGeoStruct(uint8_t *pPayload, uint32_t PayloadSize, sGeoInfo *pGeoStruct)
 {
-  uint8_t *pLastByteAdd, *pLook4Word, *pEndString;
-  const char *pKeyWord = GEO_TYPE_STRING;
-  uint32_t SizeOfKeyWord = GEO_TYPE_STRING_LENGTH;
-  pEndString = 0;
+    uint8_t *pLastByteAdd, *pLook4Word, *pEndString;
+    const char *pKeyWord = GEO_TYPE_STRING;
+    uint32_t SizeOfKeyWord = GEO_TYPE_STRING_LENGTH;
+    pEndString = 0;
 
-  /* First character force to NULL in case not matching found */
-  *pGeoStruct->Latitude = 0;
-  *pGeoStruct->Longitude = 0;
+    /* First character force to NULL in case not matching found */
+    *pGeoStruct->Latitude = 0;
+    *pGeoStruct->Longitude = 0;
 
-  /* Interesting information are stored before picture if any */
-  /* Moreover picture is not used in this demonstration SW */
-  pLastByteAdd = (uint8_t *)(pPayload + PayloadSize);
+    /* Interesting information are stored before picture if any */
+    /* Moreover picture is not used in this demonstration SW */
+    pLastByteAdd = (uint8_t *)(pPayload + PayloadSize);
 
-  pLook4Word = pPayload;
-  while (memcmp(pLook4Word, pKeyWord, SizeOfKeyWord) && (pLook4Word < pLastByteAdd)) {
-    pLook4Word++;
-  }
-
-  /* Retrieve phone number */
-  if (pLook4Word != pLastByteAdd) {
-    pLook4Word += SizeOfKeyWord;
-    pEndString = pLook4Word;
-    while (memcmp(pEndString, URI_LATITUDE_END, URI_LATITUDE_END_LENGTH) && (pEndString < pLastByteAdd)) {
-      pEndString++;
+    pLook4Word = pPayload;
+    while (memcmp(pLook4Word, pKeyWord, SizeOfKeyWord) && (pLook4Word < pLastByteAdd)) {
+        pLook4Word++;
     }
-    if (pEndString != pLastByteAdd) {
-      memcpy(pGeoStruct->Latitude, pLook4Word, pEndString - pLook4Word);
-      /* add end of string character */
-      pGeoStruct->Latitude[pEndString - pLook4Word] = 0;
-    }
-  }
-  pEndString += URI_LATITUDE_END_LENGTH;
-  pLook4Word = pEndString;
 
-  memcpy(pGeoStruct->Longitude, pEndString, PayloadSize - (pEndString - pPayload));
-  /* add end of string character */
-  pGeoStruct->Longitude[PayloadSize - (pEndString - pPayload)] = 0;
+    /* Retrieve phone number */
+    if (pLook4Word != pLastByteAdd) {
+        pLook4Word += SizeOfKeyWord;
+        pEndString = pLook4Word;
+        while (memcmp(pEndString, URI_LATITUDE_END, URI_LATITUDE_END_LENGTH) && (pEndString < pLastByteAdd)) {
+            pEndString++;
+        }
+        if (pEndString != pLastByteAdd) {
+            memcpy(pGeoStruct->Latitude, pLook4Word, pEndString - pLook4Word);
+            /* add end of string character */
+            pGeoStruct->Latitude[pEndString - pLook4Word] = 0;
+        }
+    }
+    pEndString += URI_LATITUDE_END_LENGTH;
+    pLook4Word = pEndString;
+
+    memcpy(pGeoStruct->Longitude, pEndString, PayloadSize - (pEndString - pPayload));
+    /* add end of string character */
+    pGeoStruct->Longitude[PayloadSize - (pEndString - pPayload)] = 0;
 
 }
 
@@ -108,17 +108,17 @@ void NDEF::NDEF_FillGeoStruct(uint8_t *pPayload, uint32_t PayloadSize, sGeoInfo 
   */
 void NDEF::NDEF_ReadURI_Geo(sRecordInfo_t *pRecordStruct, sGeoInfo *pGeoStruct)
 {
-  uint8_t *pPayload;
-  uint32_t PayloadSize;
+    uint8_t *pPayload;
+    uint32_t PayloadSize;
 
-  PayloadSize = pRecordStruct->PayloadLength;
+    PayloadSize = pRecordStruct->PayloadLength;
 
-  /* Read record header */
-  pPayload = (uint8_t *)(pRecordStruct->PayloadBufferAdd);
+    /* Read record header */
+    pPayload = (uint8_t *)(pRecordStruct->PayloadBufferAdd);
 
-  if (pRecordStruct->NDEF_Type == URI_GEO_TYPE) {
-    NDEF_FillGeoStruct(pPayload, PayloadSize, pGeoStruct);
-  }
+    if (pRecordStruct->NDEF_Type == URI_GEO_TYPE) {
+        NDEF_FillGeoStruct(pPayload, PayloadSize, pGeoStruct);
+    }
 
 }
 
@@ -140,37 +140,37 @@ void NDEF::NDEF_ReadURI_Geo(sRecordInfo_t *pRecordStruct, sGeoInfo *pGeoStruct)
   */
 uint16_t NDEF::NDEF_ReadGeo(sRecordInfo_t *pRecordStruct, sGeoInfo *pGeoStruct)
 {
-  uint16_t status = NDEF_ERROR;
-  sRecordInfo_t *pSPRecordStruct;
-  uint32_t PayloadSize, RecordPosition;
-  uint8_t *pData;
+    uint16_t status = NDEF_ERROR;
+    sRecordInfo_t *pSPRecordStruct;
+    uint32_t PayloadSize, RecordPosition;
+    uint8_t *pData;
 
-  if (pRecordStruct->NDEF_Type == URI_GEO_TYPE) {
-    NDEF_ReadURI_Geo(pRecordStruct, pGeoStruct);
-    status = NDEF_OK;
-  } else if (pRecordStruct->NDEF_Type == SMARTPOSTER_TYPE) {
-    for (RecordPosition = 0; RecordPosition < pRecordStruct->NbOfRecordInSPPayload; RecordPosition++) {
-      pSPRecordStruct = pRecordStruct->SPRecordStructAdd[RecordPosition];
-      if (pSPRecordStruct->NDEF_Type == URI_GEO_TYPE) {
-        NDEF_ReadURI_Geo(pSPRecordStruct, pGeoStruct);
+    if (pRecordStruct->NDEF_Type == URI_GEO_TYPE) {
+        NDEF_ReadURI_Geo(pRecordStruct, pGeoStruct);
         status = NDEF_OK;
-      }
-      if (pSPRecordStruct->NDEF_Type == TEXT_TYPE) {
-        PayloadSize = pSPRecordStruct->PayloadLength;
+    } else if (pRecordStruct->NDEF_Type == SMARTPOSTER_TYPE) {
+        for (RecordPosition = 0; RecordPosition < pRecordStruct->NbOfRecordInSPPayload; RecordPosition++) {
+            pSPRecordStruct = pRecordStruct->SPRecordStructAdd[RecordPosition];
+            if (pSPRecordStruct->NDEF_Type == URI_GEO_TYPE) {
+                NDEF_ReadURI_Geo(pSPRecordStruct, pGeoStruct);
+                status = NDEF_OK;
+            }
+            if (pSPRecordStruct->NDEF_Type == TEXT_TYPE) {
+                PayloadSize = pSPRecordStruct->PayloadLength;
 
-        /* The instruction content the UTF-8 language code that is not used here */
-        pData = (uint8_t *)pSPRecordStruct->PayloadBufferAdd;
-        PayloadSize -= *pData + 1; /* remove not useful data */
-        pData += *pData + 1; /* set pointer on useful data */
+                /* The instruction content the UTF-8 language code that is not used here */
+                pData = (uint8_t *)pSPRecordStruct->PayloadBufferAdd;
+                PayloadSize -= *pData + 1; /* remove not useful data */
+                pData += *pData + 1; /* set pointer on useful data */
 
-        memcpy(pGeoStruct->Information, pData, PayloadSize);
-        /* add end of string character */
-        pGeoStruct->Information[PayloadSize] = 0;
-      }
+                memcpy(pGeoStruct->Information, pData, PayloadSize);
+                /* add end of string character */
+                pGeoStruct->Information[PayloadSize] = 0;
+            }
+        }
     }
-  }
 
-  return status;
+    return status;
 }
 
 /**
@@ -184,13 +184,13 @@ uint16_t NDEF::NDEF_ReadGeo(sRecordInfo_t *pRecordStruct, sGeoInfo *pGeoStruct)
   */
 uint16_t NDEF::NDEF_WriteGeo(sGeoInfo *pGeoStruct)
 {
-  uint16_t status = NDEF_ERROR, Offset = 0;
+    uint16_t status = NDEF_ERROR, Offset = 0;
 
-  NDEF_PrepareGeoMessage(pGeoStruct, NDEF_Buffer, &Offset);
+    NDEF_PrepareGeoMessage(pGeoStruct, NDEF_Buffer, &Offset);
 
-  status = NfcTag_WriteNDEF(Offset, NDEF_Buffer);
+    status = NfcTag_WriteNDEF(Offset, NDEF_Buffer);
 
-  return status;
+    return status;
 }
 
 /**
@@ -201,129 +201,129 @@ uint16_t NDEF::NDEF_WriteGeo(sGeoInfo *pGeoStruct)
   */
 void NDEF::NDEF_PrepareGeoMessage(sGeoInfo *pGeoStruct, uint8_t *pNDEFMessage, uint16_t *size)
 {
-  uint16_t Offset = 0;
-  uint32_t geoSize = 0;
-  uint32_t infoSize = 0;
-  uint32_t totalSize = 0;
+    uint16_t Offset = 0;
+    uint32_t geoSize = 0;
+    uint32_t infoSize = 0;
+    uint32_t totalSize = 0;
 
-  /* GEO is an URI but can be included in a smart poster to add text to give instruction to user for instance */
+    /* GEO is an URI but can be included in a smart poster to add text to give instruction to user for instance */
 
-  /* GEO (smart poster) Record Header */
-  /************************************/
-  /*  7 |  6 |  5 |  4 |  3 | 2  1  0 */
-  /*----------------------------------*/
-  /* MB   ME   CF   SR   IL    TNF    */  /* <---- CF=0, IL=0 and SR=1 TNF=1 NFC Forum Well-known type*/
-  /*----------------------------------*/
-  /*          TYPE LENGTH             */
-  /*----------------------------------*/
-  /*        PAYLOAD LENGTH 3          */  /* <---- Used only if SR=0 */
-  /*----------------------------------*/
-  /*        PAYLOAD LENGTH 2          */  /* <---- Used only if SR=0 */
-  /*----------------------------------*/
-  /*        PAYLOAD LENGTH 1          */  /* <---- Used only if SR=0 */
-  /*----------------------------------*/
-  /*        PAYLOAD LENGTH 0          */
-  /*----------------------------------*/
-  /*          ID LENGTH               */  /* <---- Not Used  */
-  /*----------------------------------*/
-  /*              TYPE                */
-  /*----------------------------------*/
-  /*               ID                 */  /* <---- Not Used  */
-  /************************************/
+    /* GEO (smart poster) Record Header */
+    /************************************/
+    /*  7 |  6 |  5 |  4 |  3 | 2  1  0 */
+    /*----------------------------------*/
+    /* MB   ME   CF   SR   IL    TNF    */  /* <---- CF=0, IL=0 and SR=1 TNF=1 NFC Forum Well-known type*/
+    /*----------------------------------*/
+    /*          TYPE LENGTH             */
+    /*----------------------------------*/
+    /*        PAYLOAD LENGTH 3          */  /* <---- Used only if SR=0 */
+    /*----------------------------------*/
+    /*        PAYLOAD LENGTH 2          */  /* <---- Used only if SR=0 */
+    /*----------------------------------*/
+    /*        PAYLOAD LENGTH 1          */  /* <---- Used only if SR=0 */
+    /*----------------------------------*/
+    /*        PAYLOAD LENGTH 0          */
+    /*----------------------------------*/
+    /*          ID LENGTH               */  /* <---- Not Used  */
+    /*----------------------------------*/
+    /*              TYPE                */
+    /*----------------------------------*/
+    /*               ID                 */  /* <---- Not Used  */
+    /************************************/
 
-  /* GEO : 1+geo:+latitude+1+longitude */
-  geoSize = 1 + GEO_TYPE_STRING_LENGTH + strlen(pGeoStruct->Latitude) + URI_LATITUDE_END_LENGTH + strlen(pGeoStruct->Longitude);
+    /* GEO : 1+geo:+latitude+1+longitude */
+    geoSize = 1 + GEO_TYPE_STRING_LENGTH + strlen(pGeoStruct->Latitude) + URI_LATITUDE_END_LENGTH + strlen(pGeoStruct->Longitude);
 
-  /* Check if a Smart poster is needed */
-  if (pGeoStruct->Information[0] != '\0') {
-    /* Info : 1+2+info */
-    infoSize = 1 + ISO_ENGLISH_CODE_STRING_LENGTH + strlen(pGeoStruct->Information);
-    /* Total */
-    totalSize = 4 + geoSize + 4 + infoSize;
+    /* Check if a Smart poster is needed */
+    if (pGeoStruct->Information[0] != '\0') {
+        /* Info : 1+2+info */
+        infoSize = 1 + ISO_ENGLISH_CODE_STRING_LENGTH + strlen(pGeoStruct->Information);
+        /* Total */
+        totalSize = 4 + geoSize + 4 + infoSize;
+        if (geoSize > 255) {
+            totalSize += 3;  /* Normal Geo size */
+        }
+        if (infoSize > 255) {
+            totalSize += 3;  /* Normal Info size */
+        }
+
+        /* SmartPoster header */
+        if (totalSize > 255) {
+            pNDEFMessage[Offset++] = 0xC1;
+            pNDEFMessage[Offset++] = SMART_POSTER_TYPE_STRING_LENGTH;
+            pNDEFMessage[Offset++] = (totalSize & 0xFF000000) >> 24;
+            pNDEFMessage[Offset++] = (totalSize & 0x00FF0000) >> 16;
+            pNDEFMessage[Offset++] = (totalSize & 0x0000FF00) >> 8;
+            pNDEFMessage[Offset++] = totalSize & 0x000000FF;
+        } else {
+            pNDEFMessage[Offset++] = 0xD1;
+            pNDEFMessage[Offset++] = SMART_POSTER_TYPE_STRING_LENGTH;
+            pNDEFMessage[Offset++] = (uint8_t)totalSize;
+        }
+        memcpy(&pNDEFMessage[Offset], SMART_POSTER_TYPE_STRING, SMART_POSTER_TYPE_STRING_LENGTH);
+        Offset += SMART_POSTER_TYPE_STRING_LENGTH;
+    }
+
+    /* GEO header */
+    pNDEFMessage[Offset] = 0x81;
+    if (geoSize < 256) {
+        pNDEFMessage[Offset] |= 0x10;  // Set the SR bit
+    }
+    if (pGeoStruct->Information[0] == '\0') {
+        pNDEFMessage[Offset] |= 0x40;  // Set the ME bit
+    }
+    Offset++;
+
+    pNDEFMessage[Offset++] = URI_TYPE_STRING_LENGTH;
     if (geoSize > 255) {
-      totalSize += 3;  /* Normal Geo size */
-    }
-    if (infoSize > 255) {
-      totalSize += 3;  /* Normal Info size */
-    }
-
-    /* SmartPoster header */
-    if (totalSize > 255) {
-      pNDEFMessage[Offset++] = 0xC1;
-      pNDEFMessage[Offset++] = SMART_POSTER_TYPE_STRING_LENGTH;
-      pNDEFMessage[Offset++] = (totalSize & 0xFF000000) >> 24;
-      pNDEFMessage[Offset++] = (totalSize & 0x00FF0000) >> 16;
-      pNDEFMessage[Offset++] = (totalSize & 0x0000FF00) >> 8;
-      pNDEFMessage[Offset++] = totalSize & 0x000000FF;
+        pNDEFMessage[Offset++] = (geoSize & 0xFF000000) >> 24;
+        pNDEFMessage[Offset++] = (geoSize & 0x00FF0000) >> 16;
+        pNDEFMessage[Offset++] = (geoSize & 0x0000FF00) >> 8;
+        pNDEFMessage[Offset++] = geoSize & 0x000000FF;
     } else {
-      pNDEFMessage[Offset++] = 0xD1;
-      pNDEFMessage[Offset++] = SMART_POSTER_TYPE_STRING_LENGTH;
-      pNDEFMessage[Offset++] = (uint8_t)totalSize;
+        pNDEFMessage[Offset++] = (uint8_t)geoSize;
     }
-    memcpy(&pNDEFMessage[Offset], SMART_POSTER_TYPE_STRING, SMART_POSTER_TYPE_STRING_LENGTH);
-    Offset += SMART_POSTER_TYPE_STRING_LENGTH;
-  }
+    memcpy(&pNDEFMessage[Offset], URI_TYPE_STRING, URI_TYPE_STRING_LENGTH);
+    Offset += URI_TYPE_STRING_LENGTH;
 
-  /* GEO header */
-  pNDEFMessage[Offset] = 0x81;
-  if (geoSize < 256) {
-    pNDEFMessage[Offset] |= 0x10;  // Set the SR bit
-  }
-  if (pGeoStruct->Information[0] == '\0') {
-    pNDEFMessage[Offset] |= 0x40;  // Set the ME bit
-  }
-  Offset++;
+    /* GEO payload */
+    pNDEFMessage[Offset++] = URI_ID_0x00; /* URI identifier no abbreviation */
+    memcpy(&pNDEFMessage[Offset], GEO_TYPE_STRING, GEO_TYPE_STRING_LENGTH);
+    Offset += GEO_TYPE_STRING_LENGTH;
+    memcpy(&pNDEFMessage[Offset], pGeoStruct->Latitude, strlen(pGeoStruct->Latitude));
+    Offset += strlen(pGeoStruct->Latitude);
+    memcpy(&pNDEFMessage[Offset], URI_LATITUDE_END, URI_LATITUDE_END_LENGTH);
+    Offset += URI_LATITUDE_END_LENGTH;
+    memcpy(&pNDEFMessage[Offset], pGeoStruct->Longitude, strlen(pGeoStruct->Longitude));
+    Offset += strlen(pGeoStruct->Longitude);
 
-  pNDEFMessage[Offset++] = URI_TYPE_STRING_LENGTH;
-  if (geoSize > 255) {
-    pNDEFMessage[Offset++] = (geoSize & 0xFF000000) >> 24;
-    pNDEFMessage[Offset++] = (geoSize & 0x00FF0000) >> 16;
-    pNDEFMessage[Offset++] = (geoSize & 0x0000FF00) >> 8;
-    pNDEFMessage[Offset++] = geoSize & 0x000000FF;
-  } else {
-    pNDEFMessage[Offset++] = (uint8_t)geoSize;
-  }
-  memcpy(&pNDEFMessage[Offset], URI_TYPE_STRING, URI_TYPE_STRING_LENGTH);
-  Offset += URI_TYPE_STRING_LENGTH;
+    /* Information header */
+    if (pGeoStruct->Information[0] != '\0') {
+        if (infoSize > 255) {
+            pNDEFMessage[Offset++] = 0x41;
+            pNDEFMessage[Offset++] = TEXT_TYPE_STRING_LENGTH;
+            pNDEFMessage[Offset++] = (infoSize & 0xFF000000) >> 24;
+            pNDEFMessage[Offset++] = (infoSize & 0x00FF0000) >> 16;
+            pNDEFMessage[Offset++] = (infoSize & 0x0000FF00) >> 8;
+            pNDEFMessage[Offset++] = infoSize & 0x000000FF;
+        } else {
+            pNDEFMessage[Offset++] = 0x51;
+            pNDEFMessage[Offset++] = TEXT_TYPE_STRING_LENGTH;
+            pNDEFMessage[Offset++] = (uint8_t)infoSize;
+        }
 
-  /* GEO payload */
-  pNDEFMessage[Offset++] = URI_ID_0x00; /* URI identifier no abbreviation */
-  memcpy(&pNDEFMessage[Offset], GEO_TYPE_STRING, GEO_TYPE_STRING_LENGTH);
-  Offset += GEO_TYPE_STRING_LENGTH;
-  memcpy(&pNDEFMessage[Offset], pGeoStruct->Latitude, strlen(pGeoStruct->Latitude));
-  Offset += strlen(pGeoStruct->Latitude);
-  memcpy(&pNDEFMessage[Offset], URI_LATITUDE_END, URI_LATITUDE_END_LENGTH);
-  Offset += URI_LATITUDE_END_LENGTH;
-  memcpy(&pNDEFMessage[Offset], pGeoStruct->Longitude, strlen(pGeoStruct->Longitude));
-  Offset += strlen(pGeoStruct->Longitude);
+        memcpy(&pNDEFMessage[Offset], TEXT_TYPE_STRING, TEXT_TYPE_STRING_LENGTH);
+        Offset += TEXT_TYPE_STRING_LENGTH;
+        pNDEFMessage[Offset++] = ISO_ENGLISH_CODE_STRING_LENGTH; /* UTF-8 with x byte language code */
+        memcpy(&pNDEFMessage[Offset], ISO_ENGLISH_CODE_STRING, ISO_ENGLISH_CODE_STRING_LENGTH);
+        Offset += ISO_ENGLISH_CODE_STRING_LENGTH;
 
-  /* Information header */
-  if (pGeoStruct->Information[0] != '\0') {
-    if (infoSize > 255) {
-      pNDEFMessage[Offset++] = 0x41;
-      pNDEFMessage[Offset++] = TEXT_TYPE_STRING_LENGTH;
-      pNDEFMessage[Offset++] = (infoSize & 0xFF000000) >> 24;
-      pNDEFMessage[Offset++] = (infoSize & 0x00FF0000) >> 16;
-      pNDEFMessage[Offset++] = (infoSize & 0x0000FF00) >> 8;
-      pNDEFMessage[Offset++] = infoSize & 0x000000FF;
-    } else {
-      pNDEFMessage[Offset++] = 0x51;
-      pNDEFMessage[Offset++] = TEXT_TYPE_STRING_LENGTH;
-      pNDEFMessage[Offset++] = (uint8_t)infoSize;
+        /* Information payload */
+        memcpy(&pNDEFMessage[Offset], pGeoStruct->Information, strlen(pGeoStruct->Information));
+        Offset += strlen(pGeoStruct->Information);
     }
 
-    memcpy(&pNDEFMessage[Offset], TEXT_TYPE_STRING, TEXT_TYPE_STRING_LENGTH);
-    Offset += TEXT_TYPE_STRING_LENGTH;
-    pNDEFMessage[Offset++] = ISO_ENGLISH_CODE_STRING_LENGTH; /* UTF-8 with x byte language code */
-    memcpy(&pNDEFMessage[Offset], ISO_ENGLISH_CODE_STRING, ISO_ENGLISH_CODE_STRING_LENGTH);
-    Offset += ISO_ENGLISH_CODE_STRING_LENGTH;
-
-    /* Information payload */
-    memcpy(&pNDEFMessage[Offset], pGeoStruct->Information, strlen(pGeoStruct->Information));
-    Offset += strlen(pGeoStruct->Information);
-  }
-
-  *size = (uint16_t)(Offset);
+    *size = (uint16_t)(Offset);
 }
 
 /**

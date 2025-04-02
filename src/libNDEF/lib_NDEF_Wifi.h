@@ -70,29 +70,29 @@
 #define NDEF_WIFI_DEFAULT_NETWORK_KEY                       "00000000"
 
 typedef enum {
-    NDEF_WIFI_ENCRYPTION_NONE = 0x0001, /**< WPS No Encryption */
-    NDEF_WIFI_ENCRYPTION_WEP  = 0x0002, /**< WPS Encryption based on WEP  */
-    NDEF_WIFI_ENCRYPTION_TKIP = 0x0004, /**< WPS Encryption based on TKIP  */
-    NDEF_WIFI_ENCRYPTION_AES  = 0x0008  /**< WPS Encryption based on AES  */
+  NDEF_WIFI_ENCRYPTION_NONE = 0x0001, /**< WPS No Encryption */
+  NDEF_WIFI_ENCRYPTION_WEP  = 0x0002, /**< WPS Encryption based on WEP  */
+  NDEF_WIFI_ENCRYPTION_TKIP = 0x0004, /**< WPS Encryption based on TKIP  */
+  NDEF_WIFI_ENCRYPTION_AES  = 0x0008  /**< WPS Encryption based on AES  */
 } Ndef_Wifi_Encryption_t;
 
 typedef enum {
-    NDEF_WIFI_AUTHENTICATION_NONE     = 0x0001, /**< WPS No Authentication */
-    NDEF_WIFI_AUTHENTICATION_WPAPSK   = 0x0002, /**< WPS Authentication based on WPAPSK  */
-    NDEF_WIFI_AUTHENTICATION_SHARED   = 0x0004, /**< WPS Authentication based on WEP Shared Key  */
-    NDEF_WIFI_AUTHENTICATION_WPA      = 0x0008, /**< WPS Authentication based on WPA  */
-    NDEF_WIFI_AUTHENTICATION_WPA2     = 0x0010, /**< WPS Authentication based on WPA2  */
-    NDEF_WIFI_AUTHENTICATION_WPA2PSK  = 0x0020  /**< WPS Authentication based on WPA2PSK  */
+  NDEF_WIFI_AUTHENTICATION_NONE     = 0x0001, /**< WPS No Authentication */
+  NDEF_WIFI_AUTHENTICATION_WPAPSK   = 0x0002, /**< WPS Authentication based on WPAPSK  */
+  NDEF_WIFI_AUTHENTICATION_SHARED   = 0x0004, /**< WPS Authentication based on WEP Shared Key  */
+  NDEF_WIFI_AUTHENTICATION_WPA      = 0x0008, /**< WPS Authentication based on WPA  */
+  NDEF_WIFI_AUTHENTICATION_WPA2     = 0x0010, /**< WPS Authentication based on WPA2  */
+  NDEF_WIFI_AUTHENTICATION_WPA2PSK  = 0x0020  /**< WPS Authentication based on WPA2PSK  */
 } Ndef_Wifi_Authentication_t;
 
 /**
   * @brief  WifiToken structure, to store Network SSID, Authentication Type, Encryption Type and Network Key.
   */
 typedef struct {
-    char NetworkSSID[32];                           /**< Store the Network SSID. */
-    Ndef_Wifi_Authentication_t AuthenticationType;  /**< Store the Authentication type to be used. */
-    Ndef_Wifi_Encryption_t EncryptionType;          /**< Store the Encryption to be used. */
-    char NetworkKey[32];                            /**< Store the Network Key. */
+  char NetworkSSID[32];                           /**< Store the Network SSID. */
+  Ndef_Wifi_Authentication_t AuthenticationType;  /**< Store the Authentication type to be used. */
+  Ndef_Wifi_Encryption_t EncryptionType;          /**< Store the Encryption to be used. */
+  char NetworkKey[32];                            /**< Store the Network Key. */
 } sWifiTokenInfo;
 
 

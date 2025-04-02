@@ -70,45 +70,47 @@
   */
 uint16_t NDEF::NDEF_WriteText(NDEF_Text_info_t *text_info)
 {
-    uint16_t status = NDEF_ERROR;
-    uint32_t textSize, Offset = 0;
+  uint16_t status = NDEF_ERROR;
+  uint32_t textSize, Offset = 0;
 
-    if(strlen(text_info->language_code) > 10) return status;
-
-    /* TEXT : 1+en+message */
-    textSize = 1 + strlen(text_info->language_code) + strlen(text_info->text);
-
-    /* TEXT header */
-    NDEF_Buffer[Offset] = 0xC1;
-    if (textSize < 256) {
-        NDEF_Buffer[Offset] |= 0x10;  // Set the SR bit
-    }
-    Offset++;
-
-    NDEF_Buffer[Offset++] = TEXT_TYPE_STRING_LENGTH;
-    if (textSize > 255) {
-        NDEF_Buffer[Offset++] = (textSize & 0xFF000000) >> 24;
-        NDEF_Buffer[Offset++] = (textSize & 0x00FF0000) >> 16;
-        NDEF_Buffer[Offset++] = (textSize & 0x0000FF00) >> 8;
-        NDEF_Buffer[Offset++] = textSize & 0x000000FF;
-    } else {
-        NDEF_Buffer[Offset++] = (uint8_t)textSize;
-    }
-    memcpy(&NDEF_Buffer[Offset], TEXT_TYPE_STRING, TEXT_TYPE_STRING_LENGTH);
-    Offset += TEXT_TYPE_STRING_LENGTH;
-
-    /* TEXT payload */
-    NDEF_Buffer[Offset++] = strlen(text_info->language_code) | text_info->encoding << 7;
-
-    memcpy(&NDEF_Buffer[Offset], text_info->language_code, strlen(text_info->language_code));
-    Offset += strlen(text_info->language_code);
-
-    memcpy(&NDEF_Buffer[Offset], text_info->text, strlen(text_info->text));
-    Offset += strlen(text_info->text);
-
-    status = NfcTag_WriteNDEF(Offset, NDEF_Buffer);
-
+  if (strlen(text_info->language_code) > 10) {
     return status;
+  }
+
+  /* TEXT : 1+en+message */
+  textSize = 1 + strlen(text_info->language_code) + strlen(text_info->text);
+
+  /* TEXT header */
+  NDEF_Buffer[Offset] = 0xC1;
+  if (textSize < 256) {
+    NDEF_Buffer[Offset] |= 0x10;  // Set the SR bit
+  }
+  Offset++;
+
+  NDEF_Buffer[Offset++] = TEXT_TYPE_STRING_LENGTH;
+  if (textSize > 255) {
+    NDEF_Buffer[Offset++] = (textSize & 0xFF000000) >> 24;
+    NDEF_Buffer[Offset++] = (textSize & 0x00FF0000) >> 16;
+    NDEF_Buffer[Offset++] = (textSize & 0x0000FF00) >> 8;
+    NDEF_Buffer[Offset++] = textSize & 0x000000FF;
+  } else {
+    NDEF_Buffer[Offset++] = (uint8_t)textSize;
+  }
+  memcpy(&NDEF_Buffer[Offset], TEXT_TYPE_STRING, TEXT_TYPE_STRING_LENGTH);
+  Offset += TEXT_TYPE_STRING_LENGTH;
+
+  /* TEXT payload */
+  NDEF_Buffer[Offset++] = strlen(text_info->language_code) | text_info->encoding << 7;
+
+  memcpy(&NDEF_Buffer[Offset], text_info->language_code, strlen(text_info->language_code));
+  Offset += strlen(text_info->language_code);
+
+  memcpy(&NDEF_Buffer[Offset], text_info->text, strlen(text_info->text));
+  Offset += strlen(text_info->text);
+
+  status = NfcTag_WriteNDEF(Offset, NDEF_Buffer);
+
+  return status;
 }
 
 
@@ -122,40 +124,40 @@ uint16_t NDEF::NDEF_WriteText(NDEF_Text_info_t *text_info)
   */
 uint16_t NDEF::NDEF_ReadText(sRecordInfo_t *pRecordStruct, NDEF_Text_info_t *pText)
 {
-    uint16_t status = NDEF_ERROR;
+  uint16_t status = NDEF_ERROR;
 
-    if (pRecordStruct->NDEF_Type == TEXT_TYPE) {
-        /* Get the text metadata (status byte (encoding & language code length) + language code) */
-        NDEF_Text_metadata_t *text_record_info = (NDEF_Text_metadata_t *)pRecordStruct->PayloadBufferAdd;
+  if (pRecordStruct->NDEF_Type == TEXT_TYPE) {
+    /* Get the text metadata (status byte (encoding & language code length) + language code) */
+    NDEF_Text_metadata_t *text_record_info = (NDEF_Text_metadata_t *)pRecordStruct->PayloadBufferAdd;
 
-        uint32_t text_length = pRecordStruct->PayloadLength           /* record length */
-                               - text_record_info->language_length    /* minus language code length */
-                               - sizeof(uint8_t);                     /* minus the status byte length */
+    uint32_t text_length = pRecordStruct->PayloadLength           /* record length */
+                           - text_record_info->language_length    /* minus language code length */
+                           - sizeof(uint8_t);                     /* minus the status byte length */
 
-        if ((text_record_info->language_length >= TEXT_LANGUAGE_CODE_MAX_SIZE) ||
-                (text_length >= TEXT_MAX_SIZE)) {
-            /* One of the text info structure buffer is too small */
-            return NDEF_ERROR_MEMORY_INTERNAL;
-        }
-
-        /* Retrieve the encoding */
-        pText->encoding = (NDEF_Text_encoding_t)text_record_info->encoding;
-
-        /* Save the language code string (adding null char at the end) */
-        memcpy(&pText->language_code, text_record_info->language, text_record_info->language_length);
-        pText->language_code[text_record_info->language_length] = '\0';
-
-        /* Copy the text string itself (adding null char at the end) */
-        memcpy(&pText->text, text_record_info->language + text_record_info->language_length, text_length);
-        pText->text[text_length] = '\0';
-
-        status = NDEF_OK;
-    } else {
-        /* Not a text record, exit in error */
-        status = NDEF_ERROR;
+    if ((text_record_info->language_length >= TEXT_LANGUAGE_CODE_MAX_SIZE) ||
+        (text_length >= TEXT_MAX_SIZE)) {
+      /* One of the text info structure buffer is too small */
+      return NDEF_ERROR_MEMORY_INTERNAL;
     }
 
-    return status;
+    /* Retrieve the encoding */
+    pText->encoding = (NDEF_Text_encoding_t)text_record_info->encoding;
+
+    /* Save the language code string (adding null char at the end) */
+    memcpy(&pText->language_code, text_record_info->language, text_record_info->language_length);
+    pText->language_code[text_record_info->language_length] = '\0';
+
+    /* Copy the text string itself (adding null char at the end) */
+    memcpy(&pText->text, text_record_info->language + text_record_info->language_length, text_length);
+    pText->text[text_length] = '\0';
+
+    status = NDEF_OK;
+  } else {
+    /* Not a text record, exit in error */
+    status = NDEF_ERROR;
+  }
+
+  return status;
 }
 
 /**

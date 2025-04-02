@@ -44,9 +44,9 @@
 #endif
 
 #if __has_include("custom_config.h")
-#include "custom_config.h"
+  #include "custom_config.h"
 #else
-#include "default_config.h"
+  #include "default_config.h"
 #endif
 
 
@@ -217,38 +217,38 @@ extern uint8_t NDEF_Record_Buffer [NDEF_RECORD_MAX_SIZE];
 extern uint32_t NDEF_Record_Buffer_size;
 
 typedef enum {
-    UNKNOWN_TYPE = 0,
-    VCARD_TYPE,
-    UNABRIDGED_URI_TYPE,
-    WELL_KNOWN_ABRIDGED_URI_TYPE,
-    URI_SMS_TYPE,
-    URI_GEO_TYPE,
-    URI_EMAIL_TYPE,
-    SMARTPOSTER_TYPE,
-    URL_TYPE,
-    TEXT_TYPE,
-    HANDOVER_TYPE,
-    /* list of "external type" known by this demo, other external type will be addressed as UNKNWON_TYPE */
-    M24SR_DISCOVERY_APP_TYPE,
-    BT_TYPE,
-    BLE_TYPE,
-    URI_WIFITOKEN_TYPE
+  UNKNOWN_TYPE = 0,
+  VCARD_TYPE,
+  UNABRIDGED_URI_TYPE,
+  WELL_KNOWN_ABRIDGED_URI_TYPE,
+  URI_SMS_TYPE,
+  URI_GEO_TYPE,
+  URI_EMAIL_TYPE,
+  SMARTPOSTER_TYPE,
+  URL_TYPE,
+  TEXT_TYPE,
+  HANDOVER_TYPE,
+  /* list of "external type" known by this demo, other external type will be addressed as UNKNWON_TYPE */
+  M24SR_DISCOVERY_APP_TYPE,
+  BT_TYPE,
+  BLE_TYPE,
+  URI_WIFITOKEN_TYPE
 } NDEF_TypeDef;
 
 typedef struct sRecordInfo sRecordInfo_t;
 
 struct sRecordInfo {
-    uint8_t RecordFlags;
-    uint8_t TypeLength;
-    uint32_t PayloadLength;
-    uint8_t IDLength;
-    uint8_t Type[20];
-    uint8_t ID[20];
-    uint16_t PayloadOffset;
-    uint8_t *PayloadBufferAdd;    /* add where payload content has been stored */
-    NDEF_TypeDef NDEF_Type;  /* to store identification ID for application */
-    sRecordInfo_t *SPRecordStructAdd[SP_MAX_RECORD]; /*in case of smart poster array to store add of other sRecordInfo struct */
-    uint8_t NbOfRecordInSPPayload;
+  uint8_t RecordFlags;
+  uint8_t TypeLength;
+  uint32_t PayloadLength;
+  uint8_t IDLength;
+  uint8_t Type[20];
+  uint8_t ID[20];
+  uint16_t PayloadOffset;
+  uint8_t *PayloadBufferAdd;    /* add where payload content has been stored */
+  NDEF_TypeDef NDEF_Type;  /* to store identification ID for application */
+  sRecordInfo_t *SPRecordStructAdd[SP_MAX_RECORD]; /*in case of smart poster array to store add of other sRecordInfo struct */
+  uint8_t NbOfRecordInSPPayload;
 };
 
 #endif /* __LIB_NDEF_H */

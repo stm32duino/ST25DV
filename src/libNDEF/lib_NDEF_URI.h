@@ -35,12 +35,12 @@
 #include "lib_NDEF.h"
 
 typedef struct {
-    //  char protocol[80];
-    //  char URI_Message[400];
-    //  char Information[400];
-    char protocol[URI_PROTOCOL_MAX_SIZE];
-    char URI_Message[URI_MESSAGE_MAX_SIZE];
-    char Information[URI_INFO_MAX_SIZE];
+  //  char protocol[80];
+  //  char URI_Message[400];
+  //  char Information[400];
+  char protocol[URI_PROTOCOL_MAX_SIZE];
+  char URI_Message[URI_MESSAGE_MAX_SIZE];
+  char Information[URI_INFO_MAX_SIZE];
 } sURI_Info;
 
 #endif /* __LIB_NDEF_URI_H */

@@ -70,48 +70,48 @@
   */
 uint16_t NDEF::NDEF_AddAAR(const sAARInfo *pAARStruct)
 {
-    uint16_t status = NDEF_ERROR;
+  uint16_t status = NDEF_ERROR;
 
-    /* AAR: External Type Record Header */
-    /************************************/
-    /*  7 |  6 |  5 |  4 |  3 | 2  1  0 */
-    /*----------------------------------*/
-    /* MB   ME   CF   SR   IL    TNF    */  /* <---- IL=0, CF=0 and SR=1 TNF=4 NFC Forum external type*/
-    /*----------------------------------*/
-    /*          TYPE LENGTH             */
-    /*----------------------------------*/
-    /*        PAYLOAD LENGTH 3          */  /* <---- Not Used  */
-    /*----------------------------------*/
-    /*        PAYLOAD LENGTH 2          */  /* <---- Not Used  */
-    /*----------------------------------*/
-    /*        PAYLOAD LENGTH 1          */  /* <---- Not Used  */
-    /*----------------------------------*/
-    /*        PAYLOAD LENGTH 0          */
-    /*----------------------------------*/
-    /*           ID LENGTH              */  /* <---- Not Used  */
-    /*----------------------------------*/
-    /*             TYPE                 */  /* android.com:pkg */
-    /*----------------------------------*/
-    /*              ID                  */  /* <---- Not Used  */
-    /************************************/
+  /* AAR: External Type Record Header */
+  /************************************/
+  /*  7 |  6 |  5 |  4 |  3 | 2  1  0 */
+  /*----------------------------------*/
+  /* MB   ME   CF   SR   IL    TNF    */  /* <---- IL=0, CF=0 and SR=1 TNF=4 NFC Forum external type*/
+  /*----------------------------------*/
+  /*          TYPE LENGTH             */
+  /*----------------------------------*/
+  /*        PAYLOAD LENGTH 3          */  /* <---- Not Used  */
+  /*----------------------------------*/
+  /*        PAYLOAD LENGTH 2          */  /* <---- Not Used  */
+  /*----------------------------------*/
+  /*        PAYLOAD LENGTH 1          */  /* <---- Not Used  */
+  /*----------------------------------*/
+  /*        PAYLOAD LENGTH 0          */
+  /*----------------------------------*/
+  /*           ID LENGTH              */  /* <---- Not Used  */
+  /*----------------------------------*/
+  /*             TYPE                 */  /* android.com:pkg */
+  /*----------------------------------*/
+  /*              ID                  */  /* <---- Not Used  */
+  /************************************/
 
-    /* Do we have to add AAR to an existing NDEF message */
-    /* retrieve current NDEF size and current record flag*/
-    sRecordInfo_t AARrecord;
+  /* Do we have to add AAR to an existing NDEF message */
+  /* retrieve current NDEF size and current record flag*/
+  sRecordInfo_t AARrecord;
 
-    /* fill AAR record header */
-    AARrecord.RecordFlags = SR_Mask | TNF_NFCForumExternal;
-    AARrecord.TypeLength = AAR_TYPE_STRING_LENGTH;
+  /* fill AAR record header */
+  AARrecord.RecordFlags = SR_Mask | TNF_NFCForumExternal;
+  AARrecord.TypeLength = AAR_TYPE_STRING_LENGTH;
 
-    memcpy(AARrecord.Type, AAR_TYPE_STRING, AAR_TYPE_STRING_LENGTH);
+  memcpy(AARrecord.Type, AAR_TYPE_STRING, AAR_TYPE_STRING_LENGTH);
 
-    /* fill AAR payload */
-    AARrecord.PayloadBufferAdd = (uint8_t *)pAARStruct->PackageName;
-    AARrecord.PayloadLength = strlen(pAARStruct->PackageName) ;
+  /* fill AAR payload */
+  AARrecord.PayloadBufferAdd = (uint8_t *)pAARStruct->PackageName;
+  AARrecord.PayloadLength = strlen(pAARStruct->PackageName) ;
 
-    status = NDEF_AppendRecord(&AARrecord);
+  status = NDEF_AppendRecord(&AARrecord);
 
-    return status;
+  return status;
 }
 
 

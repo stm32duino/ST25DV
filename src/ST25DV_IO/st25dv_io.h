@@ -36,7 +36,7 @@
 #define I_AM_ST25DV64KC                      0x51
 
 #ifndef NULL
-#define NULL      (void *) 0
+  #define NULL      (void *) 0
 #endif
 
 #define NFCTAG_4K_SIZE            ((uint32_t) 0x200)
@@ -336,242 +336,242 @@
  * @brief  ST25DV Ack Nack enumerator definition
  */
 typedef enum {
-    I2CANSW_ACK = 0,
-    I2CANSW_NACK
+  I2CANSW_ACK = 0,
+  I2CANSW_NACK
 } ST25DV_I2CANSW_E;
 
 /**
  * @brief  NFCTAG status enumerator definition.
  */
 typedef enum {
-    NFCTAG_OK      = 0,
-    NFCTAG_ERROR   = 1,
-    NFCTAG_BUSY    = 2,
-    NFCTAG_TIMEOUT = 3,
-    NFCTAG_NACK    = 4
+  NFCTAG_OK      = 0,
+  NFCTAG_ERROR   = 1,
+  NFCTAG_BUSY    = 2,
+  NFCTAG_TIMEOUT = 3,
+  NFCTAG_NACK    = 4
 } NFCTAG_StatusTypeDef;
 
 /**
  * @brief  ST25DV Enable Disable enumerator definition.
  */
 typedef enum {
-    ST25DV_DISABLE = 0,
-    ST25DV_ENABLE
+  ST25DV_DISABLE = 0,
+  ST25DV_ENABLE
 } ST25DV_EN_STATUS;
 
 /**
  * @brief  ST25DV Energy Harvesting mode enumerator definition.
  */
 typedef enum {
-    ST25DV_EH_ACTIVE_AFTER_BOOT = 0,
-    ST25DV_EH_ON_DEMAND
+  ST25DV_EH_ACTIVE_AFTER_BOOT = 0,
+  ST25DV_EH_ON_DEMAND
 } ST25DV_EH_MODE_STATUS;
 
 /**
  * @brief  ST25DV FIELD status enumerator definition.
  */
 typedef enum {
-    ST25DV_FIELD_OFF = 0,
-    ST25DV_FIELD_ON
+  ST25DV_FIELD_OFF = 0,
+  ST25DV_FIELD_ON
 } ST25DV_FIELD_STATUS;
 
 /**
  * @brief  ST25DV VCC status enumerator definition
  */
 typedef enum {
-    ST25DV_VCC_OFF = 0,
-    ST25DV_VCC_ON
+  ST25DV_VCC_OFF = 0,
+  ST25DV_VCC_ON
 } ST25DV_VCC_STATUS;
 
 /**
  * @brief  ST25DV protection status enumerator definition
  */
 typedef enum {
-    ST25DV_NO_PROT = 0,
-    ST25DV_WRITE_PROT,
-    ST25DV_READ_PROT,
-    ST25DV_READWRITE_PROT
+  ST25DV_NO_PROT = 0,
+  ST25DV_WRITE_PROT,
+  ST25DV_READ_PROT,
+  ST25DV_READWRITE_PROT
 } ST25DV_PROTECTION_CONF;
 
 /**
  * @brief  ST25DV area protection enumerator definition.
  */
 typedef enum {
-    ST25DV_PROT_ZONE1 = 0,
-    ST25DV_PROT_ZONE2,
-    ST25DV_PROT_ZONE3,
-    ST25DV_PROT_ZONE4
+  ST25DV_PROT_ZONE1 = 0,
+  ST25DV_PROT_ZONE2,
+  ST25DV_PROT_ZONE3,
+  ST25DV_PROT_ZONE4
 } ST25DV_PROTECTION_ZONE;
 
 /**
  * @brief  ST25DV password protection status enumerator definition.
  */
 typedef enum {
-    ST25DV_NOT_PROTECTED = 0,
-    ST25DV_PROT_PASSWD1,
-    ST25DV_PROT_PASSWD2,
-    ST25DV_PROT_PASSWD3
+  ST25DV_NOT_PROTECTED = 0,
+  ST25DV_PROT_PASSWD1,
+  ST25DV_PROT_PASSWD2,
+  ST25DV_PROT_PASSWD3
 } ST25DV_PASSWD_PROT_STATUS;
 
 /**
  * @brief  ST25DV lock status enumerator definition.
  */
 typedef enum {
-    ST25DV_UNLOCKED = 0,
-    ST25DV_LOCKED
+  ST25DV_UNLOCKED = 0,
+  ST25DV_LOCKED
 } ST25DV_LOCK_STATUS;
 
 /**
  * @brief  ST25DV Number of Blocks for the CCFile enumerator definition.
  */
 typedef enum {
-    ST25DV_CCFILE_1BLCK = 0,
-    ST25DV_CCFILE_2BLCK
+  ST25DV_CCFILE_1BLCK = 0,
+  ST25DV_CCFILE_2BLCK
 } ST25DV_CCFILE_BLOCK;
 
 /**
  * @brief  ST25DV session status enumerator definition.
  */
 typedef enum {
-    ST25DV_SESSION_CLOSED = 0,
-    ST25DV_SESSION_OPEN
+  ST25DV_SESSION_CLOSED = 0,
+  ST25DV_SESSION_OPEN
 } ST25DV_I2CSSO_STATUS;
 
 /**
  * @brief  ST25DV area end address enumerator definition.
  */
 typedef enum {
-    ST25DV_ZONE_END1 = 0,
-    ST25DV_ZONE_END2,
-    ST25DV_ZONE_END3
+  ST25DV_ZONE_END1 = 0,
+  ST25DV_ZONE_END2,
+  ST25DV_ZONE_END3
 } ST25DV_END_ZONE;
 
 /**
  * @brief  ST25DV IT pulse duration enumerator definition.
  */
 typedef enum {
-    ST25DV_302_US = 0,
-    ST25DV_264_US,
-    ST25DV_226_US,
-    ST25DV_188_US,
-    ST25DV_151_US,
-    ST25DV_113_US,
-    ST25DV_75_US,
-    ST25DV_37_US
+  ST25DV_302_US = 0,
+  ST25DV_264_US,
+  ST25DV_226_US,
+  ST25DV_188_US,
+  ST25DV_151_US,
+  ST25DV_113_US,
+  ST25DV_75_US,
+  ST25DV_37_US
 } ST25DV_PULSE_DURATION;
 
 /**
  * @brief  ST25DV Mailbox Current Message enumerator definition
  */
 typedef enum {
-    ST25DV_NO_MSG = 0,
-    ST25DV_HOST_MSG,
-    ST25DV_RF_MSG
+  ST25DV_NO_MSG = 0,
+  ST25DV_HOST_MSG,
+  ST25DV_RF_MSG
 } ST25DV_CURRENT_MSG;
 
 /**
  * @brief  ST25DV EH Ctrl structure definition
  */
 typedef struct {
-    ST25DV_EN_STATUS EH_EN_Mode;
-    ST25DV_EN_STATUS EH_on;
-    ST25DV_EN_STATUS Field_on;
-    ST25DV_EN_STATUS VCC_on;
+  ST25DV_EN_STATUS EH_EN_Mode;
+  ST25DV_EN_STATUS EH_on;
+  ST25DV_EN_STATUS Field_on;
+  ST25DV_EN_STATUS VCC_on;
 } ST25DV_EH_CTRL;
 
 /**
  * @brief  ST25DV GPO structure definition
  */
 typedef struct {
-    ST25DV_EN_STATUS GPO_RFUser_en;
-    ST25DV_EN_STATUS GPO_RFActivity_en;
-    ST25DV_EN_STATUS GPO_RFInterrupt_en;
-    ST25DV_EN_STATUS GPO_FieldChange_en;
-    ST25DV_EN_STATUS GPO_RFPutMsg_en;
-    ST25DV_EN_STATUS GPO_RFGetMsg_en;
-    ST25DV_EN_STATUS GPO_RFWrite_en;
-    ST25DV_EN_STATUS GPO_Enable;
+  ST25DV_EN_STATUS GPO_RFUser_en;
+  ST25DV_EN_STATUS GPO_RFActivity_en;
+  ST25DV_EN_STATUS GPO_RFInterrupt_en;
+  ST25DV_EN_STATUS GPO_FieldChange_en;
+  ST25DV_EN_STATUS GPO_RFPutMsg_en;
+  ST25DV_EN_STATUS GPO_RFGetMsg_en;
+  ST25DV_EN_STATUS GPO_RFWrite_en;
+  ST25DV_EN_STATUS GPO_Enable;
 } ST25DV_GPO;
 
 /**
  * @brief  ST25DV RF Management structure definition.
  */
 typedef struct {
-    ST25DV_EN_STATUS RfDisable;
-    ST25DV_EN_STATUS RfSleep;
+  ST25DV_EN_STATUS RfDisable;
+  ST25DV_EN_STATUS RfSleep;
 } ST25DV_RF_MNGT;
 
 /**
  * @brief  ST25DV RF Area protection structure definition.
  */
 typedef struct {
-    ST25DV_PASSWD_PROT_STATUS PasswdCtrl;
-    ST25DV_PROTECTION_CONF RWprotection;
+  ST25DV_PASSWD_PROT_STATUS PasswdCtrl;
+  ST25DV_PROTECTION_CONF RWprotection;
 } ST25DV_RF_PROT_ZONE;
 
 /**
  * @brief  ST25DV I2C Area protection structure definition.
  */
 typedef struct {
-    ST25DV_PROTECTION_CONF ProtectZone1;
-    ST25DV_PROTECTION_CONF ProtectZone2;
-    ST25DV_PROTECTION_CONF ProtectZone3;
-    ST25DV_PROTECTION_CONF ProtectZone4;
+  ST25DV_PROTECTION_CONF ProtectZone1;
+  ST25DV_PROTECTION_CONF ProtectZone2;
+  ST25DV_PROTECTION_CONF ProtectZone3;
+  ST25DV_PROTECTION_CONF ProtectZone4;
 } ST25DV_I2C_PROT_ZONE;
 
 /**
  * @brief  ST25DV MB_CTRL_DYN register structure definition.
  */
 typedef struct {
-    uint8_t MbEnable;
-    uint8_t HostPutMsg;
-    uint8_t RfPutMsg;
-    uint8_t HostMissMsg;
-    uint8_t RFMissMsg;
-    ST25DV_CURRENT_MSG CurrentMsg;
+  uint8_t MbEnable;
+  uint8_t HostPutMsg;
+  uint8_t RfPutMsg;
+  uint8_t HostMissMsg;
+  uint8_t RFMissMsg;
+  ST25DV_CURRENT_MSG CurrentMsg;
 } ST25DV_MB_CTRL_DYN_STATUS;
 
 /**
  * @brief  ST25DV Lock CCFile structure definition.
  */
 typedef struct {
-    ST25DV_LOCK_STATUS LckBck0;
-    ST25DV_LOCK_STATUS LckBck1;
+  ST25DV_LOCK_STATUS LckBck0;
+  ST25DV_LOCK_STATUS LckBck1;
 } ST25DV_LOCK_CCFILE;
 
 /**
  * @brief  ST25DV Memory size structure definition.
  */
 typedef struct {
-    uint8_t BlockSize;
-    uint16_t Mem_Size;
+  uint8_t BlockSize;
+  uint16_t Mem_Size;
 } ST25DV_MEM_SIZE;
 
 /**
  * @brief  ST25DV UID information structure definition.
  */
 typedef struct {
-    uint32_t MsbUid;
-    uint32_t LsbUid;
+  uint32_t MsbUid;
+  uint32_t LsbUid;
 } ST25DV_UID;
 
 /**
  * @brief  ST25DV Password structure definition.
  */
 typedef struct {
-    uint32_t MsbPasswd;
-    uint32_t LsbPasswd;
+  uint32_t MsbPasswd;
+  uint32_t LsbPasswd;
 } ST25DV_PASSWD;
 
 
 #if defined(ARDUINO_SAM_DUE)
-#define WIRE Wire1
+  #define WIRE Wire1
 #else
-#define WIRE Wire
+  #define WIRE Wire
 #endif
 
 class ST25DV_IO {
-public:
+  public:
     ST25DV_IO(int32_t gpo, int32_t ldp, TwoWire *i2c, Stream *serial = NULL);
 
     NFCTAG_StatusTypeDef ST25DV_i2c_Init(void);
@@ -664,7 +664,7 @@ public:
     TwoWire *get_pwire();
     Stream *get_pserial();
 
-protected:
+  protected:
     int32_t _gpo;
     int32_t _lpd;
     TwoWire *_pwire;

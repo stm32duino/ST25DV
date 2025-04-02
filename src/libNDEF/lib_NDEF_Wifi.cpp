@@ -105,55 +105,55 @@
   */
 void NDEF::NDEF_FillWifiTokenStruct(uint8_t *pPayload, uint32_t PayloadSize, sWifiTokenInfo *pWifiTokenStruct)
 {
-    uint8_t *pLastByteAdd, data1, data2, *temp, *temp_br ;
-    uint16_t SSIDLen, NetWorkKeyLen;
-    uint8_t *dbg, dbg1;
+  uint8_t *pLastByteAdd, data1, data2, *temp, *temp_br ;
+  uint16_t SSIDLen, NetWorkKeyLen;
+  uint8_t *dbg, dbg1;
 
 
-    pLastByteAdd = (uint8_t *)(pPayload + PayloadSize);
-    pPayload--;
+  pLastByteAdd = (uint8_t *)(pPayload + PayloadSize);
+  pPayload--;
 
-    while (pPayload++ != pLastByteAdd) {
-        uint8_t attribute = *pPayload;
-        temp_br = pPayload;
-        switch (attribute) {
+  while (pPayload++ != pLastByteAdd) {
+    uint8_t attribute = *pPayload;
+    temp_br = pPayload;
+    switch (attribute) {
 
-        case ATTRIBUTE_ID_SSID_LSB:
-            temp = pPayload;
-            dbg = temp;
-            dbg1 = *++dbg;
-            if (dbg1 == ATTRIBUTE_ID_SSID_MSB) {
-                data1 = *++dbg;
-                data2 = *++dbg;
-                SSIDLen = data1;
-                SSIDLen = SSIDLen << 8;
-                SSIDLen |= data2;
-                pPayload += 4;
-                memcpy(pWifiTokenStruct->NetworkSSID, pPayload, SSIDLen);
-                /* add end of string character */
-                pWifiTokenStruct->NetworkSSID[SSIDLen] = '\0';
-                pPayload += SSIDLen - 1;
-            } else if (dbg1 == ATTRIBUTE_ID_NETWORK_MSB) {
-                data1 = *++dbg;
-                data2 = *++dbg;
-                NetWorkKeyLen = data1;
-                NetWorkKeyLen = NetWorkKeyLen << 8;
-                NetWorkKeyLen |= data2;
-                pPayload += 4;
-                memcpy(pWifiTokenStruct->NetworkKey, pPayload, NetWorkKeyLen);
-                /* add end of string character */
-                pWifiTokenStruct->NetworkKey[NetWorkKeyLen] = '\0';
-                pPayload += NetWorkKeyLen - 1;
-            } else {
-                pPayload = temp_br;
-            }
-
-            break;
-
-        default :
-            ;
+      case ATTRIBUTE_ID_SSID_LSB:
+        temp = pPayload;
+        dbg = temp;
+        dbg1 = *++dbg;
+        if (dbg1 == ATTRIBUTE_ID_SSID_MSB) {
+          data1 = *++dbg;
+          data2 = *++dbg;
+          SSIDLen = data1;
+          SSIDLen = SSIDLen << 8;
+          SSIDLen |= data2;
+          pPayload += 4;
+          memcpy(pWifiTokenStruct->NetworkSSID, pPayload, SSIDLen);
+          /* add end of string character */
+          pWifiTokenStruct->NetworkSSID[SSIDLen] = '\0';
+          pPayload += SSIDLen - 1;
+        } else if (dbg1 == ATTRIBUTE_ID_NETWORK_MSB) {
+          data1 = *++dbg;
+          data2 = *++dbg;
+          NetWorkKeyLen = data1;
+          NetWorkKeyLen = NetWorkKeyLen << 8;
+          NetWorkKeyLen |= data2;
+          pPayload += 4;
+          memcpy(pWifiTokenStruct->NetworkKey, pPayload, NetWorkKeyLen);
+          /* add end of string character */
+          pWifiTokenStruct->NetworkKey[NetWorkKeyLen] = '\0';
+          pPayload += NetWorkKeyLen - 1;
+        } else {
+          pPayload = temp_br;
         }
+
+        break;
+
+      default :
+        ;
     }
+  }
 
 }
 
@@ -165,17 +165,17 @@ void NDEF::NDEF_FillWifiTokenStruct(uint8_t *pPayload, uint32_t PayloadSize, sWi
   */
 void NDEF::NDEF_Read_WifiToken(struct sRecordInfo *pRecordStruct, sWifiTokenInfo *pWifiTokenStruct)
 {
-    uint8_t *pPayload;
-    uint32_t PayloadSize;
+  uint8_t *pPayload;
+  uint32_t PayloadSize;
 
-    PayloadSize = pRecordStruct->PayloadLength;
+  PayloadSize = pRecordStruct->PayloadLength;
 
-    /* Read record header */
-    pPayload = (uint8_t *)(pRecordStruct->PayloadBufferAdd);
+  /* Read record header */
+  pPayload = (uint8_t *)(pRecordStruct->PayloadBufferAdd);
 
-    if (pRecordStruct->NDEF_Type == URI_WIFITOKEN_TYPE) {
-        NDEF_FillWifiTokenStruct(pPayload, PayloadSize, pWifiTokenStruct);
-    }
+  if (pRecordStruct->NDEF_Type == URI_WIFITOKEN_TYPE) {
+    NDEF_FillWifiTokenStruct(pPayload, PayloadSize, pWifiTokenStruct);
+  }
 
 }
 
@@ -189,14 +189,14 @@ void NDEF::NDEF_Read_WifiToken(struct sRecordInfo *pRecordStruct, sWifiTokenInfo
   */
 uint16_t NDEF::NDEF_ReadWifiToken(struct sRecordInfo *pRecordStruct, sWifiTokenInfo *pWifiTokenStruct)
 {
-    uint16_t status = NDEF_ERROR;
+  uint16_t status = NDEF_ERROR;
 
-    if (pRecordStruct->NDEF_Type == URI_WIFITOKEN_TYPE) {
-        NDEF_Read_WifiToken(pRecordStruct, pWifiTokenStruct);
-        status = NDEF_OK;
-    }
+  if (pRecordStruct->NDEF_Type == URI_WIFITOKEN_TYPE) {
+    NDEF_Read_WifiToken(pRecordStruct, pWifiTokenStruct);
+    status = NDEF_OK;
+  }
 
-    return status;
+  return status;
 }
 
 
@@ -208,144 +208,144 @@ uint16_t NDEF::NDEF_ReadWifiToken(struct sRecordInfo *pRecordStruct, sWifiTokenI
   */
 uint16_t NDEF::NDEF_WriteWifiToken(sWifiTokenInfo *pWifiTokenStruct)
 {
-    uint16_t status = NDEF_ERROR;
-    uint8_t *pPayload, initStage = 0;
-    uint16_t DataSize;
-    uint32_t PayloadSize, SSIDSize, SSIDKeySize;
+  uint16_t status = NDEF_ERROR;
+  uint8_t *pPayload, initStage = 0;
+  uint16_t DataSize;
+  uint32_t PayloadSize, SSIDSize, SSIDKeySize;
 
-    if (pWifiTokenStruct->NetworkKey[0] == '\0') {
-        /* Empty network key is not supported by Phones */
-        strcpy(pWifiTokenStruct->NetworkKey, NDEF_WIFI_DEFAULT_NETWORK_KEY);
-    }
+  if (pWifiTokenStruct->NetworkKey[0] == '\0') {
+    /* Empty network key is not supported by Phones */
+    strcpy(pWifiTokenStruct->NetworkKey, NDEF_WIFI_DEFAULT_NETWORK_KEY);
+  }
 
-    uint8_t configToken1[] = {0x10, 0x4A, /* Attribute ID : Version*/
-                              0x00, 0x01, /* Attribute ID Length*/
-                              0x10,    /* Version 1.0*/
-                              0x10, 0x0E, /* Attribute ID Credential*/
-                              0x00, 0x48, /* Attribute ID Length*/
-                              0x10, 0x26, /* Attribute ID : Network Index*/
-                              0x00, 0x01, /* Attribute Length*/
-                              0x01,  /* Index */
-                              0x10, 0x45, /* Attribute ID :SSID*/
+  uint8_t configToken1[] = {0x10, 0x4A, /* Attribute ID : Version*/
+                            0x00, 0x01, /* Attribute ID Length*/
+                            0x10,    /* Version 1.0*/
+                            0x10, 0x0E, /* Attribute ID Credential*/
+                            0x00, 0x48, /* Attribute ID Length*/
+                            0x10, 0x26, /* Attribute ID : Network Index*/
+                            0x00, 0x01, /* Attribute Length*/
+                            0x01,  /* Index */
+                            0x10, 0x45, /* Attribute ID :SSID*/
 
-                             };
+                           };
 
-    /* Fill SSID length + SSID between configToken1 and configToken3*/
+  /* Fill SSID length + SSID between configToken1 and configToken3*/
 
-    uint8_t configToken3[] = {0x10, 0x03, /* Attribute ID :Authentication Type*/
-                              0x00, 0x02, /* Attribute Length*/
-                              0x00, 0x01, /* Attribute Type : Open*/
-                              0x10, 0x0F, /* Attribute ID  : Encryption Type*/
-                              0x00, 0x02, /* Attribute Length*/
-                              0x00, 0x01, /* Encryption Type : None*/
-                              0x10, 0x27
-                             };  /* Attribute ID  : Network Key */
-
-
-    /*Fill SSID KEY Length and SSID Key between configToken3 and configToken5*/
-
-    uint8_t configToken5[] = {0x10, 0x20, /* Attribute ID  : MAC Address */
-                              0x00, 0x06, /* Attribute Length*/
-                              0, /*MAC-ADDRESS*/
-                              0, /*MAC-ADDRESS*/
-                              0, /*MAC-ADDRESS*/
-                              0, /*MAC-ADDRESS*/
-                              0, /*MAC-ADDRESS*/
-                              0, /*MAC-ADDRESS*/
-                              0x10, 0x49, /* Attribute ID  : Vendor Extension */
-                              0x00, 0x06, /* Attribute Length*/
-                              0x00, 0x37, 0x2A, /* Vendor ID:WFA*/
-                              0x02, /* Subelement ID:Network Key Shareable*/
-                              0x01, /* Subelement Length*/
-                              0x01, /*Network Key Shareable : TRUE*/
-                              0x10, 0x49, /* Attribute ID  : Vendor Extension */
-                              0x00, 0x06, /* Attribute Length*/
-                              0x00, 0x37, 0x2A, /* Vendor ID:WFA*/
-                              0x00, /* Subelement ID:Version2*/
-                              0x01, /* Subelement Length:1*/
-                              0x20 /* Version2*/
-                             };
+  uint8_t configToken3[] = {0x10, 0x03, /* Attribute ID :Authentication Type*/
+                            0x00, 0x02, /* Attribute Length*/
+                            0x00, 0x01, /* Attribute Type : Open*/
+                            0x10, 0x0F, /* Attribute ID  : Encryption Type*/
+                            0x00, 0x02, /* Attribute Length*/
+                            0x00, 0x01, /* Encryption Type : None*/
+                            0x10, 0x27
+                           };  /* Attribute ID  : Network Key */
 
 
-    /* Set size of the tokens */
-    const uint32_t CONFIG_TOKEN_1 = sizeof(configToken1);
-    const uint32_t CONFIG_TOKEN_3 = sizeof(configToken3);
-    const uint32_t CONFIG_TOKEN_5 = sizeof(configToken5);
+  /*Fill SSID KEY Length and SSID Key between configToken3 and configToken5*/
 
-    /* Update Token3 for Authentication & Encryption Types, their default value is coded in token3 */
-    configToken3[CONFIG_TOKEN_3_AUTHENTICATION_TYPE_INDEX] = pWifiTokenStruct->AuthenticationType & 0xFF;
-    configToken3[CONFIG_TOKEN_3_ENCRYPTION_TYPE_INDEX] = pWifiTokenStruct->EncryptionType & 0xFF;
-
-    /* fill Wifi record header */
-    NDEF_Buffer[FIRST_RECORD_OFFSET] = 0xD2;   /* Record Flag */
-    NDEF_Buffer[FIRST_RECORD_OFFSET + 1] = WIFITOKEN_TYPE_STRING_LENGTH;
-    NDEF_Buffer[FIRST_RECORD_OFFSET + 2] = 76; /* needs to be autocalculated - done at the end */
-
-    memcpy(&NDEF_Buffer[FIRST_RECORD_OFFSET + 3], WIFITOKEN_TYPE_STRING, WIFITOKEN_TYPE_STRING_LENGTH);
-
-    pPayload = &NDEF_Buffer[FIRST_RECORD_OFFSET + 3 + WIFITOKEN_TYPE_STRING_LENGTH];
-    PayloadSize = 0;
-
-    /* Compute credential length */
-
-    uint16_t credential_length =  5 +                                     // Network index
-                                  4 +                                     // SSID type + length
-                                  strlen(pWifiTokenStruct->NetworkSSID) + // SSID
-                                  CONFIG_TOKEN_3 +
-                                  2 +                                     // Network key length
-                                  strlen(pWifiTokenStruct->NetworkKey) +  // Network KEY
-                                  CONFIG_TOKEN_5;
-
-    /* update credential length */
-    configToken1[CONFIG_TOKEN_1_CREDENTIAL_LENGTH_INDEX + 1] = credential_length & 0xff;
-    configToken1[CONFIG_TOKEN_1_CREDENTIAL_LENGTH_INDEX] = credential_length >> 8;
+  uint8_t configToken5[] = {0x10, 0x20, /* Attribute ID  : MAC Address */
+                            0x00, 0x06, /* Attribute Length*/
+                            0, /*MAC-ADDRESS*/
+                            0, /*MAC-ADDRESS*/
+                            0, /*MAC-ADDRESS*/
+                            0, /*MAC-ADDRESS*/
+                            0, /*MAC-ADDRESS*/
+                            0, /*MAC-ADDRESS*/
+                            0x10, 0x49, /* Attribute ID  : Vendor Extension */
+                            0x00, 0x06, /* Attribute Length*/
+                            0x00, 0x37, 0x2A, /* Vendor ID:WFA*/
+                            0x02, /* Subelement ID:Network Key Shareable*/
+                            0x01, /* Subelement Length*/
+                            0x01, /*Network Key Shareable : TRUE*/
+                            0x10, 0x49, /* Attribute ID  : Vendor Extension */
+                            0x00, 0x06, /* Attribute Length*/
+                            0x00, 0x37, 0x2A, /* Vendor ID:WFA*/
+                            0x00, /* Subelement ID:Version2*/
+                            0x01, /* Subelement Length:1*/
+                            0x20 /* Version2*/
+                           };
 
 
-    for (initStage = 0; initStage < CONFIG_TOKEN_1; initStage++) {
-        *pPayload = configToken1[initStage];
-        pPayload++;
-    }
+  /* Set size of the tokens */
+  const uint32_t CONFIG_TOKEN_1 = sizeof(configToken1);
+  const uint32_t CONFIG_TOKEN_3 = sizeof(configToken3);
+  const uint32_t CONFIG_TOKEN_5 = sizeof(configToken5);
 
-    /*Fill SSID length and SSID value*/
-    SSIDSize = strlen(pWifiTokenStruct->NetworkSSID);
-    *pPayload = 0x00;
+  /* Update Token3 for Authentication & Encryption Types, their default value is coded in token3 */
+  configToken3[CONFIG_TOKEN_3_AUTHENTICATION_TYPE_INDEX] = pWifiTokenStruct->AuthenticationType & 0xFF;
+  configToken3[CONFIG_TOKEN_3_ENCRYPTION_TYPE_INDEX] = pWifiTokenStruct->EncryptionType & 0xFF;
+
+  /* fill Wifi record header */
+  NDEF_Buffer[FIRST_RECORD_OFFSET] = 0xD2;   /* Record Flag */
+  NDEF_Buffer[FIRST_RECORD_OFFSET + 1] = WIFITOKEN_TYPE_STRING_LENGTH;
+  NDEF_Buffer[FIRST_RECORD_OFFSET + 2] = 76; /* needs to be autocalculated - done at the end */
+
+  memcpy(&NDEF_Buffer[FIRST_RECORD_OFFSET + 3], WIFITOKEN_TYPE_STRING, WIFITOKEN_TYPE_STRING_LENGTH);
+
+  pPayload = &NDEF_Buffer[FIRST_RECORD_OFFSET + 3 + WIFITOKEN_TYPE_STRING_LENGTH];
+  PayloadSize = 0;
+
+  /* Compute credential length */
+
+  uint16_t credential_length =  5 +                                     // Network index
+                                4 +                                     // SSID type + length
+                                strlen(pWifiTokenStruct->NetworkSSID) + // SSID
+                                CONFIG_TOKEN_3 +
+                                2 +                                     // Network key length
+                                strlen(pWifiTokenStruct->NetworkKey) +  // Network KEY
+                                CONFIG_TOKEN_5;
+
+  /* update credential length */
+  configToken1[CONFIG_TOKEN_1_CREDENTIAL_LENGTH_INDEX + 1] = credential_length & 0xff;
+  configToken1[CONFIG_TOKEN_1_CREDENTIAL_LENGTH_INDEX] = credential_length >> 8;
+
+
+  for (initStage = 0; initStage < CONFIG_TOKEN_1; initStage++) {
+    *pPayload = configToken1[initStage];
     pPayload++;
-    *pPayload = SSIDSize & 0x000000FF;
+  }
+
+  /*Fill SSID length and SSID value*/
+  SSIDSize = strlen(pWifiTokenStruct->NetworkSSID);
+  *pPayload = 0x00;
+  pPayload++;
+  *pPayload = SSIDSize & 0x000000FF;
+  pPayload++;
+
+  strcpy((char *)pPayload, pWifiTokenStruct->NetworkSSID);
+  pPayload = pPayload + strlen(pWifiTokenStruct->NetworkSSID);
+
+  for (initStage = 0;  initStage < CONFIG_TOKEN_3; initStage++) {
+    *pPayload = configToken3[initStage];
     pPayload++;
+  }
 
-    strcpy((char *)pPayload, pWifiTokenStruct->NetworkSSID);
-    pPayload = pPayload + strlen(pWifiTokenStruct->NetworkSSID);
+  /* Fill the SSIDKey length and SSIDKey value */
+  SSIDKeySize = strlen(pWifiTokenStruct->NetworkKey);
+  *pPayload = 0x00;
+  pPayload++;
+  *pPayload = SSIDKeySize & 0x000000FF;
+  pPayload++;
 
-    for (initStage = 0;  initStage < CONFIG_TOKEN_3; initStage++) {
-        *pPayload = configToken3[initStage];
-        pPayload++;
-    }
+  memcpy((char *)pPayload, pWifiTokenStruct->NetworkKey, SSIDKeySize);
+  pPayload = pPayload + SSIDKeySize;
 
-    /* Fill the SSIDKey length and SSIDKey value */
-    SSIDKeySize = strlen(pWifiTokenStruct->NetworkKey);
-    *pPayload = 0x00;
+  for (initStage = 0; initStage < CONFIG_TOKEN_5; initStage++) {
+    *pPayload = configToken5[initStage];
     pPayload++;
-    *pPayload = SSIDKeySize & 0x000000FF;
-    pPayload++;
+  }
 
-    memcpy((char *)pPayload, pWifiTokenStruct->NetworkKey, SSIDKeySize);
-    pPayload = pPayload + SSIDKeySize;
+  PayloadSize += CONFIG_TOKEN_1 + CONFIG_TOKEN_3 + CONFIG_TOKEN_5 + SSIDSize + SSIDKeySize + 4 ; // +4 is for SSID & Key length fields
 
-    for (initStage = 0; initStage < CONFIG_TOKEN_5; initStage++) {
-        *pPayload = configToken5[initStage];
-        pPayload++;
-    }
+  NDEF_Buffer[FIRST_RECORD_OFFSET + 2] = (PayloadSize & 0x000000FF);
 
-    PayloadSize += CONFIG_TOKEN_1 + CONFIG_TOKEN_3 + CONFIG_TOKEN_5 + SSIDSize + SSIDKeySize + 4 ; // +4 is for SSID & Key length fields
+  DataSize = PayloadSize + 3 + WIFITOKEN_TYPE_STRING_LENGTH;
 
-    NDEF_Buffer[FIRST_RECORD_OFFSET + 2] = (PayloadSize & 0x000000FF);
+  /* Write NDEF */
+  status = NDEF_WriteNDEF(DataSize, NDEF_Buffer);
 
-    DataSize = PayloadSize + 3 + WIFITOKEN_TYPE_STRING_LENGTH;
-
-    /* Write NDEF */
-    status = NDEF_WriteNDEF(DataSize, NDEF_Buffer);
-
-    return status;
+  return status;
 }
 
 

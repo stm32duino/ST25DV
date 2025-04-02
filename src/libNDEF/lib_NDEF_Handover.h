@@ -64,33 +64,33 @@
 #define NDEF_HANDOVER_AC_CPS_MASK (0x3)
 /** @brief Enumerates the NFC Forum Power States possible values */
 typedef enum {
-    NDEF_HANDOVER_AC_CPS_INACTIVE   = 0x0, /**< The HW for this Alternative Carrier has to be switch on before proceeding. */
-    NDEF_HANDOVER_AC_CPS_ACTIVE     = 0x1, /**< The HW for this Alternative Carrier is currently running. */
-    NDEF_HANDOVER_AC_CPS_ACTIVATING = 0x2, /**< The HW for this Alternative Carrier is being activated. */
-    NDEF_HANDOVER_AC_CPS_UNKNOWN    = 0x3  /**< The HW for this Alternative Carrier is unknown. */
+  NDEF_HANDOVER_AC_CPS_INACTIVE   = 0x0, /**< The HW for this Alternative Carrier has to be switch on before proceeding. */
+  NDEF_HANDOVER_AC_CPS_ACTIVE     = 0x1, /**< The HW for this Alternative Carrier is currently running. */
+  NDEF_HANDOVER_AC_CPS_ACTIVATING = 0x2, /**< The HW for this Alternative Carrier is being activated. */
+  NDEF_HANDOVER_AC_CPS_UNKNOWN    = 0x3  /**< The HW for this Alternative Carrier is unknown. */
 } Ndef_Handover_ac_cps_t;
 
 
 
 typedef struct {
-    uint8_t                       cps;                /**< Current Power State for this Alternative Carrier Hardware. */
-    sRecordInfo_t                 ac_record;          /**< The record structure used to store/build the Alternative Carrier record. */
-    uint8_t                       aux_data_ref_count; /**< The number of Auxiliary Data Reference for this Alternative Carrier. */
-    /* following fields are only used when reading NDEF */
-    uint8_t                      *aux_data_ref_start; /**< Internal field, managed by the library, to keep track of the Auxiliary Data Reference start address in the AC record. */
-    uint8_t                      *aux_data_ref_end;   /**< Internal field, managed by the library, to keep track of the Auxiliary Data Reference end address in the AC record. */
+  uint8_t                       cps;                /**< Current Power State for this Alternative Carrier Hardware. */
+  sRecordInfo_t                 ac_record;          /**< The record structure used to store/build the Alternative Carrier record. */
+  uint8_t                       aux_data_ref_count; /**< The number of Auxiliary Data Reference for this Alternative Carrier. */
+  /* following fields are only used when reading NDEF */
+  uint8_t                      *aux_data_ref_start; /**< Internal field, managed by the library, to keep track of the Auxiliary Data Reference start address in the AC record. */
+  uint8_t                      *aux_data_ref_end;   /**< Internal field, managed by the library, to keep track of the Auxiliary Data Reference end address in the AC record. */
 } Ndef_Handover_alternative_carrier_t;
 
 
 typedef struct {
-    uint16_t  type;                                   /**< Handover type: could be Select or Request. */
-    uint8_t   version;                                /**< Version of the Handover record. */
-    /* following fields are only used when reading NDEF */
-    uint8_t   has_cr;                                 /**< Boolean, if true this Handover has a Collision Resolution nested record. */
-    uint16_t  cr_random_number;                       /**< Random number for the Collision Resolution. */
-    uint8_t   nb_alternative_carrier;                 /**< Number of Alternative Carrier nested records un this Handover. */
-    uint8_t  *ac_start;                               /**< Internal field, managed by the library, to keep track of the Alternative Carrier Reference Data start address in the Handover record. */
-    uint8_t  *ac_end;                                 /**< Internal field, managed by the library, to keep track of the Alternative Carrier Reference Data end address in the Handover record. */
+  uint16_t  type;                                   /**< Handover type: could be Select or Request. */
+  uint8_t   version;                                /**< Version of the Handover record. */
+  /* following fields are only used when reading NDEF */
+  uint8_t   has_cr;                                 /**< Boolean, if true this Handover has a Collision Resolution nested record. */
+  uint16_t  cr_random_number;                       /**< Random number for the Collision Resolution. */
+  uint8_t   nb_alternative_carrier;                 /**< Number of Alternative Carrier nested records un this Handover. */
+  uint8_t  *ac_start;                               /**< Internal field, managed by the library, to keep track of the Alternative Carrier Reference Data start address in the Handover record. */
+  uint8_t  *ac_end;                                 /**< Internal field, managed by the library, to keep track of the Alternative Carrier Reference Data end address in the Handover record. */
 } Ndef_Handover_t;
 
 /** @}

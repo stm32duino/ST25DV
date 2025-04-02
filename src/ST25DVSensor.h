@@ -31,7 +31,7 @@
 #endif
 
 class ST25DV {
-public:
+  public:
     ST25DV(int32_t gpo, int32_t lpd, TwoWire *i2c, Stream *serial = NULL) : st25dv_io(gpo, lpd, i2c, serial), ndef(&st25dv_io) {}
 
     int begin();
@@ -58,7 +58,7 @@ public:
     NDEF_TypeDef readNDEFType();
     NDEF *getNDEF();
 
-protected:
+  protected:
     NFCTAG_StatusTypeDef ST25DV_Init(void);
     void ST25DV_GPO_Init(void);
     void ST25DV_GPO_DeInit(void);

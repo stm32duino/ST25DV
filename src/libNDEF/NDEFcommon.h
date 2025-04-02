@@ -40,14 +40,14 @@
  * @brief  GPO status information structure definition
  */
 typedef struct {
-    uint8_t WritenEEPROM;
-    uint8_t RfBusy;
-    uint8_t FieldOn;
-    uint8_t FieldOff;
-    uint8_t MsgInMailbox;
-    uint8_t MailboxMsgRead;
-    uint8_t RfInterrupt;
-    uint8_t Rfuser;
+  uint8_t WritenEEPROM;
+  uint8_t RfBusy;
+  uint8_t FieldOn;
+  uint8_t FieldOff;
+  uint8_t MsgInMailbox;
+  uint8_t MailboxMsgRead;
+  uint8_t RfInterrupt;
+  uint8_t Rfuser;
 } IT_GPO_STATUS;
 
 /* Exported macro ------------------------------------------------------------*/

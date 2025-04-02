@@ -109,11 +109,11 @@
   */
 uint8_t *NDEF::NDEF_BluetoothCopy(uint8_t *dst, uint8_t *src, uint32_t length)
 {
-    uint32_t index;
-    for (index = 0 ; index < length; index++) {
-        dst[index] = src[length - index - 1];
-    }
-    return dst;
+  uint32_t index;
+  for (index = 0 ; index < length; index++) {
+    dst[index] = src[length - index - 1];
+  }
+  return dst;
 }
 
 /**
@@ -125,150 +125,150 @@ uint8_t *NDEF::NDEF_BluetoothCopy(uint8_t *dst, uint8_t *src, uint32_t length)
   */
 uint16_t NDEF::NDEF_ReadBluetoothOOB(sRecordInfo_t *pRecord, Ndef_Bluetooth_OOB_t *pBluetooth)
 {
-    uint8_t *pData = pRecord->PayloadBufferAdd;
-    uint8_t *OOBEnd = pRecord->PayloadBufferAdd + pRecord->PayloadLength;
+  uint8_t *pData = pRecord->PayloadBufferAdd;
+  uint8_t *OOBEnd = pRecord->PayloadBufferAdd + pRecord->PayloadLength;
 
-    pBluetooth->OptionalMask = 0;
-    pBluetooth->nbServiceData = 0;
-    pBluetooth->Role = NDEF_BLE_ROLE_UNDEF;
-    pBluetooth->DeviceAddressType = NDEF_BLE_UNDEF_ADDRESS_TYPE;
-    pBluetooth->nbUUID16 = 0;
-    pBluetooth->nbUUID32 = 0;
-    pBluetooth->nbUUID128 = 0;
-    pBluetooth->nbServiceSolicitation16 = 0;
-    pBluetooth->nbServiceSolicitation128 = 0;
+  pBluetooth->OptionalMask = 0;
+  pBluetooth->nbServiceData = 0;
+  pBluetooth->Role = NDEF_BLE_ROLE_UNDEF;
+  pBluetooth->DeviceAddressType = NDEF_BLE_UNDEF_ADDRESS_TYPE;
+  pBluetooth->nbUUID16 = 0;
+  pBluetooth->nbUUID32 = 0;
+  pBluetooth->nbUUID128 = 0;
+  pBluetooth->nbServiceSolicitation16 = 0;
+  pBluetooth->nbServiceSolicitation128 = 0;
 
-    if ((pRecord->TypeLength == strlen(NDEF_BLUETOOTH_BREDR_MIME_TYPE)) &&
-            !memcmp(pRecord->Type, NDEF_BLUETOOTH_BREDR_MIME_TYPE, strlen(NDEF_BLUETOOTH_BREDR_MIME_TYPE))) {
-        pBluetooth->Type = NDEF_BLUETOOTH_BREDR;
-        /* Retrieve mandatory OOB data:                   */
-        /* 2 bytes for length and 6 bytes for device addr */
-        NDEF_BluetoothCopy((uint8_t *)pBluetooth->DeviceAddress, &pData[2], sizeof(pBluetooth->DeviceAddress));
-        pData += 8;
-    } else if ((pRecord->TypeLength == strlen(NDEF_BLUETOOTH_BLE_MIME_TYPE)) &&
-               !memcmp(pRecord->Type, NDEF_BLUETOOTH_BLE_MIME_TYPE, strlen(NDEF_BLUETOOTH_BLE_MIME_TYPE))) {
-        pBluetooth->Type = NDEF_BLUETOOTH_BLE;
-        /* for BLE, mandatory fields are in EIR */
-    } else {
-        /* This is an unknown MIME type */
-        return NDEF_ERROR;
+  if ((pRecord->TypeLength == strlen(NDEF_BLUETOOTH_BREDR_MIME_TYPE)) &&
+      !memcmp(pRecord->Type, NDEF_BLUETOOTH_BREDR_MIME_TYPE, strlen(NDEF_BLUETOOTH_BREDR_MIME_TYPE))) {
+    pBluetooth->Type = NDEF_BLUETOOTH_BREDR;
+    /* Retrieve mandatory OOB data:                   */
+    /* 2 bytes for length and 6 bytes for device addr */
+    NDEF_BluetoothCopy((uint8_t *)pBluetooth->DeviceAddress, &pData[2], sizeof(pBluetooth->DeviceAddress));
+    pData += 8;
+  } else if ((pRecord->TypeLength == strlen(NDEF_BLUETOOTH_BLE_MIME_TYPE)) &&
+             !memcmp(pRecord->Type, NDEF_BLUETOOTH_BLE_MIME_TYPE, strlen(NDEF_BLUETOOTH_BLE_MIME_TYPE))) {
+    pBluetooth->Type = NDEF_BLUETOOTH_BLE;
+    /* for BLE, mandatory fields are in EIR */
+  } else {
+    /* This is an unknown MIME type */
+    return NDEF_ERROR;
+  }
+
+  /* EIR format: 1 byte for length, 1 byte for type, n bytes for data */
+  while (pData < OOBEnd) {
+    NDEF_EIR_t *rEIR = (NDEF_EIR_t *)pData;
+    /* +1 for EIR length byte */
+    pData += rEIR->length + 1;
+
+    /* keep track of all EIR found */
+    if (rEIR->type < 0x20) {
+      NDEF_BLUETOOTH_SET_OPTIONAL_MASK(pBluetooth, rEIR->type);
     }
 
-    /* EIR format: 1 byte for length, 1 byte for type, n bytes for data */
-    while (pData < OOBEnd) {
-        NDEF_EIR_t *rEIR = (NDEF_EIR_t *)pData;
-        /* +1 for EIR length byte */
-        pData += rEIR->length + 1;
+    switch (rEIR->type) {
+      case BLUETOOTH_EIR_FLAGS:
+        pBluetooth->Flags = *rEIR->value;
+        break;
 
-        /* keep track of all EIR found */
-        if (rEIR->type < 0x20) {
-            NDEF_BLUETOOTH_SET_OPTIONAL_MASK(pBluetooth, rEIR->type);
-        }
+      case BLUETOOTH_EIR_SERVICE_CLASS_UUID_PARTIAL_16:
+      case BLUETOOTH_EIR_SERVICE_CLASS_UUID_COMPLETE_16:
+        pBluetooth->nbUUID16 = (rEIR->length - 1) / 2 ;
+        NDEF_BluetoothCopy((uint8_t *)pBluetooth->ClassUUID16, rEIR->value, rEIR->length - 1);
+        break;
 
-        switch (rEIR->type) {
-        case BLUETOOTH_EIR_FLAGS:
-            pBluetooth->Flags = *rEIR->value;
-            break;
+      case BLUETOOTH_EIR_SERVICE_CLASS_UUID_PARTIAL_32:
+      case BLUETOOTH_EIR_SERVICE_CLASS_UUID_COMPLETE_32:
+        pBluetooth->nbUUID32 = (rEIR->length - 1) / 4 ;
+        NDEF_BluetoothCopy((uint8_t *)pBluetooth->ClassUUID32, rEIR->value, rEIR->length - 1);
+        break;
 
-        case BLUETOOTH_EIR_SERVICE_CLASS_UUID_PARTIAL_16:
-        case BLUETOOTH_EIR_SERVICE_CLASS_UUID_COMPLETE_16:
-            pBluetooth->nbUUID16 = (rEIR->length - 1) / 2 ;
-            NDEF_BluetoothCopy((uint8_t *)pBluetooth->ClassUUID16, rEIR->value, rEIR->length - 1);
-            break;
+      case BLUETOOTH_EIR_SERVICE_CLASS_UUID_PARTIAL_128:
+      case BLUETOOTH_EIR_SERVICE_CLASS_UUID_COMPLETE_128:
+        pBluetooth->nbUUID128 = (rEIR->length - 1) / 16 ;
+        NDEF_BluetoothCopy((uint8_t *)pBluetooth->ClassUUID128, rEIR->value, rEIR->length - 1);
+        break;
 
-        case BLUETOOTH_EIR_SERVICE_CLASS_UUID_PARTIAL_32:
-        case BLUETOOTH_EIR_SERVICE_CLASS_UUID_COMPLETE_32:
-            pBluetooth->nbUUID32 = (rEIR->length - 1) / 4 ;
-            NDEF_BluetoothCopy((uint8_t *)pBluetooth->ClassUUID32, rEIR->value, rEIR->length - 1);
-            break;
+      case BLUETOOTH_EIR_SHORT_LOCAL_NAME:
+      case BLUETOOTH_EIR_COMPLETE_LOCAL_NAME:
+        /* No worry about name length as max EIR length is 0xff using 1 byte for the type metadata  */
+        memcpy(pBluetooth->LocalName, rEIR->value, rEIR->length - 1);
+        pBluetooth->LocalName[rEIR->length] = '\0';
+        break;
 
-        case BLUETOOTH_EIR_SERVICE_CLASS_UUID_PARTIAL_128:
-        case BLUETOOTH_EIR_SERVICE_CLASS_UUID_COMPLETE_128:
-            pBluetooth->nbUUID128 = (rEIR->length - 1) / 16 ;
-            NDEF_BluetoothCopy((uint8_t *)pBluetooth->ClassUUID128, rEIR->value, rEIR->length - 1);
-            break;
+      case BLUETOOTH_EIR_TX_POWER_LEVEL:
+        pBluetooth->TxPowerLevel = *rEIR->value;
+        break;
 
-        case BLUETOOTH_EIR_SHORT_LOCAL_NAME:
-        case BLUETOOTH_EIR_COMPLETE_LOCAL_NAME:
-            /* No worry about name length as max EIR length is 0xff using 1 byte for the type metadata  */
-            memcpy(pBluetooth->LocalName, rEIR->value, rEIR->length - 1);
-            pBluetooth->LocalName[rEIR->length] = '\0';
-            break;
+      case BLUETOOTH_EIR_DEVICE_CLASS:
+        NDEF_BluetoothCopy((uint8_t *)pBluetooth->DeviceClass, rEIR->value, sizeof(pBluetooth->DeviceClass));
+        break;
 
-        case BLUETOOTH_EIR_TX_POWER_LEVEL:
-            pBluetooth->TxPowerLevel = *rEIR->value;
-            break;
+      case BLUETOOTH_EIR_SIMPLE_PAIRING_HASH:
+        NDEF_BluetoothCopy((uint8_t *)pBluetooth->SimplePairingHash, rEIR->value, sizeof(pBluetooth->SimplePairingHash));
+        break;
 
-        case BLUETOOTH_EIR_DEVICE_CLASS:
-            NDEF_BluetoothCopy((uint8_t *)pBluetooth->DeviceClass, rEIR->value, sizeof(pBluetooth->DeviceClass));
-            break;
+      case BLUETOOTH_EIR_SIMPLE_PAIRING_RANDOMIZER:
+        NDEF_BluetoothCopy((uint8_t *)pBluetooth->SimplePairingRandomizer, rEIR->value, sizeof(pBluetooth->SimplePairingRandomizer));
+        break;
 
-        case BLUETOOTH_EIR_SIMPLE_PAIRING_HASH:
-            NDEF_BluetoothCopy((uint8_t *)pBluetooth->SimplePairingHash, rEIR->value, sizeof(pBluetooth->SimplePairingHash));
-            break;
+      case BLUETOOTH_EIR_SECURITY_MANAGER_TK_VALUE:
+        NDEF_BluetoothCopy((uint8_t *)pBluetooth->SecureManagerTK, rEIR->value, sizeof(pBluetooth->SecureManagerTK));
+        break;
 
-        case BLUETOOTH_EIR_SIMPLE_PAIRING_RANDOMIZER:
-            NDEF_BluetoothCopy((uint8_t *)pBluetooth->SimplePairingRandomizer, rEIR->value, sizeof(pBluetooth->SimplePairingRandomizer));
-            break;
+      case BLUETOOTH_EIR_SECURITY_MANAGER_FLAGS:
+        pBluetooth->SMFlags = *rEIR->value;
+        break;
 
-        case BLUETOOTH_EIR_SECURITY_MANAGER_TK_VALUE:
-            NDEF_BluetoothCopy((uint8_t *)pBluetooth->SecureManagerTK, rEIR->value, sizeof(pBluetooth->SecureManagerTK));
-            break;
+      case BLUETOOTH_EIR_SLAVE_CONNECTION_INTERVAL_RANGE:
+        NDEF_BluetoothCopy((uint8_t *)pBluetooth->SlaveConnIntervalRange, rEIR->value, sizeof(pBluetooth->SlaveConnIntervalRange));
+        break;
 
-        case BLUETOOTH_EIR_SECURITY_MANAGER_FLAGS:
-            pBluetooth->SMFlags = *rEIR->value;
-            break;
+      case BLUETOOTH_EIR_SERVICE_SOLICITATION_16:
+        pBluetooth->nbServiceSolicitation16 = (rEIR->length - 1) / 2 ;
+        NDEF_BluetoothCopy((uint8_t *)pBluetooth->ServiceSolicitation16, rEIR->value, rEIR->length - 1);
+        break;
 
-        case BLUETOOTH_EIR_SLAVE_CONNECTION_INTERVAL_RANGE:
-            NDEF_BluetoothCopy((uint8_t *)pBluetooth->SlaveConnIntervalRange, rEIR->value, sizeof(pBluetooth->SlaveConnIntervalRange));
-            break;
+      case BLUETOOTH_EIR_SERVICE_SOLICITATION_128:
+        pBluetooth->nbServiceSolicitation128 = (rEIR->length - 1) / 16 ;
+        NDEF_BluetoothCopy((uint8_t *)pBluetooth->ServiceSolicitation128, rEIR->value, rEIR->length - 1);
+        break;
 
-        case BLUETOOTH_EIR_SERVICE_SOLICITATION_16:
-            pBluetooth->nbServiceSolicitation16 = (rEIR->length - 1) / 2 ;
-            NDEF_BluetoothCopy((uint8_t *)pBluetooth->ServiceSolicitation16, rEIR->value, rEIR->length - 1);
-            break;
+      case BLUETOOTH_EIR_SERVICE_DATA:
+        /* a specific function should be used for this EIR */
+        pBluetooth->nbServiceData++;
+        break;
 
-        case BLUETOOTH_EIR_SERVICE_SOLICITATION_128:
-            pBluetooth->nbServiceSolicitation128 = (rEIR->length - 1) / 16 ;
-            NDEF_BluetoothCopy((uint8_t *)pBluetooth->ServiceSolicitation128, rEIR->value, rEIR->length - 1);
-            break;
+      case BLUETOOTH_EIR_MANUFACTURER_DATA:
+        /* a specific function should be used for this EIR */
+        pBluetooth->nbManufacturerData++;
+        break;
 
-        case BLUETOOTH_EIR_SERVICE_DATA:
-            /* a specific function should be used for this EIR */
-            pBluetooth->nbServiceData++;
-            break;
+      case BLUETOOTH_EIR_APPEARANCE:
+        pBluetooth->Appearance = *(uint16_t *)rEIR->value;
+        break;
 
-        case BLUETOOTH_EIR_MANUFACTURER_DATA:
-            /* a specific function should be used for this EIR */
-            pBluetooth->nbManufacturerData++;
-            break;
+      case BLUETOOTH_EIR_BLE_DEVICE_ADDRESS:
+        NDEF_BluetoothCopy((uint8_t *)pBluetooth->DeviceAddress, rEIR->value, sizeof(pBluetooth->DeviceAddress));
+        pBluetooth->DeviceAddressType = (Ndef_BLE_Address_Type_t)rEIR->value[sizeof(pBluetooth->DeviceAddress)];
+        break;
 
-        case BLUETOOTH_EIR_APPEARANCE:
-            pBluetooth->Appearance = *(uint16_t *)rEIR->value;
-            break;
+      case BLUETOOTH_EIR_BLE_ROLE:
+        pBluetooth->Role = (Ndef_BLE_Role_t) * rEIR->value;
+        break;
 
-        case BLUETOOTH_EIR_BLE_DEVICE_ADDRESS:
-            NDEF_BluetoothCopy((uint8_t *)pBluetooth->DeviceAddress, rEIR->value, sizeof(pBluetooth->DeviceAddress));
-            pBluetooth->DeviceAddressType = (Ndef_BLE_Address_Type_t)rEIR->value[sizeof(pBluetooth->DeviceAddress)];
-            break;
+      default:
+        pBluetooth->nbUnknown++;
+        break;
+    } /* switch rEIR->type */
+  } /* while (pData < OOBEnd) */
+  /* Check that BLE mandatory fields are there */
+  if ((pBluetooth->Type == NDEF_BLUETOOTH_BLE) &&
+      (!NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_BLE_DEVICE_ADDRESS) ||
+       !NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_BLE_ROLE))) {
+    return NDEF_ERROR;
+  }
 
-        case BLUETOOTH_EIR_BLE_ROLE:
-            pBluetooth->Role = (Ndef_BLE_Role_t) * rEIR->value;
-            break;
-
-        default:
-            pBluetooth->nbUnknown++;
-            break;
-        } /* switch rEIR->type */
-    } /* while (pData < OOBEnd) */
-    /* Check that BLE mandatory fields are there */
-    if ((pBluetooth->Type == NDEF_BLUETOOTH_BLE) &&
-            (!NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_BLE_DEVICE_ADDRESS) ||
-             !NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_BLE_ROLE))) {
-        return NDEF_ERROR;
-    }
-
-    return NDEF_OK;
+  return NDEF_OK;
 }
 
 /**
@@ -281,224 +281,224 @@ uint16_t NDEF::NDEF_ReadBluetoothOOB(sRecordInfo_t *pRecord, Ndef_Bluetooth_OOB_
   */
 uint16_t NDEF::NDEF_AppendBluetoothOOB(Ndef_Bluetooth_OOB_t *pBluetooth, char *RecordID)
 {
-    sRecordInfo_t Record;
-    uint16_t status;
+  sRecordInfo_t Record;
+  uint16_t status;
 
-    Record.RecordFlags = TNF_MediaType;
-    Record.RecordFlags |= (RecordID != NULL) ? IL_Mask : 0;
-    Record.IDLength = strlen(RecordID);
-    memcpy(Record.ID, RecordID, Record.IDLength);
+  Record.RecordFlags = TNF_MediaType;
+  Record.RecordFlags |= (RecordID != NULL) ? IL_Mask : 0;
+  Record.IDLength = strlen(RecordID);
+  memcpy(Record.ID, RecordID, Record.IDLength);
 
-    if (pBluetooth->Type == NDEF_BLUETOOTH_BREDR) {
-        Record.TypeLength = strlen(NDEF_BLUETOOTH_BREDR_MIME_TYPE);
-        memcpy(Record.Type, NDEF_BLUETOOTH_BREDR_MIME_TYPE, Record.TypeLength);
-    } else if (pBluetooth->Type == NDEF_BLUETOOTH_BLE) {
-        Record.TypeLength = strlen(NDEF_BLUETOOTH_BLE_MIME_TYPE);
-        memcpy(Record.Type, NDEF_BLUETOOTH_BLE_MIME_TYPE, Record.TypeLength);
+  if (pBluetooth->Type == NDEF_BLUETOOTH_BREDR) {
+    Record.TypeLength = strlen(NDEF_BLUETOOTH_BREDR_MIME_TYPE);
+    memcpy(Record.Type, NDEF_BLUETOOTH_BREDR_MIME_TYPE, Record.TypeLength);
+  } else if (pBluetooth->Type == NDEF_BLUETOOTH_BLE) {
+    Record.TypeLength = strlen(NDEF_BLUETOOTH_BLE_MIME_TYPE);
+    memcpy(Record.Type, NDEF_BLUETOOTH_BLE_MIME_TYPE, Record.TypeLength);
+  } else {
+    return NDEF_ERROR;
+  }
+
+  /* Generate OOB payload */
+  Record.PayloadLength = NDEF_GetBluetoothOOBLength(pBluetooth);
+  Record.PayloadBufferAdd = NDEF_Record_Buffer;
+  if (Record.PayloadLength > NDEF_RECORD_MAX_SIZE) {
+    return NDEF_ERROR_MEMORY_INTERNAL;
+  }
+
+  /* pData: pointer to ease increment of record buffer address (byte granularity) */
+  uint8_t *pData = Record.PayloadBufferAdd;
+
+  /* for BR-EDR Device address & length are managed outside EIR */
+  if (pBluetooth->Type == NDEF_BLUETOOTH_BREDR) {
+    *pData = Record.PayloadLength;
+    pData += 2;
+    NDEF_BluetoothCopy(pData, (uint8_t *)pBluetooth->DeviceAddress, sizeof(pBluetooth->DeviceAddress));
+    pData += sizeof(pBluetooth->DeviceAddress);
+  }
+
+  /* wEIR: pointer to ease write to the buffer.
+   * length always set with an additional +1 corresponding to the EIR type byte.
+   * pData increment is always done with an additional +1 corresponding to the EIR length byte.
+   */
+  NDEF_EIR_t *wEIR;
+
+
+  if (pBluetooth->Type == NDEF_BLUETOOTH_BLE) {
+    /* following EIR are mandatory for BLE */
+    wEIR = (NDEF_EIR_t *)pData;
+    wEIR->length = sizeof(pBluetooth->DeviceAddress) + sizeof(pBluetooth->DeviceAddressType) + 1;
+    wEIR->type = BLUETOOTH_EIR_BLE_DEVICE_ADDRESS;
+    NDEF_BluetoothCopy(wEIR->value, (uint8_t *)pBluetooth->DeviceAddress, sizeof(pBluetooth->DeviceAddress));
+    wEIR->value[sizeof(pBluetooth->DeviceAddress)] = pBluetooth->DeviceAddressType;
+    pData += wEIR->length + 1;
+
+    wEIR = (NDEF_EIR_t *)pData;
+    wEIR->length = sizeof(pBluetooth->Role) + 1;
+    wEIR->type = BLUETOOTH_EIR_BLE_ROLE;
+    wEIR->value[0] = pBluetooth->Role;
+    pData += wEIR->length + 1;
+
+  }
+
+  /* Rely on the optional mask to know if a EIR is required or not */
+  if (NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_FLAGS)) {
+    wEIR = (NDEF_EIR_t *)pData;
+    wEIR->length = sizeof(pBluetooth->Flags) + 1;
+    wEIR->type = BLUETOOTH_EIR_FLAGS;
+    wEIR->value[0] = pBluetooth->Flags;
+    pData += wEIR->length + 1;
+  }
+
+  if (pBluetooth->nbUUID16 > 0) {
+    wEIR = (NDEF_EIR_t *)pData;
+    wEIR->length = 2 * pBluetooth->nbUUID16 + 1;
+    if (NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_SERVICE_CLASS_UUID_COMPLETE_16)) {
+      wEIR->type = BLUETOOTH_EIR_SERVICE_CLASS_UUID_COMPLETE_16;
     } else {
-        return NDEF_ERROR;
+      wEIR->type = BLUETOOTH_EIR_SERVICE_CLASS_UUID_PARTIAL_16;
     }
+    NDEF_BluetoothCopy(wEIR->value, (uint8_t *) pBluetooth->ClassUUID16, 2 * pBluetooth->nbUUID16);
+    pData += wEIR->length + 1;
 
-    /* Generate OOB payload */
-    Record.PayloadLength = NDEF_GetBluetoothOOBLength(pBluetooth);
-    Record.PayloadBufferAdd = NDEF_Record_Buffer;
-    if (Record.PayloadLength > NDEF_RECORD_MAX_SIZE) {
-        return NDEF_ERROR_MEMORY_INTERNAL;
+  }
+
+  if (pBluetooth->nbUUID32 > 0) {
+    wEIR = (NDEF_EIR_t *)pData;
+    wEIR->length = 4 * pBluetooth->nbUUID32 + 1;
+    if (NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_SERVICE_CLASS_UUID_COMPLETE_32)) {
+      wEIR->type = BLUETOOTH_EIR_SERVICE_CLASS_UUID_COMPLETE_32;
+    } else {
+      wEIR->type = BLUETOOTH_EIR_SERVICE_CLASS_UUID_PARTIAL_32;
     }
+    NDEF_BluetoothCopy(wEIR->value, (uint8_t *)pBluetooth->ClassUUID32, 4 * pBluetooth->nbUUID32);
+    pData += wEIR->length + 1;
 
-    /* pData: pointer to ease increment of record buffer address (byte granularity) */
-    uint8_t *pData = Record.PayloadBufferAdd;
+  }
 
-    /* for BR-EDR Device address & length are managed outside EIR */
-    if (pBluetooth->Type == NDEF_BLUETOOTH_BREDR) {
-        *pData = Record.PayloadLength;
-        pData += 2;
-        NDEF_BluetoothCopy(pData, (uint8_t *)pBluetooth->DeviceAddress, sizeof(pBluetooth->DeviceAddress));
-        pData += sizeof(pBluetooth->DeviceAddress);
+  if (pBluetooth->nbUUID128 > 0) {
+    wEIR = (NDEF_EIR_t *)pData;
+    wEIR->length = 16 * pBluetooth->nbUUID128 + 1;
+    if (NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_SERVICE_CLASS_UUID_COMPLETE_128)) {
+      wEIR->type = BLUETOOTH_EIR_SERVICE_CLASS_UUID_COMPLETE_128;
+    } else {
+      wEIR->type = BLUETOOTH_EIR_SERVICE_CLASS_UUID_PARTIAL_128;
     }
+    NDEF_BluetoothCopy(wEIR->value, (uint8_t *) pBluetooth->ClassUUID128, 16 * pBluetooth->nbUUID128);
+    pData += wEIR->length + 1;
 
-    /* wEIR: pointer to ease write to the buffer.
-     * length always set with an additional +1 corresponding to the EIR type byte.
-     * pData increment is always done with an additional +1 corresponding to the EIR length byte.
-     */
-    NDEF_EIR_t *wEIR;
+  }
 
-
-    if (pBluetooth->Type == NDEF_BLUETOOTH_BLE) {
-        /* following EIR are mandatory for BLE */
-        wEIR = (NDEF_EIR_t *)pData;
-        wEIR->length = sizeof(pBluetooth->DeviceAddress) + sizeof(pBluetooth->DeviceAddressType) + 1;
-        wEIR->type = BLUETOOTH_EIR_BLE_DEVICE_ADDRESS;
-        NDEF_BluetoothCopy(wEIR->value, (uint8_t *)pBluetooth->DeviceAddress, sizeof(pBluetooth->DeviceAddress));
-        wEIR->value[sizeof(pBluetooth->DeviceAddress)] = pBluetooth->DeviceAddressType;
-        pData += wEIR->length + 1;
-
-        wEIR = (NDEF_EIR_t *)pData;
-        wEIR->length = sizeof(pBluetooth->Role) + 1;
-        wEIR->type = BLUETOOTH_EIR_BLE_ROLE;
-        wEIR->value[0] = pBluetooth->Role;
-        pData += wEIR->length + 1;
-
+  if (NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_SHORT_LOCAL_NAME) ||
+      NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_COMPLETE_LOCAL_NAME)) {
+    wEIR = (NDEF_EIR_t *)pData;
+    wEIR->length = strlen(pBluetooth->LocalName) + 1;
+    if (NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_SHORT_LOCAL_NAME)) {
+      wEIR->type = BLUETOOTH_EIR_SHORT_LOCAL_NAME;
+    } else {
+      wEIR->type = BLUETOOTH_EIR_COMPLETE_LOCAL_NAME;
     }
+    memcpy(wEIR->value, pBluetooth->LocalName, strlen(pBluetooth->LocalName));
+    pData += wEIR->length + 1;
 
-    /* Rely on the optional mask to know if a EIR is required or not */
-    if (NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_FLAGS)) {
-        wEIR = (NDEF_EIR_t *)pData;
-        wEIR->length = sizeof(pBluetooth->Flags) + 1;
-        wEIR->type = BLUETOOTH_EIR_FLAGS;
-        wEIR->value[0] = pBluetooth->Flags;
-        pData += wEIR->length + 1;
-    }
+  }
 
-    if (pBluetooth->nbUUID16 > 0) {
-        wEIR = (NDEF_EIR_t *)pData;
-        wEIR->length = 2 * pBluetooth->nbUUID16 + 1;
-        if (NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_SERVICE_CLASS_UUID_COMPLETE_16)) {
-            wEIR->type = BLUETOOTH_EIR_SERVICE_CLASS_UUID_COMPLETE_16;
-        } else {
-            wEIR->type = BLUETOOTH_EIR_SERVICE_CLASS_UUID_PARTIAL_16;
-        }
-        NDEF_BluetoothCopy(wEIR->value, (uint8_t *) pBluetooth->ClassUUID16, 2 * pBluetooth->nbUUID16);
-        pData += wEIR->length + 1;
+  if (NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_TX_POWER_LEVEL)) {
+    wEIR = (NDEF_EIR_t *)pData;
+    wEIR->length = sizeof(pBluetooth->TxPowerLevel) + 1;
+    wEIR->type = BLUETOOTH_EIR_TX_POWER_LEVEL;
+    wEIR->value[0] = pBluetooth->TxPowerLevel;
+    pData += wEIR->length + 1;
+  }
 
-    }
+  if (NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_DEVICE_CLASS)) {
+    wEIR = (NDEF_EIR_t *)pData;
+    wEIR->length = sizeof(pBluetooth->DeviceClass) + 1;
+    wEIR->type = BLUETOOTH_EIR_DEVICE_CLASS;
+    NDEF_BluetoothCopy(wEIR->value, pBluetooth->DeviceClass, sizeof(pBluetooth->DeviceClass));
+    pData += wEIR->length + 1;
 
-    if (pBluetooth->nbUUID32 > 0) {
-        wEIR = (NDEF_EIR_t *)pData;
-        wEIR->length = 4 * pBluetooth->nbUUID32 + 1;
-        if (NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_SERVICE_CLASS_UUID_COMPLETE_32)) {
-            wEIR->type = BLUETOOTH_EIR_SERVICE_CLASS_UUID_COMPLETE_32;
-        } else {
-            wEIR->type = BLUETOOTH_EIR_SERVICE_CLASS_UUID_PARTIAL_32;
-        }
-        NDEF_BluetoothCopy(wEIR->value, (uint8_t *)pBluetooth->ClassUUID32, 4 * pBluetooth->nbUUID32);
-        pData += wEIR->length + 1;
+  }
 
-    }
+  if (NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_SIMPLE_PAIRING_HASH)) {
+    wEIR = (NDEF_EIR_t *)pData;
+    wEIR->length = sizeof(pBluetooth->SimplePairingHash) + 1;
+    wEIR->type = BLUETOOTH_EIR_SIMPLE_PAIRING_HASH;
+    NDEF_BluetoothCopy(wEIR->value, pBluetooth->SimplePairingHash, sizeof(pBluetooth->SimplePairingHash));
+    pData += wEIR->length + 1;
 
-    if (pBluetooth->nbUUID128 > 0) {
-        wEIR = (NDEF_EIR_t *)pData;
-        wEIR->length = 16 * pBluetooth->nbUUID128 + 1;
-        if (NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_SERVICE_CLASS_UUID_COMPLETE_128)) {
-            wEIR->type = BLUETOOTH_EIR_SERVICE_CLASS_UUID_COMPLETE_128;
-        } else {
-            wEIR->type = BLUETOOTH_EIR_SERVICE_CLASS_UUID_PARTIAL_128;
-        }
-        NDEF_BluetoothCopy(wEIR->value, (uint8_t *) pBluetooth->ClassUUID128, 16 * pBluetooth->nbUUID128);
-        pData += wEIR->length + 1;
+  }
 
-    }
+  if (NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_SIMPLE_PAIRING_RANDOMIZER)) {
+    wEIR = (NDEF_EIR_t *)pData;
+    wEIR->length = sizeof(pBluetooth->SimplePairingRandomizer) + 1;
+    wEIR->type = BLUETOOTH_EIR_SIMPLE_PAIRING_RANDOMIZER;
+    NDEF_BluetoothCopy(wEIR->value, pBluetooth->SimplePairingRandomizer, sizeof(pBluetooth->SimplePairingRandomizer));
+    pData += wEIR->length + 1;
 
-    if (NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_SHORT_LOCAL_NAME) ||
-            NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_COMPLETE_LOCAL_NAME)) {
-        wEIR = (NDEF_EIR_t *)pData;
-        wEIR->length = strlen(pBluetooth->LocalName) + 1;
-        if (NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_SHORT_LOCAL_NAME)) {
-            wEIR->type = BLUETOOTH_EIR_SHORT_LOCAL_NAME;
-        } else {
-            wEIR->type = BLUETOOTH_EIR_COMPLETE_LOCAL_NAME;
-        }
-        memcpy(wEIR->value, pBluetooth->LocalName, strlen(pBluetooth->LocalName));
-        pData += wEIR->length + 1;
+  }
 
-    }
+  if (NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_SECURITY_MANAGER_TK_VALUE)) {
+    wEIR = (NDEF_EIR_t *)pData;
+    wEIR->length = sizeof(pBluetooth->SecureManagerTK) + 1;
+    wEIR->type = BLUETOOTH_EIR_SECURITY_MANAGER_TK_VALUE;
+    NDEF_BluetoothCopy(wEIR->value, pBluetooth->SecureManagerTK, sizeof(pBluetooth->SecureManagerTK));
+    pData += wEIR->length + 1;
 
-    if (NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_TX_POWER_LEVEL)) {
-        wEIR = (NDEF_EIR_t *)pData;
-        wEIR->length = sizeof(pBluetooth->TxPowerLevel) + 1;
-        wEIR->type = BLUETOOTH_EIR_TX_POWER_LEVEL;
-        wEIR->value[0] = pBluetooth->TxPowerLevel;
-        pData += wEIR->length + 1;
-    }
+  }
 
-    if (NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_DEVICE_CLASS)) {
-        wEIR = (NDEF_EIR_t *)pData;
-        wEIR->length = sizeof(pBluetooth->DeviceClass) + 1;
-        wEIR->type = BLUETOOTH_EIR_DEVICE_CLASS;
-        NDEF_BluetoothCopy(wEIR->value, pBluetooth->DeviceClass, sizeof(pBluetooth->DeviceClass));
-        pData += wEIR->length + 1;
+  if (NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_SECURITY_MANAGER_FLAGS)) {
+    wEIR = (NDEF_EIR_t *)pData;
+    wEIR->length = sizeof(pBluetooth->SMFlags) + 1;
+    wEIR->type = BLUETOOTH_EIR_SECURITY_MANAGER_FLAGS;
+    wEIR->value[0] = pBluetooth->SMFlags;
+    pData += wEIR->length + 1;
 
-    }
+  }
 
-    if (NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_SIMPLE_PAIRING_HASH)) {
-        wEIR = (NDEF_EIR_t *)pData;
-        wEIR->length = sizeof(pBluetooth->SimplePairingHash) + 1;
-        wEIR->type = BLUETOOTH_EIR_SIMPLE_PAIRING_HASH;
-        NDEF_BluetoothCopy(wEIR->value, pBluetooth->SimplePairingHash, sizeof(pBluetooth->SimplePairingHash));
-        pData += wEIR->length + 1;
+  if (NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_SLAVE_CONNECTION_INTERVAL_RANGE)) {
+    wEIR = (NDEF_EIR_t *)pData;
+    wEIR->length = sizeof(pBluetooth->SlaveConnIntervalRange) + 1;
+    wEIR->type = BLUETOOTH_EIR_SLAVE_CONNECTION_INTERVAL_RANGE;
+    NDEF_BluetoothCopy(wEIR->value, (uint8_t *)pBluetooth->SlaveConnIntervalRange, sizeof(pBluetooth->SlaveConnIntervalRange));
+    pData += wEIR->length + 1;
 
-    }
+  }
 
-    if (NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_SIMPLE_PAIRING_RANDOMIZER)) {
-        wEIR = (NDEF_EIR_t *)pData;
-        wEIR->length = sizeof(pBluetooth->SimplePairingRandomizer) + 1;
-        wEIR->type = BLUETOOTH_EIR_SIMPLE_PAIRING_RANDOMIZER;
-        NDEF_BluetoothCopy(wEIR->value, pBluetooth->SimplePairingRandomizer, sizeof(pBluetooth->SimplePairingRandomizer));
-        pData += wEIR->length + 1;
+  if (pBluetooth->nbServiceSolicitation16 > 0) {
+    wEIR = (NDEF_EIR_t *)pData;
+    wEIR->length = 2 * pBluetooth->nbServiceSolicitation16 + 1;
+    wEIR->type = BLUETOOTH_EIR_SERVICE_SOLICITATION_16;
+    NDEF_BluetoothCopy(wEIR->value, (uint8_t *)pBluetooth->ServiceSolicitation16, 16 * pBluetooth->nbServiceSolicitation16);
+    pData += wEIR->length + 1;
 
-    }
+  }
 
-    if (NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_SECURITY_MANAGER_TK_VALUE)) {
-        wEIR = (NDEF_EIR_t *)pData;
-        wEIR->length = sizeof(pBluetooth->SecureManagerTK) + 1;
-        wEIR->type = BLUETOOTH_EIR_SECURITY_MANAGER_TK_VALUE;
-        NDEF_BluetoothCopy(wEIR->value, pBluetooth->SecureManagerTK, sizeof(pBluetooth->SecureManagerTK));
-        pData += wEIR->length + 1;
+  if (pBluetooth->nbServiceSolicitation128 > 0) {
+    wEIR = (NDEF_EIR_t *)pData;
+    wEIR->length = 16 * pBluetooth->nbServiceSolicitation128 + 1;
+    wEIR->type = BLUETOOTH_EIR_SERVICE_SOLICITATION_128;
+    NDEF_BluetoothCopy(wEIR->value, (uint8_t *) pBluetooth->ServiceSolicitation128, 16 * pBluetooth->nbServiceSolicitation128);
+    pData += wEIR->length + 1;
 
-    }
+  }
 
-    if (NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_SECURITY_MANAGER_FLAGS)) {
-        wEIR = (NDEF_EIR_t *)pData;
-        wEIR->length = sizeof(pBluetooth->SMFlags) + 1;
-        wEIR->type = BLUETOOTH_EIR_SECURITY_MANAGER_FLAGS;
-        wEIR->value[0] = pBluetooth->SMFlags;
-        pData += wEIR->length + 1;
+  if (NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_APPEARANCE)) {
+    wEIR = (NDEF_EIR_t *)pData;
+    wEIR->length = sizeof(pBluetooth->Appearance) + 1;
+    wEIR->type = BLUETOOTH_EIR_APPEARANCE;
+    wEIR->value[0] = pBluetooth->Appearance;
+    pData += wEIR->length + 1;
 
-    }
-
-    if (NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_SLAVE_CONNECTION_INTERVAL_RANGE)) {
-        wEIR = (NDEF_EIR_t *)pData;
-        wEIR->length = sizeof(pBluetooth->SlaveConnIntervalRange) + 1;
-        wEIR->type = BLUETOOTH_EIR_SLAVE_CONNECTION_INTERVAL_RANGE;
-        NDEF_BluetoothCopy(wEIR->value, (uint8_t *)pBluetooth->SlaveConnIntervalRange, sizeof(pBluetooth->SlaveConnIntervalRange));
-        pData += wEIR->length + 1;
-
-    }
-
-    if (pBluetooth->nbServiceSolicitation16 > 0) {
-        wEIR = (NDEF_EIR_t *)pData;
-        wEIR->length = 2 * pBluetooth->nbServiceSolicitation16 + 1;
-        wEIR->type = BLUETOOTH_EIR_SERVICE_SOLICITATION_16;
-        NDEF_BluetoothCopy(wEIR->value, (uint8_t *)pBluetooth->ServiceSolicitation16, 16 * pBluetooth->nbServiceSolicitation16);
-        pData += wEIR->length + 1;
-
-    }
-
-    if (pBluetooth->nbServiceSolicitation128 > 0) {
-        wEIR = (NDEF_EIR_t *)pData;
-        wEIR->length = 16 * pBluetooth->nbServiceSolicitation128 + 1;
-        wEIR->type = BLUETOOTH_EIR_SERVICE_SOLICITATION_128;
-        NDEF_BluetoothCopy(wEIR->value, (uint8_t *) pBluetooth->ServiceSolicitation128, 16 * pBluetooth->nbServiceSolicitation128);
-        pData += wEIR->length + 1;
-
-    }
-
-    if (NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_APPEARANCE)) {
-        wEIR = (NDEF_EIR_t *)pData;
-        wEIR->length = sizeof(pBluetooth->Appearance) + 1;
-        wEIR->type = BLUETOOTH_EIR_APPEARANCE;
-        wEIR->value[0] = pBluetooth->Appearance;
-        pData += wEIR->length + 1;
-
-    }
+  }
 
 
-    status = NDEF_AppendRecord(&Record);
-    if (status != NDEF_OK) {
-        return status;
-    }
+  status = NDEF_AppendRecord(&Record);
+  if (status != NDEF_OK) {
+    return status;
+  }
 
-    return NDEF_OK;
+  return NDEF_OK;
 }
 
 /**
@@ -508,27 +508,27 @@ uint16_t NDEF::NDEF_AppendBluetoothOOB(Ndef_Bluetooth_OOB_t *pBluetooth, char *R
   */
 uint32_t NDEF::NDEF_GetBluetoothOOBLength(Ndef_Bluetooth_OOB_t *pBluetooth)
 {
-    uint32_t length = (pBluetooth->Type == NDEF_BLUETOOTH_BREDR) ? sizeof(pBluetooth->DeviceAddress) + 2 : 0; // +2 is for BR/EDR mandatory length
-    length += NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_FLAGS) ? sizeof(pBluetooth->Flags) + 2    : 0 ;
-    length += pBluetooth->nbUUID16 ? pBluetooth->nbUUID16 * 2 + 2 : 0;
-    length += pBluetooth->nbUUID32 ? pBluetooth->nbUUID32 * 4 + 2 : 0;
-    length += pBluetooth->nbUUID128 ? pBluetooth->nbUUID128 * 16 + 2 : 0;
-    length += NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_SHORT_LOCAL_NAME) ? strlen(pBluetooth->LocalName) + 2 : 0 ;
-    length += NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_COMPLETE_LOCAL_NAME) ? strlen(pBluetooth->LocalName) + 2 : 0 ;
-    length += NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_TX_POWER_LEVEL) ? sizeof(pBluetooth->TxPowerLevel + 2) : 0 ;
-    length += NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_DEVICE_CLASS) ? sizeof(pBluetooth->DeviceClass) + 2 : 0 ;
-    length += NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_SIMPLE_PAIRING_HASH) ? sizeof(pBluetooth->SimplePairingHash) + 2 : 0 ;
-    length += NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_SIMPLE_PAIRING_RANDOMIZER) ? sizeof(pBluetooth->SimplePairingRandomizer) + 2 : 0 ;
-    length += NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_SECURITY_MANAGER_TK_VALUE) ? sizeof(pBluetooth->SecureManagerTK) + 2 : 0 ;
-    length += NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_SECURITY_MANAGER_FLAGS) ? sizeof(pBluetooth->SMFlags) + 2 : 0 ;
-    length += NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_SLAVE_CONNECTION_INTERVAL_RANGE) ? sizeof(pBluetooth->SlaveConnIntervalRange) + 2 : 0 ;
-    length += NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_SERVICE_SOLICITATION_16) ? pBluetooth->nbServiceSolicitation16 * 2 + 2 : 0 ;
-    length += NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_SERVICE_SOLICITATION_128) ? pBluetooth->nbServiceSolicitation128 * 16 + 2 : 0 ;
-    length += NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_APPEARANCE) ? sizeof(pBluetooth->Appearance) + 2 : 0 ;
-    length += (pBluetooth->Type == NDEF_BLUETOOTH_BLE) ? sizeof(pBluetooth->DeviceAddress) + sizeof(pBluetooth->DeviceAddressType) + 2 : 0 ;
-    length += (pBluetooth->Type == NDEF_BLUETOOTH_BLE) ? sizeof(pBluetooth->Role) + 2 : 0;
+  uint32_t length = (pBluetooth->Type == NDEF_BLUETOOTH_BREDR) ? sizeof(pBluetooth->DeviceAddress) + 2 : 0; // +2 is for BR/EDR mandatory length
+  length += NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_FLAGS) ? sizeof(pBluetooth->Flags) + 2    : 0 ;
+  length += pBluetooth->nbUUID16 ? pBluetooth->nbUUID16 * 2 + 2 : 0;
+  length += pBluetooth->nbUUID32 ? pBluetooth->nbUUID32 * 4 + 2 : 0;
+  length += pBluetooth->nbUUID128 ? pBluetooth->nbUUID128 * 16 + 2 : 0;
+  length += NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_SHORT_LOCAL_NAME) ? strlen(pBluetooth->LocalName) + 2 : 0 ;
+  length += NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_COMPLETE_LOCAL_NAME) ? strlen(pBluetooth->LocalName) + 2 : 0 ;
+  length += NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_TX_POWER_LEVEL) ? sizeof(pBluetooth->TxPowerLevel + 2) : 0 ;
+  length += NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_DEVICE_CLASS) ? sizeof(pBluetooth->DeviceClass) + 2 : 0 ;
+  length += NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_SIMPLE_PAIRING_HASH) ? sizeof(pBluetooth->SimplePairingHash) + 2 : 0 ;
+  length += NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_SIMPLE_PAIRING_RANDOMIZER) ? sizeof(pBluetooth->SimplePairingRandomizer) + 2 : 0 ;
+  length += NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_SECURITY_MANAGER_TK_VALUE) ? sizeof(pBluetooth->SecureManagerTK) + 2 : 0 ;
+  length += NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_SECURITY_MANAGER_FLAGS) ? sizeof(pBluetooth->SMFlags) + 2 : 0 ;
+  length += NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_SLAVE_CONNECTION_INTERVAL_RANGE) ? sizeof(pBluetooth->SlaveConnIntervalRange) + 2 : 0 ;
+  length += NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_SERVICE_SOLICITATION_16) ? pBluetooth->nbServiceSolicitation16 * 2 + 2 : 0 ;
+  length += NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_SERVICE_SOLICITATION_128) ? pBluetooth->nbServiceSolicitation128 * 16 + 2 : 0 ;
+  length += NDEF_BLUETOOTH_GET_OPTIONAL_MASK(pBluetooth, BLUETOOTH_EIR_APPEARANCE) ? sizeof(pBluetooth->Appearance) + 2 : 0 ;
+  length += (pBluetooth->Type == NDEF_BLUETOOTH_BLE) ? sizeof(pBluetooth->DeviceAddress) + sizeof(pBluetooth->DeviceAddressType) + 2 : 0 ;
+  length += (pBluetooth->Type == NDEF_BLUETOOTH_BLE) ? sizeof(pBluetooth->Role) + 2 : 0;
 
-    return length;
+  return length;
 }
 /**
   * @}

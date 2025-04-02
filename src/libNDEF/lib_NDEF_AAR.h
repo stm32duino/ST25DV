@@ -35,7 +35,7 @@
 #include "lib_NDEF.h"
 
 typedef struct {
-    char PackageName[80];
+  char PackageName[80];
 } sAARInfo;
 
 

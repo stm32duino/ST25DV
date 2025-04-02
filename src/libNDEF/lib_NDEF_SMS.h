@@ -36,9 +36,9 @@
 
 
 typedef struct {
-    char PhoneNumber[SMS_PHONE_MAX_SIZE];
-    char Message[SMS_MESSAGE_MAX_SIZE];
-    char Information[SMS_INFO_MAX_SIZE];
+  char PhoneNumber[SMS_PHONE_MAX_SIZE];
+  char Message[SMS_MESSAGE_MAX_SIZE];
+  char Information[SMS_INFO_MAX_SIZE];
 } sSMSInfo;
 
 #endif /* __LIB_NDEF_SMS_H */

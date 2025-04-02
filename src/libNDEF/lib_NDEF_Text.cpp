@@ -132,8 +132,8 @@ uint16_t NDEF::NDEF_ReadText(sRecordInfo_t *pRecordStruct, NDEF_Text_info_t *pTe
                            - text_record_info->language_length    /* minus language code length */
                            - sizeof(uint8_t);                     /* minus the status byte length */
 
-    if ((text_record_info->language_length >= NDEF_TEXT_LANGUAGE_CODE_MAX_LENGTH) ||
-        (text_length >= NDEF_TEXT_MAX_LENGTH)) {
+    if ((text_record_info->language_length >= TEXT_LANGUAGE_CODE_MAX_SIZE) ||
+        (text_length >= TEXT_MAX_SIZE)) {
       /* One of the text info structure buffer is too small */
       return NDEF_ERROR_MEMORY_INTERNAL;
     }

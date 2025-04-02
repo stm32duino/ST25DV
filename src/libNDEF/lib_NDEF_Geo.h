@@ -35,9 +35,9 @@
 #include "lib_NDEF.h"
 
 typedef struct {
-  char Latitude[20];
-  char Longitude[20];
-  char Information[100];
+  char Latitude[GEO_LATITUDE_MAX_SIZE];
+  char Longitude[GEO_LONGITUDE_MAX_SIZE];
+  char Information[GEO_INFO_MAX_SIZE];
 } sGeoInfo;
 
 #endif /* __LIB_NDEF_GEO_H */
